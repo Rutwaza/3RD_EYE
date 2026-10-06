@@ -178,18 +178,9 @@ export class IntelHUD {
     if (!this._el) return;
 
     this._el.innerHTML = `
-      <div class="hud-top-bar">
-        <span class="hud-top-bar-left">TOP SECRET // SI-TK // NOFORN</span>
-        <span class="hud-top-bar-center">${this._missionId}</span>
-        <span class="hud-top-bar-right">PAGE 1/1</span>
-      </div>
-
       <div class="hud-corner hud-top-left">
         <div class="hud-bracket">┌</div>
         <div class="hud-content">
-          <div class="hud-classification">TOP SECRET // SI-TK // NOFORN</div>
-          <div class="hud-system">${this._missionId}  ${this._sensorId}</div>
-          <div class="hud-mode" id="hud-mode">NORMAL</div>
           <div class="hud-summary-wrap">
             <div class="hud-summary-label">SUMMARY</div>
             <div class="hud-summary" id="hud-summary">Awaiting telemetry...</div>
@@ -200,7 +191,6 @@ export class IntelHUD {
       <div class="hud-corner hud-top-right">
         <div class="hud-content" style="text-align:right">
           <div class="hud-rec"><span id="hud-rec-dot">●</span> REC  <span id="hud-timestamp">2026-01-01 00:00:00Z</span></div>
-          <div class="hud-orbital">ORB: ${this._orbitNum}  PASS: DESC-${this._passNum}</div>
         </div>
         <div class="hud-bracket">┐</div>
       </div>
@@ -208,33 +198,19 @@ export class IntelHUD {
       <div class="hud-corner hud-bottom-left">
         <div class="hud-bracket">└</div>
         <div class="hud-content">
-          <div id="hud-mgrs">MGRS: ---</div>
           <div id="hud-latlon">--°--'--"N ---°--'--"W</div>
         </div>
       </div>
 
       <div class="hud-corner hud-bottom-right">
         <div class="hud-content" style="text-align:right">
-          <div id="hud-gsd">GSD: --m  NIIRS: --</div>
           <div id="hud-alt">ALT: --m   SUN: --° EL</div>
-          <div id="hud-ais-vessel" class="hud-ais-vessel">AIS: --</div>
         </div>
         <div class="hud-bracket">┘</div>
       </div>
 
-      <div class="hud-edge hud-left-edge">
-        <div id="hud-coll">COLL: --:--:--Z</div>
-        <div id="hud-ona">ONA: --°</div>
-      </div>
-
-      <div class="hud-edge hud-right-edge">
-        <div>BAND: PAN</div>
-        <div>BITS: 11</div>
-        <div>LVL: 1A</div>
-      </div>
-
       <div class="hud-bottom-bar">
-        <span id="hud-bottom-line">LAT: --  LON: --  MGRS: ---</span>
+        <span id="hud-bottom-line">LAT: --  LON: --</span>
       </div>
     `;
     this._el.dataset.variant = this._variant;
@@ -356,7 +332,7 @@ export class IntelHUD {
     if (llEl) llEl.textContent = `${latDMS} ${lonDMS}`;
     const bottomEl = document.getElementById('hud-bottom-line');
     if (bottomEl) {
-      bottomEl.textContent = `MGRS: ${mgrsLabel}  LAT: ${latDMS}  LON: ${lonDMS}`;
+      bottomEl.textContent = `LAT: ${latDMS}  LON: ${lonDMS}`;
     }
 
     // GSD (Ground Sample Distance): approximate resolution in meters per pixel
@@ -626,8 +602,6 @@ export class IntelHUD {
     const m = this._latestMetrics;
     if (!m) return 'Awaiting telemetry...';
 
-    const modeEl = document.getElementById('hud-mode');
-    const modeLabel = modeEl?.textContent || 'NORMAL';
     const region = this._regionLabel(m.latDeg, m.lonDeg);
     const nearest = this._nearestKnownPoint(m.latDeg, m.lonDeg);
     const band = this._viewBand(m.altM);
@@ -649,7 +623,7 @@ export class IntelHUD {
     // NEAR the nearest catalogued POI at metro range; otherwise the lat/lon sector.
     const localityTag = composeLocalityTag(nearest, m.latDeg, m.lonDeg);
 
-    return `${modeLabel} ${band} ${localityTag} | ${region} | ALT ${altTag} | WINDOW ${winTag} | SUN ${m.sunEl.toFixed(0)}° | ONA ${m.ona.toFixed(0)}° | ${localTag}`;
+    return `${band} ${localityTag} | ${region} | ALT ${altTag} | WINDOW ${winTag} | SUN ${m.sunEl.toFixed(0)}° | ONA ${m.ona.toFixed(0)}° | ${localTag}`;
   }
 
   /**

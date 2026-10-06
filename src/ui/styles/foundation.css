@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   GOD'S EYE VIEW — Dark Sci-Fi UI
+   3RD EYE — Dark Sci-Fi UI
    Apple meets Blade Runner
    ═══════════════════════════════════════════════ */
 
@@ -671,4 +671,79 @@ body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
   margin-top: 4px;
   text-shadow: 0 0 20px var(--accent-glow);
   transition: var(--transition-smooth);
+}
+
+#style-indicator.internet-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #07100e 82%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+#style-indicator.internet-status .indicator-value {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #55e69a;
+  text-shadow: 0 0 14px rgb(85 230 154 / 45%);
+}
+
+.internet-status-icon {
+  color: #55e69a;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+  fill: currentColor;
+}
+
+.internet-status-icon .signal-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  opacity: 0.28;
+  animation: signal-pulse 1.8s ease-out infinite;
+}
+
+.internet-status-icon .signal-arc-inner {
+  animation-delay: 0s;
+}
+
+.internet-status-icon .signal-arc-middle {
+  animation-delay: 0.24s;
+}
+
+.internet-status-icon .signal-arc-outer {
+  animation-delay: 0.48s;
+}
+
+@keyframes signal-pulse {
+  0%, 100% { opacity: 0.3; }
+  35% { opacity: 1; }
+}
+
+#style-indicator.internet-status.is-offline {
+  border-color: rgb(255 77 77 / 55%);
+}
+
+#style-indicator.internet-status.is-offline .indicator-value,
+#style-indicator.internet-status.is-offline .internet-status-icon {
+  color: #ff5555;
+  text-shadow: 0 0 14px rgb(255 77 77 / 45%);
+}
+
+#style-indicator.internet-status.is-offline .signal-arc {
+  animation-play-state: paused;
+  opacity: 0.38;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .internet-status-icon .signal-arc {
+    animation: none;
+    opacity: 0.85;
+  }
 }

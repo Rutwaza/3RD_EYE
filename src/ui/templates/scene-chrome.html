@@ -10,14 +10,19 @@
   <!-- Title -->
   <div id="title-bar">
     <div class="title-glow"></div>
-    <h1><span class="title-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span> <span>GOD'S EYE <span class="title-accent">VIEW</span></span></h1>
-    <p class="subtitle">NO PLACE LEFT BEHIND</p>
+    <h1><span class="title-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span> <span>3RD <span class="title-accent">EYE</span></span></h1>
+    <p class="subtitle">OBSERVE. ORIENT. DECIDE. ACT.</p>
   </div>
 
-  <!-- Style indicator -->
-  <div id="style-indicator">
-    <span class="indicator-label">ACTIVE STYLE</span>
-    <span class="indicator-value" id="active-style-name">NORMAL</span>
+  <!-- Internet status -->
+  <div id="style-indicator" class="internet-status" role="status" aria-live="polite" aria-label="Internet connection status">
+    <svg class="internet-status-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle class="signal-dot" cx="12" cy="19" r="1.7" />
+      <path class="signal-arc signal-arc-inner" d="M8.4 15.4a5.1 5.1 0 0 1 7.2 0" />
+      <path class="signal-arc signal-arc-middle" d="M5.5 12.5a9.2 9.2 0 0 1 13 0" />
+      <path class="signal-arc signal-arc-outer" d="M2.7 9.6a13.2 13.2 0 0 1 18.6 0" />
+    </svg>
+    <span class="indicator-value" id="internet-status-value">ONLINE</span>
   </div>
 
   <!-- Top-center camera and share actions -->
