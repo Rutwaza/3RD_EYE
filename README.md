@@ -117,7 +117,7 @@ should stay private and should not be added to shared URLs by default.
 
 Any future video analysis should remain local to that gateway and focus on
 non-identifying events, such as motion or vehicle presence. The project will
-not add face recognition, named-person search, or individual tracking. A
+add face recognition, named-person search, or individual tracking. A
 deployment should include authentication, encrypted connections, network
 allowlists, limited retention, access logs, a visible processing status, and
 clear camera enrollment and removal controls.
@@ -128,6 +128,8 @@ Suggested implementation order:
 2. Test it with an operator-owned camera on a private network.
 3. Add an opt-in camera source adapter and health status.
 4. Reuse the globe's existing selection, projection, and calibration UI.
+5. Pull the pretrained face recognition model
+6. Build a know face and target face database
 5. Document deployment, privacy, retention, and camera revocation.
 
 ## Development
