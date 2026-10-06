@@ -1,8 +1,6 @@
 <div align="center">
 
-# 🌐 God's Eye View
-
-[![CI](https://github.com/bilawalsidhu/gods-eye-view/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/bilawalsidhu/gods-eye-view/actions/workflows/ci.yml)
+# 🌐 3RD EYE OSINT
 
 ### A spy-satellite simulator in your browser — then you realize the sources are public and the data is real.
 
@@ -34,7 +32,7 @@ _“pretty cool”_ — [Brendan Eich](https://x.com/BrendanEich/status/20945920
 
 <div align="center">
 
-**[Quick Start](#-quick-start) · [First Five Minutes](#-the-first-five-minutes) · [Talk to It](#-talk-to-it) · [What's Live](#-whats-on-the-globe) · [Under the Hood](#-under-the-hood) · [Keys & Costs](#-api-keys) · [Contributing](CONTRIBUTING.md)**
+**[Quick Start](#-quick-start) · [First Five Minutes](#-the-first-five-minutes) · [Using the App](#using-the-app) · [Talk to It](#-talk-to-it) · [What's Live](#-whats-on-the-globe) · [Camera Expansion Plan](#camera-expansion-plan-self-hosted-cameras) · [Keys & Costs](#-api-keys) · [Contributing](CONTRIBUTING.md)**
 
 </div>
 
@@ -113,8 +111,8 @@ Use **Node.js 24.x (24.14.0 or later) or 26.x**. The setup doctor warns about
 Node 25, which is end-of-life.
 
 ```bash
-git clone https://github.com/bilawalsidhu/gods-eye-view.git
-cd gods-eye-view
+git clone https://github.com/Rutwaza/3RD_EYE.git
+cd 3RD_EYE
 npm ci
 npm run doctor
 npm run dev
@@ -204,6 +202,92 @@ Choose a first-run mission, or try these in order. The GIFs show Google Photorea
 8. **Come home.** Hit **Reset Globe** — or just say _"zoom out to a globe view."_
 
 **Keyboard:** `1`–`7` visual styles · `H` HUD · `D` detection · `C` cockpit · `Esc` out.
+
+## Using the App
+
+The globe is the main workspace. The panels around it control data layers,
+camera feeds, scenes, visual style, and location. On a narrow screen, panels
+collapse into rails; open a panel when you need its controls.
+
+### A practical workflow
+
+1. **Choose a starting view.** Pick a first-run mission, search for a place, or
+   use the location control. Use the map-source controls to choose a basemap;
+   the app falls back to keyless sources when a configured provider is not
+   available.
+2. **Turn on only the layers you need.** Open the data/layer panel and enable
+   Flights, Vessels, Satellites, CCTV, Traffic, Transit, Fires, Earthquakes,
+   Radio, or another available layer. Some layers need a provider key; the
+   layer table and POWER UP panel show which ones.
+3. **Inspect a signal.** Click an entity to select it, read its source and
+   metadata, and follow it as the globe refreshes. Select a live aircraft and
+   choose **COCKPIT** to ride with it. Use the Contacts view to step through
+   nearby aircraft. Use **NEAREST** in CCTV to find a public camera near the
+   current target or view.
+4. **Change the presentation.** Use styles `1`–`7` or DISPLAY controls for
+   Normal, CRT, night-vision, thermal/FLIR, and other sensor treatments. `H`
+   toggles the HUD and `D` toggles the screen-space detection overlay. These
+   are visual aids; they do not add sensor data or verify detections.
+5. **Navigate and annotate.** Search or use voice to move the camera. In
+   DISPLAY, choose Draw to add a pin, line, or area. The Directions layer lets
+   you set route endpoints on the globe, request a road route, and fly the
+   camera along it.
+6. **Save or share a view.** Use scene controls to capture and sequence camera
+   shots. Share links can preserve the camera, style, layers, and selected
+   target. A shared live target is resolved again when the recipient opens it;
+   it is not a frozen data snapshot.
+
+### Feature guide: what happens behind the controls
+
+- **Live globe and map stack:** CesiumJS draws the Earth, imagery, terrain,
+  and optional photorealistic 3D tiles. Map choices depend on available
+  providers and their terms. The app keeps source attribution visible.
+- **Live entity layers:** Flights, military ADS-B tracks, vessels, satellites,
+  transit, bike-share, earthquakes, and space launches are fetched from their
+  listed providers. Each layer normalizes incoming records into map entities,
+  refreshes on its own schedule, and exposes selection details. Feeds can be
+  delayed, incomplete, or unavailable; track trails and satellite positions
+  are estimates between observations.
+- **Context and infrastructure:** Fires, mapped installations, dams, data
+  centers, submarine cables, neighborhoods, and other geographic context are
+  drawn from live public sources or bundled datasets. Coverage and licensing
+  vary by dataset; see [DATA_SOURCES.md](DATA_SOURCES.md).
+- **Traffic and directions:** Traffic is animated on OpenStreetMap roads. If a
+  TomTom key is configured, its live flow speeds affect congestion styling;
+  individual animated vehicles are simulations, not observed cars. Directions
+  requests a route from the public OSRM service and renders it on the globe.
+- **Public CCTV:** The CCTV catalog supplies publicly published camera
+  positions and frame URLs. The app displays a selected feed as a plane in the
+  3D scene. Camera orientation and coverage are estimates that can be adjusted
+  with the calibration gizmo; a viewshed is not proof that a camera can see a
+  particular object. The app does not control these cameras.
+- **Voice assistant:** With an OpenAI key, the Realtime voice session can read
+  current scene context, query supported layers, and call explicit camera,
+  layer, route, and annotation tools. The server creates a short-lived session
+  credential; the long-lived OpenAI key stays server-side. Voice actions are
+  constrained to the tools the app exposes.
+- **Draw tools and scenes:** Drawings are geographic pins, lines, or polygons.
+  Scenes store camera shots and playback timing for repeatable presentations;
+  they do not record a continuous video of the world or freeze live feeds.
+- **Visual styles, HUD, and detection:** Sensor-style shaders recolor the
+  rendered scene, while the HUD summarizes view state and the detection layer
+  places screen-space markers. These are presentation features, not real
+  optical/thermal sensors or identity analysis.
+
+### Common controls
+
+| Control | Use |
+| --- | --- |
+| `1`–`7` | Switch visual style |
+| `H` | Toggle the HUD |
+| `D` | Toggle detections |
+| `C` | Enter or leave aircraft cockpit mode when a flight is selected |
+| `Esc` | Exit the active mode or dismiss the current interaction |
+| **POWER UP** | Configure optional provider keys and see what they enable |
+| **Reset Globe** | Return to the broad Earth view |
+
+Voice is optional. Without an OpenAI key, use the search, panels, map, and
+keyboard controls directly.
 
 ---
 
@@ -482,6 +566,50 @@ a separately reviewed authentication proxy if remote access is required.
 God's Eye View runs on **public data, clear sources, and local-first execution.** No secrets, no private datasets, no mystery scraping — anything involving a private key is brokered server-side. It has the visual grammar of a classified ops room, built entirely from open signals and inspectable code.
 
 **The line.** This project models **events, assets, infrastructure, and systems** — aircraft, vessels, satellites, fires, cameras, cities. It does not build features for named-person search, face recognition, or tracking individuals, and pull requests that cross that line won't be merged. People are not a query type here.
+
+### Camera Expansion Plan: Self-Hosted Cameras
+
+The current CCTV layer is a viewer for public camera catalogs and published
+frames. It does not connect to private cameras, manage camera credentials, or
+provide face recognition. The project boundary above excludes face
+recognition, named-person search, and tracking individuals. A self-hosted
+camera integration should extend the existing camera workflow while keeping
+analysis focused on camera health, scene conditions, and non-identifying
+objects or events.
+
+This is a proposal, not a feature currently shipped in the app:
+
+1. **Start with an operator-owned local gateway.** A separate service on the
+   camera owner's network would connect to explicitly configured RTSP or ONVIF
+   cameras. GEV would talk only to that gateway through a documented API; it
+   would not accept arbitrary camera URLs from browsers or expose camera
+   credentials to the client.
+2. **Add an opt-in camera source adapter.** Normalize each authorized camera
+   into the existing catalog shape: stable ID, operator-provided label,
+   coordinates, stream/frame endpoint, health, and optional calibration. Keep
+   the existing public catalog source independent so either source can be
+   enabled or disabled separately.
+3. **Reuse the existing globe presentation.** Show camera locations, health,
+   selected frames, and calibrated projection/coverage through the current
+   CCTV panel. Make private-camera status explicit in the UI, and never publish
+   private camera coordinates or links in share URLs by default.
+4. **Add privacy-preserving event summaries only if needed.** If local video
+   analytics are introduced, keep processing on the operator's gateway and
+   limit results to non-identifying events such as motion, occupancy counts,
+   or vehicle presence. Do not create face templates, identify people, or
+   retain biometric data. Provide configurable retention, access controls,
+   audit logs, and a visible processing indicator before deployment.
+5. **Harden and document deployment.** Require explicit camera enrollment,
+   authentication, encrypted transport, network allowlists, least-privilege
+   credentials, bounded snapshots, and health/error reporting. Document
+   supported camera models, the gateway API, deployment updates, and how to
+   revoke a camera. Review data protection and notice requirements for each
+   deployment location.
+
+This sequence keeps camera ingestion modular: implement and review the gateway
+contract first, connect a test camera on a private network, then add the GEV
+adapter and UI. Public camera support remains useful without deploying a
+gateway or enabling analytics.
 
 **Come build it.** This is the canonical live 3D client from the project that kicked off the recent wave of spatial-intelligence tools — and it's a canvas: the layers here are the signals one person could find and fuse. Add a city pack, a data source, a style, a voice tool. It's the window through which you see the world; bring that window to others.
 
