@@ -40,7 +40,7 @@ export function createDefaultMapSources({
           ? keySetupRequirement('cesium-ion')
           : descriptor.requiresGoogle
             ? 'Add a Google Maps API key with Map Tiles API enabled'
-          : null,
+            : null,
       };
       if (descriptor.kind === 'photoreal')
         return {

@@ -47,15 +47,27 @@ export function readShellElements(document = globalThis.document) {
     _faceRecognitionCamera: document.getElementById('face-recognition-camera'),
     _faceRecognitionStart: document.getElementById('face-recognition-start'),
     _faceRecognitionStop: document.getElementById('face-recognition-stop'),
-    _faceRecognitionThreshold: document.getElementById('face-recognition-threshold'),
-    _faceRecognitionThresholdValue: document.getElementById('face-recognition-threshold-value'),
+    _faceRecognitionThreshold: document.getElementById(
+      'face-recognition-threshold',
+    ),
+    _faceRecognitionThresholdValue: document.getElementById(
+      'face-recognition-threshold-value',
+    ),
     _faceRecognitionStatus: document.getElementById('face-recognition-status'),
-    _faceRecognitionDatabase: document.getElementById('face-recognition-database'),
-    _faceRecognitionResults: document.getElementById('face-recognition-results'),
-    _faceRecognitionEnrollForm: document.getElementById('face-recognition-enroll'),
+    _faceRecognitionDatabase: document.getElementById(
+      'face-recognition-database',
+    ),
+    _faceRecognitionResults: document.getElementById(
+      'face-recognition-results',
+    ),
+    _faceRecognitionEnrollForm: document.getElementById(
+      'face-recognition-enroll',
+    ),
     _faceRecognitionName: document.getElementById('face-recognition-name'),
     _faceRecognitionPhotos: document.getElementById('face-recognition-photos'),
-    _faceRecognitionConsent: document.getElementById('face-recognition-consent'),
+    _faceRecognitionConsent: document.getElementById(
+      'face-recognition-consent',
+    ),
     _faceRecognitionPeople: document.getElementById('face-recognition-people'),
     _faceRecognitionView: document.getElementById('face-recognition-view'),
     _faceRecognitionCounts: document.getElementById('face-recognition-counts'),

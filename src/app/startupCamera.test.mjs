@@ -22,7 +22,10 @@ test('fresh-start camera uses the configured Kigali projection', () => {
     },
   };
   const stop = flyToKigali(viewer);
-  assert.deepEqual(view.destination, Cesium.Cartesian3.fromDegrees(30.1093, -1.9774, 4012));
+  assert.deepEqual(
+    view.destination,
+    Cesium.Cartesian3.fromDegrees(30.1093, -1.9774, 4012),
+  );
   assert.equal(view.orientation.heading, Cesium.Math.toRadians(360));
   assert.equal(view.orientation.pitch, Cesium.Math.toRadians(-90));
   assert.equal(view.orientation.roll, 0);

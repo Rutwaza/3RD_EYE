@@ -38,9 +38,9 @@ export function readLayerSource(file) {
                   ? '../layers/awareness'
                   : basename(path) === 'traffic.js'
                     ? '../layers/traffic'
-                      : basename(path) === 'cctv.js'
-                        ? '../layers/cctv'
-                        : '../layers/vessels',
+                    : basename(path) === 'cctv.js'
+                      ? '../layers/cctv'
+                      : '../layers/vessels',
   );
   return readdirSync(directory)
     .filter((name) => name.endsWith('.js'))

@@ -50,7 +50,10 @@ function localProviderPlugins() {
 }
 
 export { localProviderPlugins };
-export { createFaceRecognitionMiddleware, faceRecognitionProxy } from './face-recognition.js';
+export {
+  createFaceRecognitionMiddleware,
+  faceRecognitionProxy,
+} from './face-recognition.js';
 
 export {
   CCTV_FRAME_FETCH_TIMEOUT_MS,

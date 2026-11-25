@@ -1148,23 +1148,23 @@ function main() {
                 ? buildPhase4CctvWorkload(ENTRY_COUNT)
                 : PROFILE === 'phase5-earthquakes'
                   ? buildPhase5EarthquakesWorkload(ENTRY_COUNT)
-                    : PROFILE === 'phase5-satellites'
-                      ? buildPhase5SatellitesWorkload(ENTRY_COUNT)
-                      : PROFILE === 'phase5-cctv-projection'
-                        ? buildPhase5CctvProjectionWorkload(ENTRY_COUNT)
-                        : PROFILE === 'phase5-civil'
-                          ? buildPhase5CivilWorkload(ENTRY_COUNT)
-                          : PROFILE === 'phase5-military'
-                            ? buildPhase5MilitaryWorkload(ENTRY_COUNT)
-                            : PROFILE === 'rocket-missions'
-                              ? buildRocketMissionAmbientWorkload(ENTRY_COUNT)
-                              : PROFILE === 'phase5-rockets'
-                                ? buildPhase5RocketMissionWorkload(ENTRY_COUNT)
-                                : PROFILE === 'all-live-radio'
-                                  ? buildAllLiveRadioWorkload(ENTRY_COUNT)
-                                  : PROFILE === 'submarine-cables'
-                                    ? buildSubmarineCablesWorkload(ENTRY_COUNT)
-                                    : buildWorkload(ENTRY_COUNT);
+                  : PROFILE === 'phase5-satellites'
+                    ? buildPhase5SatellitesWorkload(ENTRY_COUNT)
+                    : PROFILE === 'phase5-cctv-projection'
+                      ? buildPhase5CctvProjectionWorkload(ENTRY_COUNT)
+                      : PROFILE === 'phase5-civil'
+                        ? buildPhase5CivilWorkload(ENTRY_COUNT)
+                        : PROFILE === 'phase5-military'
+                          ? buildPhase5MilitaryWorkload(ENTRY_COUNT)
+                          : PROFILE === 'rocket-missions'
+                            ? buildRocketMissionAmbientWorkload(ENTRY_COUNT)
+                            : PROFILE === 'phase5-rockets'
+                              ? buildPhase5RocketMissionWorkload(ENTRY_COUNT)
+                              : PROFILE === 'all-live-radio'
+                                ? buildAllLiveRadioWorkload(ENTRY_COUNT)
+                                : PROFILE === 'submarine-cables'
+                                  ? buildSubmarineCablesWorkload(ENTRY_COUNT)
+                                  : buildWorkload(ENTRY_COUNT);
   const { entries, positions, drifts } = workload;
   const solveIntervalMs = Number(process.env.GEV_ALLOC_SOLVE_MS) || 125;
   const detectionActive = !!workload.detectionLayer;

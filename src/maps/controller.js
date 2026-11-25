@@ -206,14 +206,16 @@ export class MapSourceController {
             gen === this._switchGen &&
             this._activeImageryProvider === resolution.provider &&
             markup
-          ) this._credits.show(markup);
+          )
+            this._credits.show(markup);
         } catch {
           // Keep the last valid attribution while the viewport endpoint is unavailable.
         }
       };
-      this._removeRoadmapCreditListener = this.viewer.camera.moveEnd.addEventListener(
-        () => void refreshAttribution(),
-      );
+      this._removeRoadmapCreditListener =
+        this.viewer.camera.moveEnd.addEventListener(
+          () => void refreshAttribution(),
+        );
       void refreshAttribution();
     }
     // A repeated request still owns a new switch generation. Rebind its

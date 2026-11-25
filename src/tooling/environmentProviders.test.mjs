@@ -57,11 +57,7 @@ test('standalone composition mounts every extracted provider exactly once withou
     throw Error('construction must not fetch');
   });
   const plugins = localProviderPlugins();
-  for (const factory of [
-    terrainHeightsProxy,
-    tomtomProxy,
-    firmsProxy,
-  ])
+  for (const factory of [terrainHeightsProxy, tomtomProxy, firmsProxy])
     assert.equal(plugins.filter((p) => p.name === factory().name).length, 1);
 });
 

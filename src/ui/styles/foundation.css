@@ -699,8 +699,13 @@ body.cockpit-mode #cockpit-cloud-effects.active {
 }
 
 @keyframes signal-pulse {
-  0%, 100% { opacity: 0.3; }
-  35% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  35% {
+    opacity: 1;
+  }
 }
 
 #style-indicator.internet-status.is-offline {

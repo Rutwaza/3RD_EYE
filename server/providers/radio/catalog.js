@@ -343,7 +343,8 @@ export function createRadioProxyMiddleware({
     attachAfrica(nextCatalog, selected);
     if (backgroundAfrica)
       void readAfrica(OTHER_AFRICA_CODES, timestamp).then(() => {
-        const current = catalogCache?.cachedAt === timestamp ? catalogCache : nextCatalog;
+        const current =
+          catalogCache?.cachedAt === timestamp ? catalogCache : nextCatalog;
         attachAfrica(current, selected);
         servedStationIds = current.stationIds;
       });

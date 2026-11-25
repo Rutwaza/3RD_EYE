@@ -648,7 +648,6 @@
   "src/data/cameraSensitivity.js",
   "src/data/contactPlayback.js",
   "src/data/contactPlayback.test.mjs",
-  "src/overlays/worldOverlayTokens.test.mjs",
   "scripts/format-runtime.json",
   "src/sources/overpassFeatures.test.mjs",
   "src/director/clock.test.mjs",

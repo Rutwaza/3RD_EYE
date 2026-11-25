@@ -74,7 +74,9 @@
  * the canonical control order and center their combined stack at 50vh.
  */
 #left-panel-stack.layout-tail
-  > :is(#data-panel, #cctv-panel, #scene-panel, #face-recognition-panel):not(.collapsed) {
+  > :is(#data-panel, #cctv-panel, #scene-panel, #face-recognition-panel):not(
+    .collapsed
+  ) {
   box-sizing: border-box;
   flex: 0 0 var(--left-panel-allocated-height);
   height: var(--left-panel-allocated-height);
@@ -88,7 +90,9 @@
   max-height: 100%;
 }
 
-#left-panel-stack > #face-recognition-panel:not(.collapsed) .face-recognition-inner {
+#left-panel-stack
+  > #face-recognition-panel:not(.collapsed)
+  .face-recognition-inner {
   height: 100%;
   max-height: 100%;
 }
@@ -430,7 +434,9 @@
   display: none !important;
 }
 
-#face-recognition-panel.collapsed .face-recognition-inner > :not(.panel-header) {
+#face-recognition-panel.collapsed
+  .face-recognition-inner
+  > :not(.panel-header) {
   display: none !important;
 }
 

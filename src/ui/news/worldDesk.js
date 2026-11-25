@@ -434,14 +434,12 @@ export class WorldDesk {
     );
     const watched = watchMatches(story, prefs.watchlist);
     if (watched.length)
-      body
-        .querySelector('.lead-kicker')
-        .append(
-          el('span', {
-            class: 'lead-watch',
-            text: `WATCH ${watched.join(' · ')}`,
-          }),
-        );
+      body.querySelector('.lead-kicker').append(
+        el('span', {
+          class: 'lead-watch',
+          text: `WATCH ${watched.join(' · ')}`,
+        }),
+      );
     node.replaceChildren(
       ...(image
         ? [

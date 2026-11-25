@@ -1660,7 +1660,9 @@ export async function loadItrafficSourcesFromMap() {
       const url = `${ITRAFFIC_IMAGE_ORIGIN}${encodeURIComponent(rawId)}`;
       cameras.set(id, {
         id,
-        name: String(row?.title || '').trim() || `${city} road camera ${rawId.split('-')[0]}`,
+        name:
+          String(row?.title || '').trim() ||
+          `${city} road camera ${rawId.split('-')[0]}`,
         city,
         cityId: 'south-africa',
         provider: 'SANRAL i-TRAFFIC',
@@ -1672,7 +1674,8 @@ export async function loadItrafficSourcesFromMap() {
         fovDeg: 44,
         rangeM: 160,
         mountHeightM: 12,
-        groundElevationM: city === 'Johannesburg' || city === 'Pretoria' ? 1500 : 60,
+        groundElevationM:
+          city === 'Johannesburg' || city === 'Pretoria' ? 1500 : 60,
         feedType: 'image',
         url,
         snapshotUrl: url,
