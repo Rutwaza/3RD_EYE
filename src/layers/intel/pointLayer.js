@@ -3,7 +3,14 @@ import * as Cesium from 'cesium';
 const LABEL_CAP = 70;
 const SURFACE_SAMPLE_CAP = 40;
 const SURFACE_SAMPLE_HEIGHT_M = 90_000;
+const LABEL_HEIGHT_PX = 20;
+const CHARACTER_PX = 6.8;
 const markerCache = new Map();
+/** Label rectangles per layer, so layers do not write over each other. */
+const labelRects = new Map();
+
+const overlaps = (a, b) =>
+  a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
 /** One glowing HUD marker per colour and shape, shared by every layer. */
 function marker(color, shape) {
@@ -54,6 +61,9 @@ function marker(color, shape) {
   markerCache.set(key, canvas);
   return canvas;
 }
+
+const shortTitle = (title) =>
+  title.length > 30 ? `${title.slice(0, 29).trimEnd()}…` : title;
 
 function validItem(item) {
   return (
@@ -167,14 +177,32 @@ export function createIntelPointLayer({
     const floor = height > 6e6 ? 8 : height > 2e6 ? 6 : height > 5e5 ? 5 : 0;
     const named = visible
       .filter(({ item }) => item.badge || (item.weight || 0) >= floor)
-      .sort((a, b) => (b.item.weight || 0) - (a.item.weight || 0))
-      .slice(0, LABEL_CAP);
+      .sort((a, b) => (b.item.weight || 0) - (a.item.weight || 0));
+    const taken = [...labelRects]
+      .filter(([owner]) => owner !== id)
+      .flatMap(([, rects]) => rects);
+    const mine = [];
     for (const { item, billboard, kind } of named) {
+      if (mine.length >= LABEL_CAP) break;
       const full = height < 1.6e6 || (item.weight || 0) >= 8;
       const text = full
-        ? `${item.title.slice(0, 34)}${item.badge ? `  ${item.badge}` : ''}`
+        ? `${shortTitle(item.title)}${item.badge ? `  ${item.badge}` : ''}`
         : item.badge || '';
       if (!text) continue;
+      const spot = Cesium.SceneTransforms.worldToWindowCoordinates(
+        viewer.scene,
+        billboard.position,
+      );
+      if (!spot) continue;
+      const half = (text.length * CHARACTER_PX) / 2 + 8;
+      const rect = {
+        left: spot.x - half,
+        right: spot.x + half,
+        top: spot.y - 20 - LABEL_HEIGHT_PX / 2,
+        bottom: spot.y - 20 + LABEL_HEIGHT_PX / 2,
+      };
+      if ([...taken, ...mine].some((other) => overlaps(rect, other))) continue;
+      mine.push(rect);
       labels.add({
         id: prefix + item.id,
         position: billboard.position,
@@ -194,6 +222,7 @@ export function createIntelPointLayer({
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       });
     }
+    labelRects.set(id, mine);
     render();
   }
 
@@ -261,6 +290,7 @@ export function createIntelPointLayer({
       request = null;
       if (billboards) billboards.show = false;
       if (labels) labels.show = false;
+      labelRects.delete(id);
       render();
     },
     async update() {
@@ -297,6 +327,7 @@ export function createIntelPointLayer({
       for (const remove of removeCamera) remove();
       removeCamera = [];
       unregisterPickOwner(id);
+      labelRects.delete(id);
       clear();
       if (activeViewer && !activeViewer.isDestroyed?.()) {
         if (billboards) activeViewer.scene.primitives.remove(billboards);

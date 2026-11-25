@@ -27,57 +27,73 @@ const base = {
   backend: 'webgl',
   modelBasePath,
   cacheSensitivity: 0,
-  filter: { enabled: true, equalization: false, flip: false },
+  // The library's filter stage can hand back the previous image when input
+  // sizes change between calls, so it must stay off.
+  filter: { enabled: false, equalization: false, flip: false },
   hand: off,
   gesture: off,
   segmentation: off,
 };
 
-/** Two engines: one finds people in the frame, one reads faces in a crop. */
+const faceConfig = {
+  enabled: true,
+  detector: {
+    enabled: true,
+    maxDetected: 4,
+    rotation: true,
+    minConfidence: 0.4,
+    skipFrames: 0,
+    skipTime: 0,
+  },
+  mesh: { enabled: true },
+  description: { enabled: true, skipFrames: 0, skipTime: 0 },
+  antispoof: { enabled: true, skipFrames: 0, skipTime: 0 },
+  liveness: { enabled: true, skipFrames: 0, skipTime: 0 },
+  attention: off,
+  iris: off,
+  emotion: off,
+  gear: off,
+};
+const objectConfig = {
+  enabled: true,
+  modelPath: 'centernet.json',
+  minConfidence: PERSON_CONFIDENCE,
+  iouThreshold: 0.45,
+  maxDetected: 20,
+  skipFrames: 0,
+  skipTime: 0,
+};
+
+/**
+ * One engine, switched per call. The library keeps its models and image buffers
+ * in module state, so two instances would overwrite each other.
+ */
 async function ensureEngines() {
   if (engines) return engines;
   loading ||= (async () => {
-    const people = new Human({
-      ...base,
-      face: off,
-      body: off,
-      object: {
-        enabled: true,
-        modelPath: 'centernet.json',
-        minConfidence: PERSON_CONFIDENCE,
-        iouThreshold: 0.45,
-        maxDetected: 20,
-        skipFrames: 0,
-        skipTime: 0,
-      },
-    });
-    const faces = new Human({
+    const human = new Human({
       ...base,
       body: off,
-      object: off,
-      face: {
-        enabled: true,
-        detector: {
-          enabled: true,
-          maxDetected: 4,
-          rotation: true,
-          minConfidence: 0.4,
-          skipFrames: 0,
-          skipTime: 0,
-        },
-        mesh: { enabled: true },
-        description: { enabled: true, skipFrames: 0, skipTime: 0 },
-        antispoof: { enabled: true, skipFrames: 0, skipTime: 0 },
-        liveness: { enabled: true, skipFrames: 0, skipTime: 0 },
-        attention: off,
-        iris: off,
-        emotion: off,
-        gear: off,
-      },
+      face: faceConfig,
+      object: objectConfig,
     });
-    await people.load();
-    await faces.load();
-    engines = { people, faces };
+    await human.load();
+    // The library drops models that the first call leaves switched off, so the
+    // first call uses every detector. It also compiles the shaders.
+    const blank = new OffscreenCanvas(PEOPLE_INPUT, PEOPLE_INPUT);
+    blank.getContext('2d').fillRect(0, 0, PEOPLE_INPUT, PEOPLE_INPUT);
+    await human.detect(blank, { face: faceConfig, object: objectConfig });
+    engines = {
+      human,
+      people: {
+        detect: (input) =>
+          human.detect(input, { face: off, object: objectConfig }),
+      },
+      faces: {
+        detect: (input) =>
+          human.detect(input, { face: faceConfig, object: off }),
+      },
+    };
     return engines;
   })();
   try {
@@ -317,13 +333,13 @@ async function enroll(message) {
 
 async function handleMessage(message) {
   if (message.type === 'initialize') {
-    const [{ faces }, status] = await Promise.all([
+    const [{ human }, status] = await Promise.all([
       ensureEngines(),
       api('/status'),
     ]);
     return {
       ready: true,
-      backend: faces.tf?.getBackend?.() || 'webgl',
+      backend: human.tf?.getBackend?.() || 'webgl',
       identityCount: status.identities,
     };
   }

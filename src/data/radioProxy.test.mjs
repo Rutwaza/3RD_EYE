@@ -131,14 +131,14 @@ test('proxy coalesces refreshes, omits favicons, and counts known stations only'
   assert.equal(body.stations.length, 1);
   assert.equal(body.acceptedGeneration, null);
   assert.equal('favicon' in body.stations[0], false);
-  assert.equal(fetchCount, 10, 'one discovery plus nine shared catalog queries');
+  assert.equal(fetchCount, 18, 'one discovery, nine shared catalog queries, eight East African countries');
 
   const unknown = await invoke(middleware, '/click/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 'POST');
   assert.equal(unknown.status, 404);
   const known = await invoke(middleware, `/click/${UUID}`, 'POST');
   assert.equal(known.status, 204);
   await new Promise((resolve) => setTimeout(resolve, 0));
-  assert.equal(fetchCount, 11);
+  assert.equal(fetchCount, 19);
 });
 
 test('method and route validation happen before any upstream refresh', async () => {

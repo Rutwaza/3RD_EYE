@@ -932,7 +932,7 @@ function buildAllLiveRadioWorkload(count) {
     CCTV_AMBIENT_CARD_MAX +
     1 +
     EARTHQUAKE_OVERLAY_COHORT_LIMIT +
-    3 +
+    2 +
     ROCKET_MISSION_AMBIENT_OVERLAY_COHORT_LIMIT;
   // 2026-08-18: "every shared-host source" includes the migrated
   // submarine-cable cohort, so the aggregate exercises cable labels

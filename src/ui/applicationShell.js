@@ -687,6 +687,33 @@ export class StyleManager extends ShellFacade {
   }
 
   /**
+   * Switches the active map/globe source stack.
+   * @param {string} stackId - Map stack id.
+   * @param {object} [options]
+   * @param {boolean} [options.syncShare=true] - Whether to update the share link.
+   * @returns {Promise<void>}
+   */
+  async _setMapStack(stackId, { syncShare = true } = {}) {
+    if (!this.mapStackController) return;
+    return this._mapSourceControls.select(stackId, { syncShare });
+  }
+
+  /**
+   * Syncs the map stack chip row and status chip with controller state. The
+   * lit chip always follows `state.activeId`, never the click — a rejected or
+   * superseded switch therefore leaves the genuinely active stack lit.
+   * @param {object} state - Map stack controller state.
+   * @returns {void}
+   */
+  _renderMapStackState(state) {
+    this._mapSourceControls?.render(state);
+  }
+
+  _setDetectionAllocation(strategy, { syncShare = true, persist = true } = {}) {
+    return this._visualSettings._setDetectionAllocation(...arguments);
+  }
+
+  /**
    * Pushes the current visual state (bloom, sharpen, HUD, detection) to
    * the ShareLinkManager so the URL hash stays in sync.
    * @returns {void}

@@ -19,6 +19,9 @@ const COLORS = {
   poi: '#ff4d6d',
 };
 
+const timeFormat = { dateStyle: 'short', timeStyle: 'short' };
+const formatTime = (at) => new Date(at).toLocaleString('en-GB', timeFormat);
+
 /** What one tracked person's row says. Exported for tests. */
 export function describePerson(person) {
   const { decision, face, id } = person;
@@ -47,7 +50,8 @@ export class FaceRecognitionPanel {
     elements,
     cameraStore,
     actions,
-    fetchImpl = fetch,
+    // Browsers refuse `fetch` called as another object's method.
+    fetchImpl = (...args) => globalThis.fetch(...args),
     workerFactory = null,
     openWebcam = () =>
       navigator.mediaDevices.getUserMedia({
@@ -292,7 +296,7 @@ export class FaceRecognitionPanel {
       row.className = 'face-sighting';
       row.dataset.category = sighting.category;
       const label = document.createElement('span');
-      label.textContent = `${sighting.name} · ${sighting.cameraName || 'camera'} · ${sighting.similarityPct}/100 · ${new Date(sighting.at).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}`;
+      label.textContent = `${sighting.name} · ${sighting.cameraName || 'Unnamed camera'} · ${sighting.similarityPct}/100 · ${formatTime(sighting.at)}`;
       row.append(label);
       if (sighting.review) {
         const verdict = document.createElement('b');
@@ -335,10 +339,7 @@ export class FaceRecognitionPanel {
       const row = document.createElement('div');
       row.className = 'face-audit-row';
       row.textContent = [
-        new Date(entry.at).toLocaleString('en-GB', {
-          dateStyle: 'short',
-          timeStyle: 'short',
-        }),
+        formatTime(entry.at),
         entry.action,
         entry.subject,
         entry.detail,

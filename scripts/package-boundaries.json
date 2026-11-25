@@ -249,7 +249,8 @@
       "src/data/radioCountry.js",
       "server/providers/common/http.js",
       "src/sources/radioBrowser.js",
-      "src/sources/httpBody.js"
+      "src/sources/httpBody.js",
+      "src/data/africa.js"
     ],
     "external": []
   },
@@ -698,7 +699,8 @@
       "src/ui/aircraftDisplay.js",
       "src/ui/layerBindings.js",
       "src/ui/displayBindings.js",
-      "src/ui/shellFacade.js"
+      "src/ui/shellFacade.js",
+      "src/ui/faceRecognitionPanel.js"
     ],
     "external": [
       "cesium"
@@ -1227,7 +1229,8 @@
       "src/layers/radio/tuningNoise.js",
       "src/layers/radio/volume.js",
       "src/ui/radioTunerModel.js",
-      "src/data/inputOwnership.js"
+      "src/data/inputOwnership.js",
+      "src/data/africa.js"
     ],
     "external": [
       "cesium"
@@ -1917,7 +1920,13 @@
       "src/director/sharing/lifetime.js",
       "src/director/authoring.js",
       "src/scenes/sharing.js",
-      "src/ui/sceneSharing.js"
+      "src/ui/sceneSharing.js",
+      "src/layers/selfDeployedCameras/index.js",
+      "src/layers/selfDeployedCameras/store.js",
+      "src/data/africa.js",
+      "src/layers/intel/pointLayer.js",
+      "src/layers/intel/index.js",
+      "src/ui/faceRecognitionPanel.js"
     ],
     "external": [
       "@mapbox/vector-tile",
@@ -2269,7 +2278,11 @@
       "src/sources/overpassFeaturesRecords.js",
       "src/sources/overpassFeatures.js",
       "src/sources/featureSource.js",
-      "src/sources/overpassRoads.js"
+      "src/sources/overpassRoads.js",
+      "src/layers/selfDeployedCameras/index.js",
+      "src/data/africa.js",
+      "src/layers/intel/pointLayer.js",
+      "src/layers/intel/index.js"
     ],
     "external": [
       "cesium",

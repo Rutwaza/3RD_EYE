@@ -179,6 +179,15 @@
   }
 }
 
+
+.face-recognition-inner > * {
+  flex: none;
+}
+
+#face-recognition-status {
+  line-height: 1.4;
+}
+
 /* ── Face Map console ─────────────────────────── */
 .face-recognition-inner section {
   display: grid;

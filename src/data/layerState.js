@@ -305,6 +305,51 @@ export const SHARE_TRACKING_RESTORE_POLICIES = Object.freeze({
  */
 export const LAYER_STATE_REGISTRY = Object.freeze([
   Object.freeze({
+    id: 'africa-airports',
+    token: '3',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-displacement',
+    token: 'k',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-economy',
+    token: '9',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-environment',
+    token: '5',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-facilities',
+    token: '2',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-power',
+    token: '4',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-rivers',
+    token: '6',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-seismic',
+    token: '7',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-volcanoes',
+    token: '8',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'ais-live-vessels',
     token: 'a',
     disposition: 'enabled-only',
@@ -325,6 +370,11 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     disposition: 'enabled+options',
     optionOwner: 'cctv',
   }),
+  Object.freeze({
+    id: 'crisis-alerts',
+    token: '0',
+    disposition: 'enabled-only',
+  }),
   Object.freeze({ id: 'directions', token: 'n', disposition: 'enabled-only' }),
   Object.freeze({ id: 'earthquakes', token: 'e', disposition: 'enabled-only' }),
   Object.freeze({
@@ -332,6 +382,11 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     token: 'f',
     disposition: 'enabled+options',
     optionOwner: 'flights',
+  }),
+  Object.freeze({
+    id: 'health-outbreaks',
+    token: '1',
+    disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'local-dams', token: 'q', disposition: 'enabled-only' }),
   Object.freeze({
@@ -387,61 +442,6 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
   Object.freeze({
     id: 'world-news',
     token: 'v',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'crisis-alerts',
-    token: '0',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'health-outbreaks',
-    token: '1',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-facilities',
-    token: '2',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-airports',
-    token: '3',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-power',
-    token: '4',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-environment',
-    token: '5',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-rivers',
-    token: '6',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-seismic',
-    token: '7',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-volcanoes',
-    token: '8',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-economy',
-    token: '9',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
-    id: 'africa-displacement',
-    token: 'k',
     disposition: 'enabled-only',
   }),
 ]);

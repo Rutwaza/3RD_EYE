@@ -73,16 +73,10 @@ function shortcuts() {
   return { documentRef, searchInput, calls, controller, press };
 }
 
-test('number keys retain the seven style mappings', () => {
+test('number keys no longer change the visual style', () => {
   const f = shortcuts();
-  for (const key of ['1', '2', '3', '4', '5', '6', '7', '8', 'Space'])
-    f.press(key);
-  assert.deepEqual(
-    f.calls,
-    ['normal', 'retro', 'surveillance', 'thermal', 'anime', 'noir', 'snow'].map(
-      (style) => ['setStyle', style],
-    ),
-  );
+  for (const key of ['1', '2', '3', '4', '5', '6', '7']) f.press(key);
+  assert.deepEqual(f.calls, []);
 });
 
 test('letter shortcuts retain uppercase handling and existing actions', () => {

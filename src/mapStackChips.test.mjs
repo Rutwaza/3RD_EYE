@@ -92,9 +92,9 @@ const CONTROLLER_STACKS = [
     unavailableReason: null,
   },
   {
-    id: 'bing-aerial',
-    label: 'Bing Aerial',
-    requiresIon: true,
+    id: 'google-roadmap',
+    label: 'Google Maps',
+    requiresIon: false,
     available: true,
     unavailableReason: null,
   },
@@ -130,18 +130,18 @@ test('the row renders exactly the five owner-approved sources', () => {
 
   assert.deepEqual(
     container.children.map((chip) => chip.dataset.stackId),
-    ['photoreal', 'bing-aerial', 'bing-labels', 'esri-imagery', 'osm'],
+    ['photoreal', 'google-roadmap', 'bing-labels', 'esri-imagery', 'osm'],
   );
   assert.deepEqual(container.children.map(chipText), [
     'Google 3D',
-    'Bing Aerial',
+    'Google Maps',
     'Bing Labels',
     'Esri Satellite',
     'OSM',
   ]);
   assert.deepEqual(PRESENTED_MAP_STACK_IDS, [
     'photoreal',
-    'bing-aerial',
+    'google-roadmap',
     'bing-labels',
     'esri-imagery',
     'osm',
@@ -195,7 +195,7 @@ test('clicking a chip dispatches that stack id — the same selection the dropdo
   container.children[4].click();
   container.children[3].click();
   container.children[1].click();
-  assert.deepEqual(selected, ['osm', 'esri-imagery', 'bing-aerial']);
+  assert.deepEqual(selected, ['osm', 'esri-imagery', 'google-roadmap']);
 });
 
 test('the active chip is the pressed chip, and exactly one is pressed', () => {
@@ -259,25 +259,25 @@ test('keyless ion stacks stay focusable, aria-disabled, and say why', () => {
     doc,
   });
 
-  const bingAerial = container.children[1];
+  const bingLabels = container.children[2];
   assert.equal(
-    bingAerial.disabled,
+    bingLabels.disabled,
     false,
     'unavailable sources remain keyboard-reachable',
   );
-  assert.equal(bingAerial.getAttribute('aria-disabled'), 'true');
+  assert.equal(bingLabels.getAttribute('aria-disabled'), 'true');
   assert.equal(
-    bingAerial.getAttribute('aria-label'),
-    'Bing Aerial unavailable: Needs CESIUM_ION_TOKEN — add it in Provider Settings',
+    bingLabels.getAttribute('aria-label'),
+    'Bing Labels unavailable: Needs CESIUM_ION_TOKEN — add it in Provider Settings',
   );
-  assert.ok(bingAerial.classList.contains('unavailable'));
+  assert.ok(bingLabels.classList.contains('unavailable'));
   assert.equal(
-    bingAerial.title,
+    bingLabels.title,
     'Needs CESIUM_ION_TOKEN — add it in Provider Settings',
   );
-  assert.equal(chipText(bingAerial), 'Bing Aerial ION');
+  assert.equal(chipText(bingLabels), 'Bing Labels ION');
 
-  bingAerial.click();
+  bingLabels.click();
   assert.deepEqual(
     selected,
     [],
@@ -323,8 +323,8 @@ test('a non-ion stack that fails never claims an ion token is required', () => {
     'Needs GOOGLE_MAPS_API_KEY — add it in Provider Settings',
   );
   assert.equal(
-    chipText(container.children[1]),
-    'Bing Aerial',
+    chipText(container.children[2]),
+    'Bing Labels',
     'available ion stacks stay unbadged',
   );
 });
@@ -482,7 +482,7 @@ test('the keyboard focus ring survives on the ACTIVE chip', () => {
   );
 });
 
-test('the Visual Presets tray owns Map Source and the retired left panel is absent', () => {
+test('the dock tray owns Map Source and the retired left panel is absent', () => {
   const html = expandApplicationHtml(
     readFileSync(new URL('../index.html', import.meta.url), 'utf8'),
   );
@@ -504,7 +504,7 @@ test('the Visual Presets tray owns Map Source and the retired left panel is abse
   );
   assert.match(
     html,
-    /id="map-source-label">MAP SOURCE<[\s\S]*?id="map-stack-status"/,
+    /id="map-source-label">SOURCE<[\s\S]*?id="map-stack-status"/,
   );
   assert.match(
     html,

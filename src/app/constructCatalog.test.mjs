@@ -39,8 +39,10 @@ test('catalogs construct distinct layers and classification from their supplied 
     signal: b.signal,
     surface: fixtureSurface(b.signal),
   });
-  assert.equal(first.layers.length, 19);
+  assert.equal(first.layers.length, 31);
   assert.ok(first.get('self-deployed-cameras'));
+  assert.ok(first.get('world-news'));
+  assert.ok(first.get('africa-facilities'));
   assert.equal(first.get('alpr-cameras'), undefined);
   const order = first.layers.map(({ id }) => id);
   assert.deepEqual(

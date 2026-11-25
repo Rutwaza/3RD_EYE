@@ -186,6 +186,7 @@ export const countryByCode = (code) => BY_CODE.get(code) || null;
 
 /** Longer names that contain a shorter country name. */
 const SHADOWS = [
+  [/Democratic Republic of (?:the )?Congo/g, 'CD'],
   [/South Sudan(?:ese)?/g, 'SS'],
   [/Equatorial Guinea/g, 'GQ'],
   [/Guinea-Bissau/g, 'GW'],

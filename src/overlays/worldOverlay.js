@@ -92,6 +92,7 @@ const PAINT_LANE_INDEX = new Map(
  * backdrop-filled cockpit windows survive as exclusions.
  */
 export const WORLD_OVERLAY_OCCLUDER_SELECTORS = Object.freeze([
+  '#title-bar',
   '#command-bar',
   '#live-wire',
   '#top-center-actions',

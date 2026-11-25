@@ -158,8 +158,8 @@ function encode(state) {
 
 test('production registry is exact, canonical, and rejects incomplete contracts', async () => {
   assert.equal(validateLayerStateRegistry(), true);
-  assert.equal(REGISTERED_LAYER_IDS.length, 19);
-  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 19);
+  assert.equal(REGISTERED_LAYER_IDS.length, 31);
+  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 31);
   assert.ok(REGISTERED_LAYER_IDS.includes('self-deployed-cameras'));
   assert.ok(!REGISTERED_LAYER_IDS.includes('alpr-cameras'));
   assert.ok(!REGISTERED_LAYER_IDS.includes('transit'));
@@ -399,7 +399,7 @@ test('a fresh boot starts 3D aircraft ON in proximity — codec, both layers, an
     'index.html: the 3D button paints lit on first paint, before ui.js runs — and says so');
   assert.match(ui, /this\._models3dBtn\?\.setAttribute\(\s*'aria-pressed',\s*String\(this\.(?:flightState\.)?_models3dEnabled\),?\s*\)/,
     'ui.js: and keeps aria-pressed synchronized, so the lit state is not colour-only');
-  assert.match(html, /class="pp-slider-row visible" id="models3d-mode-row"/,
+  assert.match(html, /class="pp-slider-row visible[^"]*" id="models3d-mode-row"/,
     'index.html: and the Proximity/All row paints open with it');
   assert.match(html, /id="models3d-mode-proximity"[^>]*aria-checked="true"/,
     'index.html: Proximity is the selected mode in the markup');

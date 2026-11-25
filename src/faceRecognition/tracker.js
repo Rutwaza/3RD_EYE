@@ -39,7 +39,7 @@ export function containment(small, large) {
 export function peopleViews(width, height, frameNumber) {
   const size = Math.max(width, height);
   const views = [
-    { x: -(size - width) / 2, y: -(size - height) / 2, size },
+    { x: (width - size) / 2, y: (height - size) / 2, size },
   ];
   const tile = Math.min(width, height);
   if (size > tile * 1.15) {

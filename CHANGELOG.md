@@ -1,5 +1,16 @@
 # Changelog
 
+- Add the World Desk: ranked headlines from 35 newsrooms, hotspots, trends,
+  expected events, indicative markets, live TV, a watchlist and alerts.
+- Add Africa and world-pulse map layers, South African road cameras and an
+  Africa-wide radio supplement.
+- Face Map now finds people first, then faces; checks size, angle, blur and
+  liveness; needs agreement across frames; and keeps a sightings log and a
+  hash-chained audit trail.
+- New console design. DISPLAY keeps HUD, Detect, 3D, Draw and Clean UI; the map
+  switches between a circle and a wide view from the command bar.
+- Remove the transit, bike-share and licence-plate-reader layers.
+
 - Remove the spurious scrollbars that appeared on both panel stacks at narrow
   widths (720px and below) as soon as a panel was expanded. The stacks scroll
   vertically there, and each panel's decorative glow, absolutely positioned

@@ -1,18 +1,18 @@
 {
   "name": "gods-eye-view",
   "private": true,
-  "version": "0.1.1",
-  "description": "A real-time intelligence console for planet Earth — photorealistic 3D globe, live aircraft/ships/satellites/earthquakes/CCTV, and hands-free voice control. Runs in a browser.",
+  "version": "2.0.0",
+  "description": "3RD EYE OSINT: a live 3D intelligence console with world news, Africa data and local camera analysis.",
   "type": "module",
   "license": "MIT",
   "author": "Bilawal Sidhu",
-  "homepage": "https://github.com/bilawalsidhu/gods-eye-view#readme",
+  "homepage": "https://github.com/Rutwaza/3RD_EYE#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bilawalsidhu/gods-eye-view.git"
+    "url": "https://github.com/Rutwaza/3RD_EYE.git"
   },
   "bugs": {
-    "url": "https://github.com/bilawalsidhu/gods-eye-view/issues"
+    "url": "https://github.com/Rutwaza/3RD_EYE/issues"
   },
   "engines": {
     "node": ">=24.14.0 <25 || >=26 <27"
@@ -229,5 +229,8 @@
     "./search/nominatim": "./src/search/nominatim.js",
     "./sources/nominatim": "./src/sources/nominatim.js",
     "./sources/map-features": "./src/sources/overpassFeatures.js"
-  }
+  },
+  "contributors": [
+    "Nelson Rutwaza"
+  ]
 }

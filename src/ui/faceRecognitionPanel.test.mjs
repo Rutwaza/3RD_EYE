@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FaceRecognitionPanel } from './faceRecognitionPanel.js';
+import { FaceRecognitionPanel, describePerson } from './faceRecognitionPanel.js';
 import { createSelfDeployedCameraStore } from '../layers/selfDeployedCameras/store.js';
 
 class FakeElement extends EventTarget {
@@ -77,11 +77,20 @@ test('face panel selects a deployed camera, starts one-frame matching, and resto
               result:
                 message.type === 'analyze'
                   ? {
-                      results: [
+                      people: [
                         {
-                          status: 'possible-match',
-                          name: 'Dev teammate',
-                          similarityPct: 82,
+                          id: 'H01',
+                          box: [0, 0, 10, 20],
+                          decision: {
+                            state: 'candidate',
+                            id: 'x',
+                            name: 'Dev teammate',
+                            category: 'visitor',
+                            similarityPct: 82,
+                            votes: 3,
+                          },
+                          isNew: true,
+                          face: null,
                         },
                       ],
                     }
@@ -124,14 +133,15 @@ test('face panel selects a deployed camera, starts one-frame matching, and resto
     },
     readStreamImage: () => frame,
   };
+  const requests = [];
   const panel = new FaceRecognitionPanel({
     elements,
     cameraStore,
     actions,
-    fetchImpl: async () => ({
-      ok: true,
-      json: async () => ({ identities: [] }),
-    }),
+    fetchImpl: async (url, options) => {
+      requests.push([options?.method || 'GET', url]);
+      return { ok: true, json: async () => ({ identities: [] }) };
+    },
     workerFactory,
   });
   t.after(() => panel.destroy());
@@ -146,8 +156,21 @@ test('face panel selects a deployed camera, starts one-frame matching, and resto
     1,
     elements._faceRecognitionStatus.textContent,
   );
-  assert.match(elements._faceRecognitionResults.children[0].textContent, /POSSIBLE Dev teammate/);
+  assert.match(elements._faceRecognitionResults.children[0].textContent, /CANDIDATE Dev teammate/);
+  assert.ok(
+    requests.some(([method, url]) => method === 'POST' && url.endsWith('/sightings')),
+    'a new candidate is recorded once',
+  );
   await panel.stop('Stopped');
   assert.equal(actions.restored, true);
   assert.equal(elements._faceRecognitionStop.disabled, true);
+});
+test('a likely photo or screen is never compared, and says so', () => {
+  const { tone, text } = describePerson({
+    id: 'H01',
+    decision: { state: 'low-quality', votes: 0 },
+    face: { quality: { usable: false, code: 'spoof', reason: 'may be a photo or a screen' } },
+  });
+  assert.equal(tone, 'spoof');
+  assert.match(text, /NOT COMPARED/);
 });

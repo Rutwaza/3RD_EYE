@@ -273,7 +273,7 @@ try {
   check(
     'exact five-source presentation; the retired left Map Stack panel is gone',
     JSON.stringify(presentation.ids) === JSON.stringify([
-      'photoreal', 'bing-aerial', 'bing-labels', 'esri-imagery', 'osm',
+      'photoreal', 'google-roadmap', 'bing-labels', 'esri-imagery', 'osm',
     ]) && !presentation.retiredPanel,
     JSON.stringify(presentation),
   );
@@ -754,13 +754,13 @@ try {
     'control-panel', false, { persist: false, syncShare: false },
   ));
   await waitTray('true', null);
-  await page.focus('[data-stack-id="bing-aerial"]');
+  await page.focus('[data-stack-id="google-roadmap"]');
   const ionAvailable = await page.$eval(
-    '[data-stack-id="bing-aerial"]',
+    '[data-stack-id="google-roadmap"]',
     (chip) => chip.getAttribute('aria-disabled') !== 'true',
   );
   const ionFocusedBeforeActivation = await page.$eval(
-    '[data-stack-id="bing-aerial"]',
+    '[data-stack-id="google-roadmap"]',
     (chip) => document.activeElement === chip,
   );
   // Exercise the keyboard path. Unavailable tiles intentionally reject pointer
@@ -771,7 +771,7 @@ try {
     // Cesium creates the imagery provider asynchronously. Wait for controller
     // truth instead of assuming a keyed switch can settle in one animation.
     await page.waitForFunction(
-      () => window.__godsEyeView.styleManager.mapStackController.getActiveId() === 'bing-aerial'
+      () => window.__godsEyeView.styleManager.mapStackController.getActiveId() === 'google-roadmap'
         || Boolean(window.__godsEyeView.styleManager.mapStackController.getState()?.lastError),
       { timeout: 20_000 },
     ).catch(() => {});
@@ -781,7 +781,7 @@ try {
     await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 300)));
   }
   const ionSource = await page.evaluate(() => {
-    const chip = document.querySelector('[data-stack-id="bing-aerial"]');
+    const chip = document.querySelector('[data-stack-id="google-roadmap"]');
     return {
       focused: document.activeElement === chip,
       ariaDisabled: chip.getAttribute('aria-disabled'),
@@ -809,8 +809,8 @@ try {
       'key-required sources switch normally when the ion token is configured',
       ionSource.focused
         && ionSource.ariaDisabled === 'false'
-        && ionSource.activeId === 'bing-aerial'
-        && JSON.stringify(ionSource.active) === JSON.stringify(['bing-aerial']),
+        && ionSource.activeId === 'google-roadmap'
+        && JSON.stringify(ionSource.active) === JSON.stringify(['google-roadmap']),
       JSON.stringify(ionSource),
     );
   }

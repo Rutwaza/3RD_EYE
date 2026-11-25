@@ -90,7 +90,7 @@ Context:
   - Error payloads are sanitized.
   - OpenSky cache stores successful responses only.
   - OpenSky token refresh is coalesced.
-  - GBFS/CCTV memory growth is bounded.
+  - CCTV memory growth is bounded.
 
 Validation target:
 - `vite.config.js`

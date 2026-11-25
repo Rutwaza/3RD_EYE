@@ -301,8 +301,8 @@ test('tooltips and rejected selection share the registry reason, including retir
   env.controller._onError = (message) => errors.push(message);
   const reason = env.controller
     .getStacks()
-    .find((stack) => stack.id === 'bing-aerial').unavailableReason;
-  await env.controller.setStack('bing-aerial');
+    .find((stack) => stack.id === 'bing-labels').unavailableReason;
+  await env.controller.setStack('bing-labels');
   assert.deepEqual(errors, [reason]);
   assert.match(reason, /CESIUM_ION_TOKEN/);
   await env.controller.setStack('bing-road');
