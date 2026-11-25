@@ -6,6 +6,9 @@ import {
 } from './deskModel.js';
 
 const NEWS_POLL_MS = 60_000;
+/** An old copy means the server is refreshing; ask again soon. */
+const CATCH_UP_MS = 12_000;
+const OLD_NEWS_MS = 4 * 60_000;
 const CALENDAR_POLL_MS = 15 * 60_000;
 const MARKETS_POLL_MS = 5 * 60_000;
 
@@ -100,7 +103,8 @@ export function createDeskStore({
     const run = async () => {
       if (destroyed) return;
       if (!isHidden()) await task();
-      if (!destroyed) timers.set(name, schedule(run, ms));
+      if (!destroyed)
+        timers.set(name, schedule(run, typeof ms === 'function' ? ms() : ms));
     };
     void run();
   }
@@ -122,8 +126,16 @@ export function createDeskStore({
       this.setPrefs({ read: [...prefs.read, id] });
     },
     start() {
-      loop('news', refreshNews, NEWS_POLL_MS);
-      loop('calendar', refreshInto('calendar', 'calendarError'), CALENDAR_POLL_MS);
+      loop('news', refreshNews, () =>
+        state.news && Date.now() - state.news.updatedAt > OLD_NEWS_MS
+          ? CATCH_UP_MS
+          : NEWS_POLL_MS,
+      );
+      loop(
+        'calendar',
+        refreshInto('calendar', 'calendarError'),
+        CALENDAR_POLL_MS,
+      );
       loop('markets', refreshInto('markets', 'marketsError'), MARKETS_POLL_MS);
     },
     refresh: refreshNews,

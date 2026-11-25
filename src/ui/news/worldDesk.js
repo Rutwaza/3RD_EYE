@@ -254,7 +254,9 @@ export class WorldDesk {
             onClick: () => {
               const others = CATEGORY_IDS.filter((item) => item !== id);
               const alone = others.every((item) => prefs.hidden.includes(item));
-              this.store.setPrefs({ hidden: alone ? ['entertainment'] : others });
+              this.store.setPrefs({
+                hidden: alone ? ['entertainment'] : others,
+              });
             },
           }),
         );
@@ -318,8 +320,14 @@ export class WorldDesk {
     };
     if (!news)
       return newsError
-        ? status('The desk could not be read', `${newsError}. It tries again every minute.`)
-        : status('Reading 35 newsrooms', 'The first read can take up to half a minute on a slow connection.');
+        ? status(
+            'The desk could not be read',
+            `${newsError}. It tries again every minute.`,
+          )
+        : status(
+            'Reading 35 newsrooms',
+            'The first read can take up to half a minute on a slow connection.',
+          );
     const rows = selectStories(news.stories, prefs, { search: this.search });
     if (!rows.length)
       return status(
@@ -348,7 +356,10 @@ export class WorldDesk {
       el('span', { text: story.source }),
       el('span', { text: relativeTime(story.publishedAt) }),
       story.outlets > 1 &&
-        el('span', { class: 'story-outlets', text: `${story.outlets} OUTLETS` }),
+        el('span', {
+          class: 'story-outlets',
+          text: `${story.outlets} OUTLETS`,
+        }),
       story.place && el('span', { text: story.place.name.toUpperCase() }),
     );
   }
@@ -412,7 +423,11 @@ export class WorldDesk {
           story.sources
             .slice(0, 3)
             .map((item) =>
-              el('li', {}, externalLink(item.url, `${item.name} · ${item.title}`)),
+              el(
+                'li',
+                {},
+                externalLink(item.url, `${item.name} · ${item.title}`),
+              ),
             ),
         ),
       this._actions(story),
@@ -421,7 +436,12 @@ export class WorldDesk {
     if (watched.length)
       body
         .querySelector('.lead-kicker')
-        .append(el('span', { class: 'lead-watch', text: `WATCH ${watched.join(' · ')}` }));
+        .append(
+          el('span', {
+            class: 'lead-watch',
+            text: `WATCH ${watched.join(' · ')}`,
+          }),
+        );
     node.replaceChildren(
       ...(image
         ? [
@@ -472,7 +492,11 @@ export class WorldDesk {
             'ul',
             { class: 'lead-sources' },
             story.sources.map((item) =>
-              el('li', {}, externalLink(item.url, `${item.name} · ${item.title}`)),
+              el(
+                'li',
+                {},
+                externalLink(item.url, `${item.name} · ${item.title}`),
+              ),
             ),
           ),
         open && this._actions(story),
@@ -513,7 +537,9 @@ export class WorldDesk {
             el(
               'span',
               { class: 'hot-bar', 'aria-hidden': 'true' },
-              el('i', { style: { width: `${Math.round((spot.score / top) * 100)}%` } }),
+              el('i', {
+                style: { width: `${Math.round((spot.score / top) * 100)}%` },
+              }),
             ),
             el('b', { text: String(spot.count) }),
           ),
@@ -565,15 +591,24 @@ export class WorldDesk {
     const region = this.store.getPrefs().region;
     const events = calendar.events
       .filter((event) => event.at > now - 2 * 3_600_000)
-      .filter((event) => this.agendaKind === 'all' || event.kind === this.agendaKind)
+      .filter(
+        (event) => this.agendaKind === 'all' || event.kind === this.agendaKind,
+      )
       .filter(
         (event) =>
           region === 'world' ||
           (region === 'africa' ? event.place?.africa : event.place?.eastAfrica),
       )
       // With every kind shown, minor items would bury the ones that matter.
-      .filter((event) => this.agendaKind !== 'all' || event.weight >= 2 || event.place?.africa)
-      .sort((a, b) => Number(Boolean(a.approximate)) - Number(Boolean(b.approximate)) || a.at - b.at)
+      .filter(
+        (event) =>
+          this.agendaKind !== 'all' || event.weight >= 2 || event.place?.africa,
+      )
+      .sort(
+        (a, b) =>
+          Number(Boolean(a.approximate)) - Number(Boolean(b.approximate)) ||
+          a.at - b.at,
+      )
       .slice(0, 14);
     if (!events.length)
       return list.replaceChildren(
@@ -677,7 +712,8 @@ export class WorldDesk {
             'aria-pressed': String(channel.id === this.tvChannel),
             text: channel.name,
             onClick: () => {
-              this.tvChannel = channel.id === this.tvChannel ? null : channel.id;
+              this.tvChannel =
+                channel.id === this.tvChannel ? null : channel.id;
               this.renderTv();
             },
           }),
@@ -799,7 +835,10 @@ export class WorldDesk {
     track.replaceChildren(
       el(
         'div',
-        { class: 'wire-loop', style: { '--wire-seconds': `${stories.length * 9}s` } },
+        {
+          class: 'wire-loop',
+          style: { '--wire-seconds': `${stories.length * 9}s` },
+        },
         stories.map((story) => item(story, false)),
         stories.map((story) => item(story, true)),
       ),
@@ -810,7 +849,10 @@ export class WorldDesk {
     const stack = $('desk-alerts-stack');
     const card = el(
       'div',
-      { class: 'desk-alert bento', dataset: { category: story.category, level: story.level } },
+      {
+        class: 'desk-alert bento',
+        dataset: { category: story.category, level: story.level },
+      },
       el('span', { class: 'lead-tag', text: story.level.toUpperCase() }),
       el('button', {
         type: 'button',

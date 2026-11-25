@@ -45,12 +45,21 @@ export function createNewsReader({
   now = Date.now,
 } = {}) {
   const lastGood = new Map();
+  const lastTry = new Map();
   let x = { at: 0, items: [], status: 'key-required', error: '' };
 
   async function readSource(source) {
     const held = lastGood.get(source.id);
-    if (source.aggregated && held && now() - held.at < AGGREGATED_REFRESH_MS)
-      return { status: 'live', items: held.items };
+    // A throttled feed is left alone too, or asking again keeps it throttled.
+    const waiting =
+      source.aggregated &&
+      now() - (lastTry.get(source.id) ?? -Infinity) < AGGREGATED_REFRESH_MS;
+    if (waiting && held)
+      return {
+        status: now() - held.at < AGGREGATED_REFRESH_MS * 2 ? 'live' : 'stale',
+        items: held.items,
+      };
+    lastTry.set(source.id, now());
     try {
       const xml = await fetchTextImpl(source.url);
       const items = parseFeed(xml, { limit: 30 })

@@ -153,10 +153,13 @@ async function launchEvents(read) {
   }));
 }
 
+const lastGood = new Map();
+
 /** Scheduled events from public calendars, each with its own outage status. */
 export async function readCalendar({
   read = fetchJson,
   now = Date.now(),
+  keep = lastGood,
 } = {}) {
   const feeds = [
     ['economy', 'Economic releases', () => economicEvents(read, now)],
@@ -173,9 +176,14 @@ export async function readCalendar({
     ['space', 'Space launches', () => launchEvents(read)],
   ];
   const results = await Promise.allSettled(feeds.map(([, , load]) => load()));
+  // A calendar that fails keeps its last good events; dates rarely move.
+  results.forEach((result, index) => {
+    const [id] = feeds[index];
+    if (result.status === 'fulfilled') keep.set(id, result.value);
+  });
   const seen = new Set();
-  const events = results
-    .flatMap((result) => (result.status === 'fulfilled' ? result.value : []))
+  const events = feeds
+    .flatMap(([id]) => keep.get(id) || [])
     .filter((event) => {
       const key = `${event.kind}:${event.title.toLowerCase()}`;
       if (!Number.isFinite(event.at) || seen.has(key)) return false;
@@ -186,12 +194,17 @@ export async function readCalendar({
   if (!events.length) throw new Error('No event calendar answered');
   return {
     events,
+    partial: results.some(({ status }) => status === 'rejected'),
     sources: feeds.map(([id, name], index) => ({
       id,
       name,
-      status: results[index].status === 'fulfilled' ? 'live' : 'down',
-      count:
-        results[index].status === 'fulfilled' ? results[index].value.length : 0,
+      status:
+        results[index].status === 'fulfilled'
+          ? 'live'
+          : keep.has(id)
+            ? 'stale'
+            : 'down',
+      count: (keep.get(id) || []).length,
     })),
   };
 }

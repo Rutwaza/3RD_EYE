@@ -38,9 +38,7 @@ export function containment(small, large) {
 /** Square views of a frame: the whole frame padded, then one close-up tile. */
 export function peopleViews(width, height, frameNumber) {
   const size = Math.max(width, height);
-  const views = [
-    { x: (width - size) / 2, y: (height - size) / 2, size },
-  ];
+  const views = [{ x: (width - size) / 2, y: (height - size) / 2, size }];
   const tile = Math.min(width, height);
   if (size > tile * 1.15) {
     const far = frameNumber % 2 === 1;
@@ -112,7 +110,11 @@ export function sharpnessOf(data, width, height) {
     for (let x = 1; x < width - 1; x += 1) {
       const i = y * width + x;
       const value =
-        4 * grey[i] - grey[i - 1] - grey[i + 1] - grey[i - width] - grey[i + width];
+        4 * grey[i] -
+        grey[i - 1] -
+        grey[i + 1] -
+        grey[i - width] -
+        grey[i + width];
       sum += value;
       squares += value * value;
       count += 1;
@@ -125,10 +127,21 @@ export function sharpnessOf(data, width, height) {
 export function assessFace(face, { minEdgePx = MIN_FACE_EDGE_PX } = {}) {
   const edge = Math.min(face.box?.[2] || 0, face.box?.[3] || 0);
   if (!(edge >= minEdgePx))
-    return { usable: false, code: 'small', reason: `face is ${Math.round(edge)}px, needs ${minEdgePx}px` };
+    return {
+      usable: false,
+      code: 'small',
+      reason: `face is ${Math.round(edge)}px, needs ${minEdgePx}px`,
+    };
   if (!(face.score >= MIN_FACE_SCORE))
-    return { usable: false, code: 'unsure', reason: 'face detection is uncertain' };
-  if (Math.abs(face.yaw ?? 0) > MAX_YAW_RAD || Math.abs(face.pitch ?? 0) > MAX_PITCH_RAD)
+    return {
+      usable: false,
+      code: 'unsure',
+      reason: 'face detection is uncertain',
+    };
+  if (
+    Math.abs(face.yaw ?? 0) > MAX_YAW_RAD ||
+    Math.abs(face.pitch ?? 0) > MAX_PITCH_RAD
+  )
     return { usable: false, code: 'turned', reason: 'face is turned away' };
   if (Number.isFinite(face.sharpness) && face.sharpness < MIN_SHARPNESS)
     return { usable: false, code: 'blurred', reason: 'face is blurred' };
@@ -136,7 +149,11 @@ export function assessFace(face, { minEdgePx = MIN_FACE_EDGE_PX } = {}) {
     (Number.isFinite(face.real) && face.real < MIN_LIVENESS) ||
     (Number.isFinite(face.live) && face.live < MIN_LIVENESS)
   )
-    return { usable: false, code: 'spoof', reason: 'may be a photo or a screen' };
+    return {
+      usable: false,
+      code: 'spoof',
+      reason: 'may be a photo or a screen',
+    };
   return { usable: true, code: 'ok', reason: '' };
 }
 
@@ -159,7 +176,12 @@ export function createTracker({ votesNeeded = VOTES_NEEDED } = {}) {
     const ranked = [...tally.values()].sort((a, b) => b.count - a.count);
     const top = ranked[0];
     const used = track.votes.length;
-    if (top && top.id && top.count >= votesNeeded && top.count / used >= VOTE_SHARE)
+    if (
+      top &&
+      top.id &&
+      top.count >= votesNeeded &&
+      top.count / used >= VOTE_SHARE
+    )
       return {
         state: 'candidate',
         id: top.id,
@@ -212,17 +234,19 @@ export function createTracker({ votesNeeded = VOTES_NEEDED } = {}) {
         tracks.push(track);
       }
       tracks = tracks.filter((track) => track.missed <= MAX_MISSED_FRAMES);
-      return tracks
-        // A close-up tile is read every second frame, so one gap is normal.
-        .filter((track) => track.missed <= 1)
-        .map((track) => ({
-          id: track.id,
-          box: track.box,
-          score: track.score,
-          face: track.face,
-          frames: track.frames,
-          decision: decide(track),
-        }));
+      return (
+        tracks
+          // A close-up tile is read every second frame, so one gap is normal.
+          .filter((track) => track.missed <= 1)
+          .map((track) => ({
+            id: track.id,
+            box: track.box,
+            score: track.score,
+            face: track.face,
+            frames: track.frames,
+            decision: decide(track),
+          }))
+      );
     },
     /** True the first time a track settles on this candidate. */
     claimReport(trackId, identityId) {

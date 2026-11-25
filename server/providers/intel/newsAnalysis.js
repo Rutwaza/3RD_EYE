@@ -565,7 +565,8 @@ export function trendsFrom(stories, { now = Date.now(), limit = 16 } = {}) {
       // "Russian" and "Moscow" belong with "Russia".
       const [place] = parts.length < 3 ? countriesInText(phraseText) : [];
       const term =
-        place && new RegExp(`^(?:${place.pattern.source})$`, 'u').test(phraseText)
+        place &&
+        new RegExp(`^(?:${place.pattern.source})$`, 'u').test(phraseText)
           ? place.name
           : phraseText;
       if (term.length > 2 && !ignore.test(term)) found.add(term);

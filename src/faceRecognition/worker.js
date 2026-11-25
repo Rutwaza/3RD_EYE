@@ -130,7 +130,17 @@ function crop(image, [x, y, width, height]) {
   );
   const context = canvas.getContext('2d', { willReadFrequently: true });
   context.imageSmoothingQuality = 'high';
-  context.drawImage(image, x, y, width, height, 0, 0, canvas.width, canvas.height);
+  context.drawImage(
+    image,
+    x,
+    y,
+    width,
+    height,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+  );
   return { canvas, scale };
 }
 
@@ -278,12 +288,13 @@ async function analyze({ image, thresholdPct }) {
         box: track.box.map((value) => round(value, 1)),
         score: round(track.score),
         decision: track.decision,
-        isNew:
-          candidate && tracker.claimReport(track.id, track.decision.id),
+        isNew: candidate && tracker.claimReport(track.id, track.decision.id),
         face: track.face
           ? {
               box: track.face.box.map((value) => round(value, 1)),
-              edgePx: Math.round(Math.min(track.face.box[2], track.face.box[3])),
+              edgePx: Math.round(
+                Math.min(track.face.box[2], track.face.box[3]),
+              ),
               live: round(track.face.live),
               real: round(track.face.real),
               quality: person?.quality || null,
@@ -304,7 +315,12 @@ async function enroll(message) {
   const embeddings = [];
   for (const [index, image] of images.entries()) {
     try {
-      const found = await facesIn(faces, image, [0, 0, image.width, image.height]);
+      const found = await facesIn(faces, image, [
+        0,
+        0,
+        image.width,
+        image.height,
+      ]);
       if (found.length !== 1 || !found[0].embedding)
         throw new Error(
           `Reference photo ${index + 1} must contain exactly one clear face`,

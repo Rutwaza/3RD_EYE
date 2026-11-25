@@ -31,7 +31,10 @@ export function describePerson(person) {
       text: `${id} · CANDIDATE ${decision.name} · ${CATEGORY_LABELS[decision.category] || 'ENROLLED'} · ${decision.similarityPct}/100 · ${decision.votes} FRAMES`,
     };
   if (face?.quality?.code === 'spoof')
-    return { tone: 'spoof', text: `${id} · NOT COMPARED · ${face.quality.reason}` };
+    return {
+      tone: 'spoof',
+      text: `${id} · NOT COMPARED · ${face.quality.reason}`,
+    };
   if (decision.state === 'analysing')
     return {
       tone: 'analysing',
@@ -40,7 +43,10 @@ export function describePerson(person) {
   if (decision.state === 'unknown')
     return { tone: 'unknown', text: `${id} · NOT IN THE DATABASE` };
   if (face && face.quality && !face.quality.usable)
-    return { tone: 'quality', text: `${id} · FACE SEEN · ${face.quality.reason}` };
+    return {
+      tone: 'quality',
+      text: `${id} · FACE SEEN · ${face.quality.reason}`,
+    };
   return { tone: 'human', text: `${id} · PERSON · NO FACE VISIBLE` };
 }
 
@@ -108,16 +114,14 @@ export class FaceRecognitionPanel {
     this._listen(this._faceRecognitionClear, 'click', () => {
       if (
         typeof globalThis.confirm !== 'function' ||
-        globalThis.confirm('Delete every recorded sighting? This cannot be undone.')
+        globalThis.confirm(
+          'Delete every recorded sighting? This cannot be undone.',
+        )
       )
         void this._send('/sightings', 'DELETE').then(() => this.refreshLog());
     });
     this._bindTabs();
-    this._listen(
-      globalThis.window,
-      'focus',
-      () => void this.refreshPeople(),
-    );
+    this._listen(globalThis.window, 'focus', () => void this.refreshPeople());
     this._renderCameras();
     this._renderDatabaseSummary([]);
     this._renderPeopleInFrame([]);
@@ -131,7 +135,9 @@ export class FaceRecognitionPanel {
   }
 
   _bindTabs() {
-    const root = this._faceRecognitionView?.closest?.('.face-recognition-inner');
+    const root = this._faceRecognitionView?.closest?.(
+      '.face-recognition-inner',
+    );
     if (!root) return;
     const tabs = [...root.querySelectorAll('[data-face-tab]')];
     const views = [...root.querySelectorAll('[data-face-view]')];
@@ -212,7 +218,9 @@ export class FaceRecognitionPanel {
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok)
-      throw new Error(payload?.error || `Local API returned HTTP ${response.status}`);
+      throw new Error(
+        payload?.error || `Local API returned HTTP ${response.status}`,
+      );
     return payload;
   }
 
@@ -467,7 +475,9 @@ export class FaceRecognitionPanel {
       }
       this.running = true;
       this._renderCameras();
-      this._setStatus(`LIVE · ${camera.name.toUpperCase()} · REVIEW EVERY CANDIDATE`);
+      this._setStatus(
+        `LIVE · ${camera.name.toUpperCase()} · REVIEW EVERY CANDIDATE`,
+      );
       void this._send('/session', 'POST', {
         action: 'started',
         cameraName: camera.name,
@@ -502,7 +512,11 @@ export class FaceRecognitionPanel {
     const image = this.actions.readStreamImage?.();
     // An MJPEG image never reports complete, so a known size is enough.
     return image?.naturalWidth
-      ? { source: image, width: image.naturalWidth, height: image.naturalHeight }
+      ? {
+          source: image,
+          width: image.naturalWidth,
+          height: image.naturalHeight,
+        }
       : null;
   }
 

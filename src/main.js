@@ -36,10 +36,12 @@ application
     });
   })
   .catch((error) => {
-  console.error('3rd Eye initialization failed:', error);
-  const loaderStatus = document.querySelector('#loading-screen .loader-status');
-  loaderStatus.textContent = `Error: ${describeError(error)}`;
-  loaderStatus.style.color = '#ff4444';
-});
+    console.error('3rd Eye initialization failed:', error);
+    const loaderStatus = document.querySelector(
+      '#loading-screen .loader-status',
+    );
+    loaderStatus.textContent = `Error: ${describeError(error)}`;
+    loaderStatus.style.color = '#ff4444';
+  });
 
 export { application };

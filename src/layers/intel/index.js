@@ -1,4 +1,7 @@
-import { registerPickOwner, unregisterPickOwner } from '../../data/pickRegistry.js';
+import {
+  registerPickOwner,
+  unregisterPickOwner,
+} from '../../data/pickRegistry.js';
 import { createIntelPointLayer } from './pointLayer.js';
 
 export const INTEL_SELECTED_EVENT = 'third-eye:intel-selected';
@@ -7,10 +10,20 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 
 const bundled = {
-  airports: new URL('../../data/local_data/africa/airports.json', import.meta.url).href,
-  power: new URL('../../data/local_data/africa/power.json', import.meta.url).href,
-  volcanoes: new URL('../../data/local_data/africa/volcanoes.json', import.meta.url).href,
-  facilities: new URL('../../data/local_data/africa/facilities.json', import.meta.url).href,
+  airports: new URL(
+    '../../data/local_data/africa/airports.json',
+    import.meta.url,
+  ).href,
+  power: new URL('../../data/local_data/africa/power.json', import.meta.url)
+    .href,
+  volcanoes: new URL(
+    '../../data/local_data/africa/volcanoes.json',
+    import.meta.url,
+  ).href,
+  facilities: new URL(
+    '../../data/local_data/africa/facilities.json',
+    import.meta.url,
+  ).href,
 };
 
 const kind = (label, color, shape) => ({ label, color, shape });
@@ -29,8 +42,10 @@ export function createIntelSource({
     return response.json();
   }
   return Object.freeze({
-    feed: (name, { signal } = {}) => read(`${apiRoot}/${name}`, signal, 'no-store'),
-    bundle: (name, { signal } = {}) => read(bundled[name], signal, 'force-cache'),
+    feed: (name, { signal } = {}) =>
+      read(`${apiRoot}/${name}`, signal, 'no-store'),
+    bundle: (name, { signal } = {}) =>
+      read(bundled[name], signal, 'force-cache'),
   });
 }
 

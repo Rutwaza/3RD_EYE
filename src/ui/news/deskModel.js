@@ -84,14 +84,17 @@ const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 export function watchMatches(story, watchlist) {
   const text = `${story.title} ${story.summary} ${story.countries.map(({ name }) => name).join(' ')}`;
   return watchlist.filter((term) =>
-    new RegExp(`(?<![\\p{L}\\p{N}])${escape(term)}(?![\\p{L}\\p{N}])`, 'iu').test(
-      text,
-    ),
+    new RegExp(
+      `(?<![\\p{L}\\p{N}])${escape(term)}(?![\\p{L}\\p{N}])`,
+      'iu',
+    ).test(text),
   );
 }
 
 export function matchesSearch(story, query) {
-  const needle = String(query || '').trim().toLowerCase();
+  const needle = String(query || '')
+    .trim()
+    .toLowerCase();
   if (!needle) return true;
   const hay = [
     story.title,
@@ -106,7 +109,11 @@ export function matchesSearch(story, query) {
 }
 
 /** Apply the reader's controls. Region counts ignore the region control. */
-export function selectStories(stories, prefs, { search = '', now = Date.now() } = {}) {
+export function selectStories(
+  stories,
+  prefs,
+  { search = '', now = Date.now() } = {},
+) {
   const read = new Set(prefs.read);
   const muted = new Set(prefs.mutedSources);
   const hidden = new Set(prefs.hidden);
@@ -124,7 +131,8 @@ export function selectStories(stories, prefs, { search = '', now = Date.now() } 
     return matchesSearch(story, search);
   });
   const order = {
-    priority: (a, b) => b.priority - a.priority || b.publishedAt - a.publishedAt,
+    priority: (a, b) =>
+      b.priority - a.priority || b.publishedAt - a.publishedAt,
     latest: (a, b) => b.publishedAt - a.publishedAt,
     outlets: (a, b) => b.outlets - a.outlets || b.priority - a.priority,
   };
@@ -153,8 +161,18 @@ export function pulseOf(stories, { now = Date.now() } = {}) {
     leading.reduce((sum, story) => sum + story.priority, 0) / leading.length,
   );
   const level =
-    value >= 82 ? 'critical' : value >= 70 ? 'high' : value >= 55 ? 'elevated' : 'calm';
-  return { value, level, bars: Math.max(1, Math.min(5, Math.ceil(value / 20))) };
+    value >= 82
+      ? 'critical'
+      : value >= 70
+        ? 'high'
+        : value >= 55
+          ? 'elevated'
+          : 'calm';
+  return {
+    value,
+    level,
+    bars: Math.max(1, Math.min(5, Math.ceil(value / 20))),
+  };
 }
 
 export function relativeTime(at, now = Date.now()) {
@@ -175,7 +193,12 @@ export function countdown(event, now = Date.now()) {
 }
 
 /** Stories that deserve an interruption: new, and critical or watched. */
-export function alertsFor(stories, knownIds, prefs, { now = Date.now(), limit = 3 } = {}) {
+export function alertsFor(
+  stories,
+  knownIds,
+  prefs,
+  { now = Date.now(), limit = 3 } = {},
+) {
   if (!prefs.alerts) return [];
   return stories
     .filter(

@@ -7,7 +7,9 @@ import { createFaceJournal } from './face-recognition/journal.js';
 const MAX_REQUEST_BYTES = 1_500_000;
 
 function isLoopback(address = '') {
-  const normalized = String(address).toLowerCase().replace(/^::ffff:/, '');
+  const normalized = String(address)
+    .toLowerCase()
+    .replace(/^::ffff:/, '');
   return normalized === '127.0.0.1' || normalized === '::1';
 }
 
@@ -107,7 +109,10 @@ export function createFaceRecognitionMiddleware({
           storage: 'private local folder',
         });
       } catch {
-        respond(response, 503, { available: false, error: 'Local identity store is unavailable' });
+        respond(response, 503, {
+          available: false,
+          error: 'Local identity store is unavailable',
+        });
       }
       return;
     }
@@ -116,7 +121,9 @@ export function createFaceRecognitionMiddleware({
       try {
         respond(response, 200, { identities: await store.list() });
       } catch {
-        respond(response, 503, { error: 'Local identity store is unavailable' });
+        respond(response, 503, {
+          error: 'Local identity store is unavailable',
+        });
       }
       return;
     }
@@ -136,7 +143,9 @@ export function createFaceRecognitionMiddleware({
           return;
         }
         const status = error instanceof RangeError ? 413 : 400;
-        respond(response, status, { error: error.message || 'Enrollment failed' });
+        respond(response, status, {
+          error: error.message || 'Enrollment failed',
+        });
       }
       return;
     }
@@ -154,7 +163,9 @@ export function createFaceRecognitionMiddleware({
         respond(response, 200, { results });
       } catch (error) {
         const status = error instanceof RangeError ? 413 : 400;
-        respond(response, status, { error: error.message || 'Matching failed' });
+        respond(response, status, {
+          error: error.message || 'Matching failed',
+        });
       }
       return;
     }
@@ -172,7 +183,9 @@ export function createFaceRecognitionMiddleware({
         }
         respond(response, removed ? 200 : 404, { removed });
       } catch {
-        respond(response, 503, { error: 'Local identity store is unavailable' });
+        respond(response, 503, {
+          error: 'Local identity store is unavailable',
+        });
       }
       return;
     }
@@ -180,7 +193,9 @@ export function createFaceRecognitionMiddleware({
     if (url.pathname === '/sightings') {
       try {
         if (method === 'GET') {
-          respond(response, 200, { sightings: (await journal.list()).slice(0, 120) });
+          respond(response, 200, {
+            sightings: (await journal.list()).slice(0, 120),
+          });
           return;
         }
         if (method === 'DELETE') {
@@ -203,18 +218,27 @@ export function createFaceRecognitionMiddleware({
         }
       } catch (error) {
         respond(response, error instanceof TypeError ? 400 : 503, {
-          error: error instanceof TypeError ? error.message : 'Sightings are unavailable',
+          error:
+            error instanceof TypeError
+              ? error.message
+              : 'Sightings are unavailable',
         });
         return;
       }
     }
 
-    const reviewPath = /^\/sightings\/([a-f0-9-]{36})\/review$/i.exec(url.pathname);
+    const reviewPath = /^\/sightings\/([a-f0-9-]{36})\/review$/i.exec(
+      url.pathname,
+    );
     if (reviewPath && method === 'POST') {
       try {
         const { verdict } = await readJson(request);
         const sighting = await journal.review(reviewPath[1], verdict);
-        respond(response, sighting ? 200 : 404, sighting ? { sighting } : { error: 'Sighting not found' });
+        respond(
+          response,
+          sighting ? 200 : 404,
+          sighting ? { sighting } : { error: 'Sighting not found' },
+        );
       } catch (error) {
         respond(response, 400, { error: error.message || 'Review failed' });
       }
@@ -238,7 +262,9 @@ export function createFaceRecognitionMiddleware({
         await journal.audit(`analysis-${action}`, '', cameraName);
         respond(response, 200, { recorded: true });
       } catch (error) {
-        respond(response, 400, { error: error.message || 'Session was not recorded' });
+        respond(response, 400, {
+          error: error.message || 'Session was not recorded',
+        });
       }
       return;
     }

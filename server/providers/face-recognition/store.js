@@ -30,7 +30,8 @@ function normalizeIdentity(identity) {
   const embeddings = identity.embeddings;
   if (!/^[a-f0-9-]{36}$/i.test(id))
     throw new TypeError('Identity id is invalid');
-  if (!name || name.length > 80) throw new TypeError('Identity name is invalid');
+  if (!name || name.length > 80)
+    throw new TypeError('Identity name is invalid');
   if (
     !Array.isArray(embeddings) ||
     embeddings.length < 1 ||
@@ -43,10 +44,14 @@ function normalizeIdentity(identity) {
     category: FACE_CATEGORIES.includes(identity.category)
       ? identity.category
       : 'authorised',
-    note: String(identity.note || '').trim().slice(0, 160),
+    note: String(identity.note || '')
+      .trim()
+      .slice(0, 160),
     createdAt: String(identity.createdAt || new Date().toISOString()),
     consentConfirmedAt: String(
-      identity.consentConfirmedAt || identity.createdAt || new Date().toISOString(),
+      identity.consentConfirmedAt ||
+        identity.createdAt ||
+        new Date().toISOString(),
     ),
     embeddings: embeddings.map(validateEmbedding),
   };
@@ -66,7 +71,11 @@ function faceSimilarity(first, second) {
 function possibleDuplicateFor(embeddings, identity) {
   const bestScores = embeddings
     .map((embedding) =>
-      Math.max(...identity.embeddings.map((template) => faceSimilarity(embedding, template))),
+      Math.max(
+        ...identity.embeddings.map((template) =>
+          faceSimilarity(embedding, template),
+        ),
+      ),
     )
     .sort((first, second) => second - first)
     .slice(0, 2);
@@ -133,14 +142,16 @@ export function createFaceIdentityStore({
   return Object.freeze({
     async list() {
       const rows = await load();
-      return rows.map(({ id: identityId, name, category, note, createdAt, embeddings }) => ({
-        id: identityId,
-        name,
-        category,
-        note,
-        createdAt,
-        templateCount: embeddings.length,
-      }));
+      return rows.map(
+        ({ id: identityId, name, category, note, createdAt, embeddings }) => ({
+          id: identityId,
+          name,
+          category,
+          note,
+          createdAt,
+          templateCount: embeddings.length,
+        }),
+      );
     },
     async match(embedding, thresholdPct = FACE_SIMILARITY_THRESHOLD_DEFAULT) {
       const candidate = validateEmbedding(embedding);
@@ -169,7 +180,10 @@ export function createFaceIdentityStore({
       const [best, second] = ranked;
       if (!best || best.similarityPct < threshold)
         return { status: 'unknown', similarityPct: best?.similarityPct ?? 0 };
-      if (second && best.similarityPct - second.similarityPct < FACE_AMBIGUITY_MARGIN)
+      if (
+        second &&
+        best.similarityPct - second.similarityPct < FACE_AMBIGUITY_MARGIN
+      )
         return { status: 'ambiguous', similarityPct: best.similarityPct };
       return { status: 'possible-match', ...best };
     },
@@ -188,20 +202,29 @@ export function createFaceIdentityStore({
         if (!FACE_CATEGORIES.includes(category))
           throw new TypeError('Choose a valid category');
         if (rows.length >= FACE_IDENTITY_LIMIT)
-          throw new TypeError(`Maximum ${FACE_IDENTITY_LIMIT} identities reached`);
+          throw new TypeError(
+            `Maximum ${FACE_IDENTITY_LIMIT} identities reached`,
+          );
         const name = String(candidateName || '').trim();
         if (!name || name.length > 80)
           throw new TypeError('Display name must be 1 to 80 characters');
         if (rows.some((row) => row.name.toLowerCase() === name.toLowerCase()))
           throw new TypeError('That display name is already enrolled');
-        if (!Array.isArray(embeddings) || embeddings.length < 1 || embeddings.length > FACE_TEMPLATES_PER_IDENTITY_LIMIT)
+        if (
+          !Array.isArray(embeddings) ||
+          embeddings.length < 1 ||
+          embeddings.length > FACE_TEMPLATES_PER_IDENTITY_LIMIT
+        )
           throw new TypeError('Identity needs 1 to 8 reference templates');
         const templates = embeddings.map(validateEmbedding);
         const possibleDuplicate = rows
           .map((identity) => possibleDuplicateFor(templates, identity))
-          .sort((first, second) => second.similarityPct - first.similarityPct)[0];
+          .sort(
+            (first, second) => second.similarityPct - first.similarityPct,
+          )[0];
         if (
-          possibleDuplicate?.similarityPct >= FACE_POSSIBLE_DUPLICATE_THRESHOLD &&
+          possibleDuplicate?.similarityPct >=
+            FACE_POSSIBLE_DUPLICATE_THRESHOLD &&
           allowPossibleDuplicate !== true
         ) {
           const error = new Error('This face may already be enrolled');

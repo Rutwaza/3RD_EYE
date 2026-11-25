@@ -213,9 +213,9 @@ export function createIntelPointLayer({
         outlineWidth: 3,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         showBackground: true,
-        backgroundColor: Cesium.Color.fromCssColorString(
-          kind.color,
-        ).withAlpha(0.16),
+        backgroundColor: Cesium.Color.fromCssColorString(kind.color).withAlpha(
+          0.16,
+        ),
         backgroundPadding: new Cesium.Cartesian2(6, 3),
         pixelOffset: new Cesium.Cartesian2(0, -20),
         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,

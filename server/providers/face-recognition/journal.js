@@ -1,5 +1,11 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import {
+  appendFile,
+  mkdir,
+  readFile,
+  rename,
+  writeFile,
+} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -78,13 +84,20 @@ export function createFaceJournal({
   const hashOf = (row) =>
     createHash('sha256')
       .update(
-        JSON.stringify([row.previous, row.at, row.action, row.subject, row.detail]),
+        JSON.stringify([
+          row.previous,
+          row.at,
+          row.action,
+          row.subject,
+          row.detail,
+        ]),
       )
       .digest('hex');
 
   /** Each row seals the one before it, so a silent edit breaks the chain. */
   async function writeAudit(action, subject = '', detail = '') {
-    if (lastHash === null) lastHash = (await auditRows()).at(-1)?.hash || GENESIS;
+    if (lastHash === null)
+      lastHash = (await auditRows()).at(-1)?.hash || GENESIS;
     const row = {
       at: now(),
       action: text(action, 40),
@@ -130,8 +143,7 @@ export function createFaceJournal({
             })),
         };
       }),
-    list: () =>
-      serialize(async () => [...(await loadSightings())].reverse()),
+    list: () => serialize(async () => [...(await loadSightings())].reverse()),
     record: (input, identity) =>
       serialize(async () => {
         const rows = await loadSightings();
@@ -147,7 +159,10 @@ export function createFaceJournal({
             0,
             Math.min(100, Math.round(Number(input.similarityPct) || 0)),
           ),
-          votes: Math.max(0, Math.min(50, Math.round(Number(input.votes) || 0))),
+          votes: Math.max(
+            0,
+            Math.min(50, Math.round(Number(input.votes) || 0)),
+          ),
           review: null,
         };
         await saveSightings([...rows, row].slice(-SIGHTING_LIMIT));
@@ -162,7 +177,9 @@ export function createFaceJournal({
         const row = rows.find((item) => item.id === sightingId);
         if (!row) return null;
         const updated = { ...row, review: verdict, reviewedAt: now() };
-        await saveSightings(rows.map((item) => (item === row ? updated : item)));
+        await saveSightings(
+          rows.map((item) => (item === row ? updated : item)),
+        );
         await writeAudit(`review-${verdict}`, row.name, row.cameraName);
         return updated;
       }),

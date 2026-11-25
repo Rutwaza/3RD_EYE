@@ -68,10 +68,7 @@ export class IntelCard {
         'footer',
         {},
         el('span', {
-          text: [
-            item.source,
-            `${item.lat.toFixed(3)}, ${item.lon.toFixed(3)}`,
-          ]
+          text: [item.source, `${item.lat.toFixed(3)}, ${item.lon.toFixed(3)}`]
             .filter(Boolean)
             .join(' · '),
         }),

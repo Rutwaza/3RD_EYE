@@ -75,7 +75,11 @@ export function mountWorldDesk({ viewer, styleManager, dataManager }) {
         card.showStory(story);
       },
       openAfrica() {
-        fly(EAST_AFRICA_VIEW.lat, EAST_AFRICA_VIEW.lon, EAST_AFRICA_VIEW.height);
+        fly(
+          EAST_AFRICA_VIEW.lat,
+          EAST_AFRICA_VIEW.lon,
+          EAST_AFRICA_VIEW.height,
+        );
         for (const id of AFRICA_LAYERS) void enable(id);
       },
       setFraming(view) {

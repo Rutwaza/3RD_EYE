@@ -605,7 +605,11 @@ body.desk-open::before {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--cat), color-mix(in srgb, var(--cat) 40%, transparent));
+  background: linear-gradient(
+    90deg,
+    var(--cat),
+    color-mix(in srgb, var(--cat) 40%, transparent)
+  );
   box-shadow: 0 0 10px color-mix(in srgb, var(--cat) 50%, transparent);
 }
 
@@ -963,9 +967,16 @@ body.desk-open::before {
 
 @media (max-width: 980px) {
   #world-desk {
-    grid-template-columns: 1fr;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    scrollbar-width: none;
+  }
+  #world-desk[hidden] {
+    display: none;
+  }
+  #world-desk > * {
+    flex: none;
   }
   .desk-rail,
   .desk-side,
@@ -974,7 +985,8 @@ body.desk-open::before {
   }
   .desk-main {
     order: -1;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
   }
   .desk-lead {
     grid-template-columns: minmax(0, 1fr) auto;
