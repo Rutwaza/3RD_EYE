@@ -1,13 +1,3 @@
-const STYLE_KEYS = Object.freeze({
-  1: 'normal',
-  2: 'retro',
-  3: 'surveillance',
-  4: 'thermal',
-  5: 'anime',
-  6: 'noir',
-  7: 'snow',
-});
-
 /**
  * Bind the application's existing bubbling keyboard shortcuts.
  * Capture-phase surfaces keep first refusal. The caller owns each action and
@@ -29,7 +19,6 @@ export function bindApplicationShortcuts({
       event.target === searchInput;
     if (isFormControl && event.key !== 'Escape') return;
 
-    if (STYLE_KEYS[event.key]) actions.setStyle(STYLE_KEYS[event.key]);
     if (event.key === 'Escape') actions.dismissSearch();
     const key = event.key.toLowerCase();
     if (key === 'h') actions.toggleHud();

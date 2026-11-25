@@ -1,5 +1,10 @@
 import { lookup as lookupDns } from 'node:dns/promises';
 import { randomUUID } from 'node:crypto';
+import {
+  AFRICA_COUNTRY_CODES,
+  EAST_AFRICA_COUNTRY_CODES,
+  isEastAfricaCountryCode,
+} from '../../../src/data/africa.js';
 
 import { readResponseTextCapped } from '../common/http.js';
 import {
@@ -43,15 +48,23 @@ export async function mapRadioConcurrent(values, concurrency, mapper) {
   return results;
 }
 
+const OTHER_AFRICA_CODES = AFRICA_COUNTRY_CODES.filter(
+  (code) => !EAST_AFRICA_COUNTRY_CODES.includes(code),
+);
+
 /** Create the testable Connect middleware backing `/api/radio`. */
 export function createRadioProxyMiddleware({
   fetchImpl = null,
   lookupImpl = lookupDns,
   now = Date.now,
+  backgroundAfrica = fetchImpl === null,
 } = {}) {
   let mirrorCache = { origins: [...RADIO_FALLBACK_MIRRORS], cachedAt: 0 };
   let mirrorPromise = null;
   let catalogCache = null;
+  // Regional stations are an additive field: the global catalog keeps its own
+  // selection and cap.
+  const africaByCountry = new Map();
   let catalogGeneration = 0;
   // The generation counter is process-local, so it restarts from 1 with the
   // server. The instance token scopes each generation sequence: a client that
@@ -148,6 +161,48 @@ export function createRadioProxyMiddleware({
     throw lastError || new Error('No Radio Browser mirror is available');
   }
 
+  /** Read several countries' stations; one failing country changes nothing. */
+  async function readAfrica(countryCodes, timestamp) {
+    await mapRadioConcurrent(countryCodes, 3, async (countryCode) => {
+      const east = isEastAfricaCountryCode(countryCode);
+      const params = new URLSearchParams({
+        countrycode: countryCode,
+        has_geo_info: 'true',
+        is_https: 'true',
+        hidebroken: 'true',
+        order: 'clickcount',
+        reverse: 'true',
+        limit: east ? '80' : '30',
+      });
+      try {
+        const rows = await fetchPath(`/json/stations/search?${params}`);
+        if (!Array.isArray(rows)) return;
+        africaByCountry.set(countryCode, {
+          updatedAt: timestamp,
+          stations: rows
+            .map(normalizeRadioBrowserStation)
+            .filter((station) => station?.countryCode === countryCode)
+            .slice(0, east ? 40 : 15),
+        });
+      } catch {
+        // The last good stations for this country stay until they go stale.
+      }
+    });
+  }
+
+  /** Add the regional stations the global selection does not already carry. */
+  function attachAfrica(catalog, selected) {
+    const globalIds = new Set(selected.map((station) => station.id));
+    const stations = [...africaByCountry.values()]
+      .flatMap((cached) => cached.stations)
+      .filter((station) => !globalIds.has(station.id));
+    catalog.africaStations = stations.map(publicRadioStation);
+    catalog.stationIds = new Set([
+      ...globalIds,
+      ...stations.map((station) => station.id),
+    ]);
+  }
+
   async function refreshCatalog() {
     const queries = [
       null,
@@ -160,6 +215,8 @@ export function createRadioProxyMiddleware({
       'marine',
       'traffic',
     ];
+    // African countries, EAC partner states first. Each country gets its own small, popularity-ranked
+    // allowance so global click counts cannot crowd the region out.
     const outcomes = await mapRadioConcurrent(
       queries,
       3,
@@ -272,6 +329,25 @@ export function createRadioProxyMiddleware({
       degradedReason: degraded ? healthReasons.join(',') : null,
       coverage,
     };
+
+    // This supplement intentionally has independent failure handling and a
+    // separate cap. A region-query outage never invalidates the existing
+    // global catalog or its health policy. East Africa is read before the
+    // catalog is published; the rest of the continent joins it afterwards, so
+    // a slow link never holds the station list back.
+    for (const [countryCode, cached] of africaByCountry) {
+      if (timestamp - cached.updatedAt > RADIO_DIRECTORY_STALE_MS)
+        africaByCountry.delete(countryCode);
+    }
+    await readAfrica(EAST_AFRICA_COUNTRY_CODES, timestamp);
+    attachAfrica(nextCatalog, selected);
+    if (backgroundAfrica)
+      void readAfrica(OTHER_AFRICA_CODES, timestamp).then(() => {
+        const current =
+          catalogCache?.cachedAt === timestamp ? catalogCache : nextCatalog;
+        attachAfrica(current, selected);
+        servedStationIds = current.stationIds;
+      });
     if (degraded && catalogCache) {
       const error = new Error(
         'Radio Browser catalog refresh did not meet health policy',
@@ -353,6 +429,7 @@ export function createRadioProxyMiddleware({
         const catalog = await getCatalog();
         sendJson(res, 200, {
           stations: catalog.stations,
+          africaStations: catalog.africaStations || [],
           updatedAt: catalog.updatedAt,
           stale: catalog.stale,
           degraded: Boolean(catalog.degraded),

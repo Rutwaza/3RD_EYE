@@ -123,9 +123,9 @@ test('tracked entry factory pins the production protected-lane policy', () => {
 
 test('selected camera readout carries tactical animation and fixed badge clearance', () => {
   const entry = createTrackedOverlayEntry({
-    id: 'alpr:42', gevDisplayPosition: () => ({ x: 1, y: 2, z: 3 }),
+    id: 'site:42', gevDisplayPosition: () => ({ x: 1, y: 2, z: 3 }),
     gevLabelModel: {
-      title: 'ALPR-0042', details: ['OSM MAPPED'], accent: '#ff6474',
+      title: 'SITE-0042', details: ['OSM MAPPED'], accent: '#ff6474',
       cardStyle: 'tactical', selected: true, leaderStyle: 'elbow',
       leaderAnimationMs: 440, leaderAnimationStartedAt: 100, leaderDrawRatio: 0.68,
       anchorRadiusPx: 30, anchorRadiusScale: null,
@@ -217,18 +217,6 @@ test('selection lifecycle ignores vessels, accepts installations, and clears wit
     }));
     assert.equal(getActiveTrackedReadoutId(), 'installations:fort-test');
     assert.equal(recorder.calls.filter(({ op }) => op === 'set').at(-1).entries[0].title, 'FORT TEST');
-
-    // ALPR cameras are static context too: a click publishes the same card.
-    const camera = {
-      gevTrackedId: 'alpr:42',
-      gevDisplayPosition: () => ({ x: 4, y: 5, z: 6 }),
-      gevLabelModel: { title: 'FLOCK SAFETY ALPR', details: ['CITY PD'], accent: '#ff66c4' },
-    };
-    fakeWindow.dispatchEvent(new CustomEvent('gev:entity-selected', {
-      detail: { layerId: 'alpr-cameras', entity: camera },
-    }));
-    assert.equal(getActiveTrackedReadoutId(), 'alpr:42');
-    assert.equal(recorder.calls.filter(({ op }) => op === 'set').at(-1).entries[0].title, 'FLOCK SAFETY ALPR');
 
     fakeWindow.dispatchEvent(new CustomEvent('gev:entity-selected', {
       detail: { layerId: 'ais-live-vessels', entity: installation },

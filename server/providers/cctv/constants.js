@@ -236,6 +236,20 @@ export const CALGARY_DOWNTOWN = { lat: 51.0461, lon: -114.0626 };
  * body cannot be buffered without limit. */
 export const CALGARY_MAX_CATALOG_BYTES = 4 * 1024 * 1024;
 
+/** South African national and provincial road cameras, as drawn on the public
+ * i-TRAFFIC map. Frames are still images pinned to the same host. */
+export const ITRAFFIC_CAMERAS_URL =
+  'https://www.i-traffic.co.za/map/mapIcons/Cameras';
+export const ITRAFFIC_IMAGE_ORIGIN = 'https://www.i-traffic.co.za/map/Cctv/';
+export const DEFAULT_ITRAFFIC_MAX_SOURCES = 900;
+export const ITRAFFIC_ANCHORS = [
+  { lat: -26.2041, lon: 28.0473 }, // Johannesburg
+  { lat: -25.7479, lon: 28.2293 }, // Pretoria
+  { lat: -33.9249, lon: 18.4241 }, // Cape Town
+  { lat: -29.8587, lon: 31.0218 }, // Durban
+];
+export const ITRAFFIC_MAX_CATALOG_BYTES = 4 * 1024 * 1024;
+
 /** Camera CATALOGS change rarely; 15 min keeps multi-megabyte upstream list refetches (Austin rows.json + 4 Caltrans districts + TfL + Ontario 511) infrequent. Frames are fetched per-request and are unaffected. */
 export const CCTV_SOURCE_CACHE_MS = 15 * 60 * 1000;
 /** Per-provider catalog-fetch timeout. Bounds the worst-case refresh so one

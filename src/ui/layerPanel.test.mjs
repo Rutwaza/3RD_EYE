@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
-test('panel presentation places Transit between Street Traffic and Bike Share in Movement', () => {
+test('Movement excludes transit and bike share from the panel ordering', () => {
   const source = readFileSync(
     new URL('./layerPanel.js', import.meta.url),
     'utf8',
@@ -17,17 +17,32 @@ test('panel presentation places Transit between Street Traffic and Bike Share in
   );
   assert.deepEqual(
     order.filter(({ label }) => label === 'Movement').map(({ id }) => id),
-    [
-      'satellites',
-      'flights',
-      'military',
-      'ais-live-vessels',
-      'traffic',
-      'transit',
-      'bikeshare',
-    ],
+    ['satellites', 'flights', 'military', 'ais-live-vessels', 'traffic'],
   );
-  assert.equal(order.filter(({ id }) => id === 'transit').length, 1);
+  assert.equal(order.filter(({ id }) => id === 'transit').length, 0);
+  assert.equal(order.filter(({ id }) => id === 'bikeshare').length, 0);
+});
+
+test('camera panel exposes self-deployed cameras instead of mapped ALPR', () => {
+  const source = readFileSync(
+    new URL('./layerPanel.js', import.meta.url),
+    'utf8',
+  );
+  const declarations = source.slice(
+    source.indexOf('const PANEL_GROUPS ='),
+    source.indexOf('const PANEL_POSITIONS ='),
+  );
+  const order = JSON.parse(
+    runInNewContext(`${declarations}\nJSON.stringify(PANEL_ORDER)`),
+  );
+  assert.deepEqual(
+    order.filter(({ label }) => label === 'Cameras').map(({ id }) => id),
+    ['cctv', 'self-deployed-cameras'],
+  );
+  assert.equal(
+    order.some(({ id }) => id === 'alpr-cameras'),
+    false,
+  );
 });
 
 test('partial feed controls distinguish incomplete records from stale data and outages', async () => {

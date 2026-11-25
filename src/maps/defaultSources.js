@@ -5,6 +5,7 @@ import {
   createOsmImagery,
   createEsriImagery,
   createIonImagery,
+  createGoogleRoadmapImagery,
   ESRI_ATTRIBUTION_HTML,
 } from './imagery.js';
 import { createWorldTerrain, createKeylessTerrain } from './terrain.js';
@@ -14,6 +15,7 @@ export function createDefaultMapSources({
   googleTileset = null,
   cesiumToken = '',
   googleApiKey = '',
+  viewer = null,
 } = {}) {
   const ionToken = String(cesiumToken || '').trim();
   const hasIon = Boolean(ionToken);
@@ -33,9 +35,12 @@ export function createDefaultMapSources({
       const common = {
         descriptor,
         available: !descriptor.requiresIon || hasIon,
+        ...(descriptor.requiresGoogle ? { available: hasGoogle } : {}),
         unavailableReason: descriptor.requiresIon
           ? keySetupRequirement('cesium-ion')
-          : null,
+          : descriptor.requiresGoogle
+            ? 'Add a Google Maps API key with Map Tiles API enabled'
+            : null,
       };
       if (descriptor.kind === 'photoreal')
         return {
@@ -43,6 +48,14 @@ export function createDefaultMapSources({
           available: Boolean(googleTileset),
           unavailableReason: photorealUnavailableReason(hasIon || hasGoogle),
           tileset: googleTileset,
+        };
+      if (descriptor.kind === 'google-roadmap')
+        return {
+          ...common,
+          imagery: ({ signal }) =>
+            createGoogleRoadmapImagery(googleApiKey, { signal, viewer }),
+          terrain,
+          credit: '<span>Google Maps</span>',
         };
       const imagery =
         descriptor.kind === 'ion'

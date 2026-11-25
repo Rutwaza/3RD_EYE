@@ -207,7 +207,7 @@ test('the draw modules are registered for formatting and boundary checks', () =>
   }
   // Every layer that consults the shared claim has to own the module it reads,
   // or its bundle fails the boundary check.
-  for (const group of ['alpr-cameras', 'vessel-layer', 'satellites-layer']) {
+  for (const group of ['vessel-layer', 'satellites-layer']) {
     assert.ok(
       boundaries[group]?.modules.includes('src/data/inputOwnership.js'),
       `${group} consults the pointer claim and must own the module`,

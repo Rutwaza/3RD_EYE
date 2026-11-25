@@ -1,0 +1,321 @@
+#face-recognition-panel {
+  --panel-expanded-width: 360px;
+  position: fixed;
+  top: var(--left-stack-top);
+  left: var(--left-stack-x);
+  right: auto;
+  bottom: auto;
+  z-index: 100;
+  width: var(--panel-expanded-width);
+  max-height: calc(100vh - 24px);
+  pointer-events: auto;
+}
+
+#face-recognition-panel .panel-glow {
+  pointer-events: none;
+}
+
+.face-recognition-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--panel-radius);
+  background: var(--glass-bg);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+}
+
+.face-recognition-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 7px;
+}
+
+.face-recognition-controls select,
+.face-recognition-enroll input[type='text'],
+.face-recognition-enroll input[type='file'] {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  border: 1px solid var(--glass-border);
+  border-radius: 5px;
+  padding: 6px 8px;
+  color: var(--text-primary);
+  background: rgb(255 255 255 / 6%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.face-recognition-controls select:focus-visible,
+.face-recognition-enroll input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.face-recognition-threshold {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.face-recognition-threshold input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+#face-recognition-status {
+  min-height: 14px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.face-recognition-note {
+  padding: 7px 8px;
+  border-left: 2px solid var(--accent);
+  color: var(--text-secondary);
+  background: rgb(255 255 255 / 3%);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.face-recognition-database {
+  padding: 7px 8px;
+  border: 1px solid rgb(0 212 255 / 18%);
+  border-radius: 4px;
+  color: #9eeeff;
+  background: rgb(0 212 255 / 5%);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+}
+
+#face-recognition-results,
+#face-recognition-people {
+  display: grid;
+  gap: 5px;
+  max-height: 170px;
+  overflow-y: auto;
+}
+
+.face-recognition-result,
+.face-recognition-person {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid rgb(255 255 255 / 9%);
+  border-radius: 5px;
+  color: var(--text-primary);
+  background: rgb(255 255 255 / 3%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.face-recognition-result[data-match='possible'] {
+  border-color: rgb(255 200 90 / 35%);
+  color: #ffe3a3;
+}
+
+.face-recognition-result[data-match='quality'] {
+  border-color: rgb(255 180 80 / 30%);
+  color: #ffd6a0;
+}
+
+.face-recognition-enroll {
+  display: grid;
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 2%);
+}
+
+.face-recognition-enroll > label:not(.face-recognition-consent) {
+  display: grid;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.face-recognition-consent {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.face-recognition-consent input {
+  margin: 1px 0 0;
+  accent-color: var(--accent);
+}
+
+.face-recognition-person button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  #face-recognition-panel {
+    width: min(360px, calc(100vw - 32px));
+  }
+}
+
+
+.face-recognition-inner > * {
+  flex: none;
+}
+
+#face-recognition-status {
+  line-height: 1.4;
+}
+
+/* ── Face Map console ─────────────────────────── */
+.face-recognition-inner section {
+  display: grid;
+  gap: 9px;
+}
+
+.face-recognition-inner section[hidden] {
+  display: none;
+}
+
+.face-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgb(130 170 255 / 16%);
+  border-radius: 10px;
+}
+
+.face-tabs button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.face-tabs button[aria-selected='true'] {
+  color: #fff;
+  background: linear-gradient(110deg, rgb(53 224 255 / 24%), rgb(155 107 255 / 28%));
+}
+
+.face-view {
+  overflow: hidden;
+  border: 1px solid rgb(53 224 255 / 28%);
+  border-radius: 12px;
+  background: #02040a;
+}
+
+.face-view canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.face-counts,
+.face-audit-state {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.face-recognition-note,
+.face-recognition-database,
+#face-recognition-status,
+.face-recognition-threshold,
+.face-recognition-result,
+.face-recognition-person,
+.face-recognition-enroll > label:not(.face-recognition-consent) {
+  font-size: 11px;
+}
+
+.face-recognition-enroll select {
+  min-height: 32px;
+}
+
+.face-recognition-result[data-match='possible'],
+.face-sighting[data-category='authorised'],
+.face-recognition-person[data-category='authorised'] {
+  border-color: rgb(62 230 168 / 45%);
+}
+
+.face-recognition-result[data-match='spoof'],
+.face-sighting[data-category='poi'],
+.face-recognition-person[data-category='poi'] {
+  border-color: rgb(255 77 109 / 55%);
+}
+
+.face-recognition-result[data-match='analysing'] {
+  border-color: rgb(155 107 255 / 50%);
+}
+
+.face-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.face-audit-state[data-intact='false'] {
+  color: #ff4d6d;
+}
+
+#face-recognition-sightings,
+#face-recognition-audit {
+  display: grid;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.face-sighting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid rgb(130 170 255 / 18%);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.face-sighting span {
+  flex: 1 1 100%;
+}
+
+.face-sighting b {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.face-audit-row {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}

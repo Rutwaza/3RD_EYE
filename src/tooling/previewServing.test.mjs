@@ -102,7 +102,6 @@ test('real dev and built-preview servers serve provider JSON and terminate unkno
         ['/api/terrain/heights?points=invalid', 400],
         ['/api/overpass', 405],
         ['/api/cctv/sources', 200],
-        ['/api/gbfs/', 400],
         ['/api/tomtom/status', 200],
         ['/api/radio/unknown', 404],
         ['/api/setup/status', isPreview ? 404 : 200],

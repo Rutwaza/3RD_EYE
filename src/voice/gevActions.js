@@ -186,6 +186,27 @@ const LAYER_ALIASES = new Map([
   ['aircraft', 'flights'],
   ['military', 'military'],
   ['military flights', 'military'],
+  ['world news', 'world-news'],
+  ['news', 'world-news'],
+  ['headlines', 'world-news'],
+  ['disasters', 'crisis-alerts'],
+  ['disaster alerts', 'crisis-alerts'],
+  ['outbreaks', 'health-outbreaks'],
+  ['disease outbreaks', 'health-outbreaks'],
+  ['facilities', 'africa-facilities'],
+  ['hospitals', 'africa-facilities'],
+  ['border posts', 'africa-facilities'],
+  ['airports', 'africa-airports'],
+  ['power plants', 'africa-power'],
+  ['air quality', 'africa-environment'],
+  ['weather', 'africa-environment'],
+  ['rivers', 'africa-rivers'],
+  ['river levels', 'africa-rivers'],
+  ['african earthquakes', 'africa-seismic'],
+  ['volcanoes', 'africa-volcanoes'],
+  ['economies', 'africa-economy'],
+  ['refugees', 'africa-displacement'],
+  ['displaced people', 'africa-displacement'],
   ['earthquakes', 'earthquakes'],
   ['quakes', 'earthquakes'],
   ['satellites', 'satellites'],
@@ -199,8 +220,6 @@ const LAYER_ALIASES = new Map([
   ['radio', 'radio'],
   ['internet radio', 'radio'],
   ['radio stations', 'radio'],
-  ['bikeshare', 'bikeshare'],
-  ['bikes', 'bikeshare'],
   ['ais', 'ais-live-vessels'],
   ['ships', 'ais-live-vessels'],
   ['vessels', 'ais-live-vessels'],
@@ -215,12 +234,9 @@ const LAYER_ALIASES = new Map([
   ['firms', 'local-firms'],
   ['fires', 'local-firms'],
   ['active fires', 'local-firms'],
-  ['alpr', 'alpr-cameras'],
-  ['alpr cameras', 'alpr-cameras'],
-  ['flock cameras', 'alpr-cameras'],
-  ['license plate readers', 'alpr-cameras'],
-  ['license plate cameras', 'alpr-cameras'],
-  ['plate readers', 'alpr-cameras'],
+  ['self deployed cameras', 'self-deployed-cameras'],
+  ['deployed cameras', 'self-deployed-cameras'],
+  ['esp32 cameras', 'self-deployed-cameras'],
 ]);
 
 const CITY_ALIASES = new Map([
@@ -237,7 +253,8 @@ const CITY_ALIASES = new Map([
 // phrasing ALWAYS means the satellites DATA LAYER, never a basemap; the
 // session instructions carry the decision table.
 //
-// Road phrasings resolve to OSM, the one shipped road basemap. Every alias
+// Generic road phrasings resolve to OSM; explicit Google Maps/Roadmap names
+// resolve to Google's labeled 2D style. Every alias
 // must name a live `MAP_STACKS` id: an alias for a retired stack would resolve
 // cleanly and then fail at the controller with "Unknown map stack", which reads
 // to the operator as a broken command rather than a retired source.
@@ -247,8 +264,11 @@ const STACK_ALIASES = new Map([
   ['google', 'photoreal'],
   ['3d', 'photoreal'],
   ['photorealistic', 'photoreal'],
-  ['bing-aerial', 'bing-aerial'],
-  ['bing aerial', 'bing-aerial'],
+  ['google-roadmap', 'google-roadmap'],
+  ['google roadmap', 'google-roadmap'],
+  ['google maps', 'google-roadmap'],
+  ['google map', 'google-roadmap'],
+  ['roadmap', 'google-roadmap'],
   ['bing-labels', 'bing-labels'],
   ['bing labels', 'bing-labels'],
   ['labels', 'bing-labels'],

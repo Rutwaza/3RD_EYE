@@ -63,9 +63,9 @@ check, not a JavaScript sandbox. Common voice controls cannot depend on a
 Realtime protocol implementation. Negative fixtures cover indirect helpers,
 self-package imports, symlinks and unreachable files.
 
-Source factories have dedicated exports for ALPR, bikeshare, CCTV, earthquakes,
+Source factories have dedicated exports for CCTV, earthquakes,
 FIRMS, installations, launches, radio, satellites and traffic. They preserve the
-same factory implementations without loading layer rendering. ALPR/earthquake
+same factory implementations without loading layer rendering. Earthquake
 record normalization and CCTV source endpoint policy have plain owners separate
 from geometry/cards. Source exports do not start acquisition at import time.
 
@@ -172,9 +172,9 @@ response limits and cache policy. The boundary gate checks this portable entry
 separately from the Node providers. Satellite rendering and launch replay remain
 in their existing browser modules.
 
-## Terrain, traffic, fires and bike-share providers
+## Terrain, traffic and fire providers
 
-`gods-eye-view/server/providers/terrain`, `/traffic`, `/firms` and `/gbfs`
+`gods-eye-view/server/providers/terrain`, `/traffic` and `/firms`
 are separate Node-only entries. Each owns its existing middleware and
 process-scoped cache or request handling. Standalone composition mounts them in
 the original order; their imports do not start acquisition.
@@ -182,7 +182,7 @@ the original order; their imports do not start acquisition.
 `gods-eye-view/sources/terrain` exports existing point-key, retry and cache
 reconstruction mechanics with injectable acquisition dependencies.
 `gods-eye-view/sources/traffic` exports tile math and budget calculations.
-`gods-eye-view/sources/gbfs` exports host/path acceptance and cache-header rules.
+
 These entries import no Node middleware, application configuration or rendering.
 Callers retain their request admission and transport policy.
 
@@ -193,7 +193,7 @@ The Node provider continues using the same implementation; contract fixtures
 cover malformed rows, acquisition times, empty feeds and the inclusive time
 window. The boundary gate checks each entry independently.
 
-Browser terrain sampling, traffic matching/drawing, fire overlays and bike-share
+Browser terrain sampling, traffic matching/drawing, fire overlays and camera
 layer lifecycle remain in their current modules. This extraction changes no
 source defaults, credentials, quotas, data interpretation or visual behavior.
 
@@ -584,7 +584,7 @@ An empty search array is a definitive miss. HTTP failures, malformed results
 and oversized responses remain retryable. Attribution identifies OpenStreetMap /
 Nominatim.
 
-Overpass currently supplies traffic road geometry, ALPR camera records, military
+Overpass currently supplies traffic road geometry, military
 installation footprints, and annotation geometry (administrative boundaries,
 neighborhoods, streets, building/grounds outlines and monument candidates).
 Nominatim forward/reverse lookup does not replace those queries. Layer source

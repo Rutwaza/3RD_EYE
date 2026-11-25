@@ -1,18 +1,18 @@
 {
   "name": "gods-eye-view",
   "private": true,
-  "version": "0.1.1",
-  "description": "A real-time intelligence console for planet Earth \u2014 photorealistic 3D globe, live aircraft/ships/satellites/earthquakes/CCTV, and hands-free voice control. Runs in a browser.",
+  "version": "2.0.0",
+  "description": "3RD EYE OSINT: a live 3D intelligence console with world news, Africa data and local camera analysis.",
   "type": "module",
   "license": "MIT",
   "author": "Bilawal Sidhu",
-  "homepage": "https://github.com/bilawalsidhu/gods-eye-view#readme",
+  "homepage": "https://github.com/Rutwaza/3RD_EYE#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bilawalsidhu/gods-eye-view.git"
+    "url": "https://github.com/Rutwaza/3RD_EYE.git"
   },
   "bugs": {
-    "url": "https://github.com/bilawalsidhu/gods-eye-view/issues"
+    "url": "https://github.com/Rutwaza/3RD_EYE/issues"
   },
   "engines": {
     "node": ">=24.14.0 <25 || >=26 <27"
@@ -43,11 +43,11 @@
     "test": "node scripts/run-unit-tests.mjs",
     "test:track": "node scripts/track-regression.mjs",
     "qa:map-source-tray": "node scripts/qa-map-source-tray.mjs",
-    "check:boundaries": "node scripts/check-import-directions.mjs && node scripts/check-package-boundaries.mjs",
-    "qa:transit": "node scripts/qa-transit.mjs"
+    "check:boundaries": "node scripts/check-import-directions.mjs && node scripts/check-package-boundaries.mjs"
   },
   "dependencies": {
     "@mapbox/vector-tile": "^3.0.0",
+    "@vladmandic/human": "^3.3.6",
     "cesium": "^1.124.0",
     "egm96-universal": "^1.1.1",
     "mgrs": "^2.1.0",
@@ -94,12 +94,11 @@
     "./server/providers/firms": {
       "node": "./server/providers/firms.js"
     },
-    "./server/providers/gbfs": {
-      "node": "./server/providers/gbfs.js"
-    },
-    "./sources/gbfs": "./src/data/gbfsSource.js",
     "./server/providers/cctv": {
       "node": "./server/providers/cctv.js"
+    },
+    "./server/providers/face-recognition": {
+      "node": "./server/providers/face-recognition.js"
     },
     "./server/providers/radio": {
       "node": "./server/providers/radio.js"
@@ -157,10 +156,8 @@
     "./layers/installations": "./src/layers/installations/index.js",
     "./layers/awareness": "./src/layers/awareness/index.js",
     "./layers/traffic": "./src/layers/traffic/index.js",
-    "./layers/bikeshare": "./src/layers/bikeshare/index.js",
     "./layers/directions": "./src/layers/directions/index.js",
     "./layers/cctv": "./src/layers/cctv/index.js",
-    "./layers/alpr": "./src/layers/alpr/index.js",
     "./layers/radio": "./src/layers/radio/index.js",
     "./layers/submarine-cables": "./src/layers/submarineCables/index.js",
     "./sources/bundled-cables": "./src/layers/submarineCables/bundledSource.js",
@@ -217,8 +214,6 @@
     "./voice/session": "./src/voice/session.js",
     "./voice/session-controls": "./src/voice/sessionCommands.js",
     "./voice/realtime-session": "./src/voice/realtimeSession.js",
-    "./layers/alpr/source": "./src/layers/alpr/source.js",
-    "./layers/bikeshare/source": "./src/layers/bikeshare/source.js",
     "./layers/cctv/source": "./src/layers/cctv/source.js",
     "./layers/earthquakes/source": "./src/layers/earthquakes/source.js",
     "./layers/firms/source": "./src/layers/firms/source.js",
@@ -233,14 +228,9 @@
     "./sources/overpass": "./src/sources/overpass.js",
     "./search/nominatim": "./src/search/nominatim.js",
     "./sources/nominatim": "./src/sources/nominatim.js",
-    "./server/providers/transit": {
-      "node": "./server/providers/transit.js"
-    },
-    "./sources/transit": "./src/data/transitProxy.js",
-    "./layers/transit": "./src/layers/transit/index.js",
-    "./layers/transit/standalone": "./src/data/transit.js",
-    "./layers/transit/source": "./src/layers/transit/source.js",
-    "./sources/transit-service": "./src/sources/transitService.js",
     "./sources/map-features": "./src/sources/overpassFeatures.js"
-  }
+  },
+  "contributors": [
+    "Nelson Rutwaza"
+  ]
 }

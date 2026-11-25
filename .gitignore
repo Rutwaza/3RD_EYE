@@ -19,3 +19,7 @@ output/
 3d-models/
 pinokio/ENVIRONMENT
 pinokio/.installed
+
+# Proposal documents hold personal details; keep them out of the public repository.
+*.docx
+~$*

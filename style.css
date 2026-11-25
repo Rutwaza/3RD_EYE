@@ -9,6 +9,7 @@
 @import './src/ui/styles/radio.css';
 @import './src/ui/styles/cctv.css';
 @import './src/ui/styles/scenes.css';
+@import './src/ui/styles/face-recognition.css';
 @import './src/ui/styles/bhote-koshi.css';
 @import './src/ui/styles/recording.css';
 @import './src/ui/styles/responsive.css';
@@ -19,3 +20,6 @@
 @import './src/ui/styles/voice-cost.css';
 @import './src/ui/styles/first-run.css';
 @import './src/ui/styles/provider-settings.css';
+@import './src/ui/styles/panel-scrollbars.css';
+@import './src/ui/styles/theme.css';
+@import './src/ui/styles/world-desk.css';

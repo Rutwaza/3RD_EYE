@@ -321,25 +321,6 @@ body.cockpit-mode #cockpit-cloud-effects.active {
   color: rgba(232, 234, 237, 0.7);
 }
 
-/* Keep the ALPR source overflow reachable even after its brief on-map credit
-   collapses. Wrap whole entries only while the optional layer is on. */
-body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
-  #cesium-credits {
-  white-space: normal;
-}
-body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
-  #cesium-credits
-  .cesium-credit-wrapper {
-  display: inline-block !important;
-  white-space: nowrap;
-}
-body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
-  #cesium-credits
-  .cesium-credit-expand-link {
-  /* Keep the complete link at the left edge, clear of the Power Up button. */
-  display: block !important;
-}
-
 /* Cesium's stock attribution lightbox grows with every registered data source.
    Keep the title and close affordance fixed while the complete, unabridged
    credit list wraps and scrolls inside a compact panel. */
@@ -541,6 +522,10 @@ body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
   position: relative;
 }
 
+#title-bar .title-osint {
+  color: var(--accent);
+}
+
 #title-bar .title-logo {
   position: relative;
   display: block;
@@ -684,14 +669,6 @@ body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
   backdrop-filter: blur(8px);
 }
 
-#style-indicator.internet-status .indicator-value {
-  margin: 0;
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: #55e69a;
-  text-shadow: 0 0 14px rgb(85 230 154 / 45%);
-}
-
 .internet-status-icon {
   color: #55e69a;
   width: 20px;
@@ -722,8 +699,13 @@ body:has(.data-toggle-row[data-layer-id='alpr-cameras'] .data-toggle-btn.active)
 }
 
 @keyframes signal-pulse {
-  0%, 100% { opacity: 0.3; }
-  35% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  35% {
+    opacity: 1;
+  }
 }
 
 #style-indicator.internet-status.is-offline {

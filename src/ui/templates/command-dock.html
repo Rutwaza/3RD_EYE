@@ -1,18 +1,18 @@
   <!-- Unified bottom command dock: locations, voice (injected at runtime), visual presets -->
-  <div id="command-dock" aria-label="Navigation, voice, and visual preset controls">
+  <div id="command-dock" aria-label="Navigation, voice and map controls">
   <!-- Control panel -->
   <div id="control-panel" class="panel-collapsible collapsed">
     <div class="panel-glow"></div>
     <div class="panel-inner">
       <button id="control-panel-toggle" class="panel-header dock-tray-toggle" type="button"
         data-dock-toggle-target="control-panel" aria-expanded="false"
-        aria-controls="control-panel-popover" aria-label="Expand Visual Presets">
-        <span class="panel-title"><span class="dock-label-icon dock-label-icon-presets" aria-hidden="true"></span>VISUAL PRESETS</span>
+        aria-controls="control-panel-popover" aria-label="Expand Map source">
+        <span class="panel-title"><span class="dock-label-icon dock-label-icon-presets" aria-hidden="true"></span>MAP SOURCE</span>
         <span class="panel-divider"></span>
       </button>
       <div id="control-panel-popover" class="dock-popover-content">
-      <button class="dock-pin-btn" data-pin-target="control-panel" type="button" aria-label="Pin visual presets" aria-pressed="false" title="Keep visual presets open"><img src="/pin.svg" alt="" /></button>
-      <div id="style-buttons" class="button-grid">
+      <button class="dock-pin-btn" data-pin-target="control-panel" type="button" aria-label="Pin map source" aria-pressed="false" title="Keep map source open"><img src="/pin.svg" alt="" /></button>
+      <div id="style-buttons" class="button-grid advanced-control">
         <button class="style-btn active" data-style="normal" title="Show the globe without a visual filter.">
           <span class="btn-icon">◯</span>
           <span class="btn-label">Normal</span>
@@ -51,13 +51,13 @@
       </div>
       <section class="map-source-section" aria-labelledby="map-source-label">
         <div class="map-source-heading">
-          <span id="map-source-label">MAP SOURCE</span>
+          <span id="map-source-label">SOURCE</span>
           <span id="map-stack-status" class="pp-stack-status" aria-live="polite">3D</span>
         </div>
         <div id="map-stack-chips" class="map-stack-chip-row" role="group" aria-label="Map source"></div>
       </section>
       </div>
-      <div id="style-mini-status" class="panel-mini-status" aria-live="polite">
+      <div id="style-mini-status" class="panel-mini-status advanced-control" aria-live="polite">
         <span class="panel-mini-label">Style</span>
         <span id="style-mini-value" class="panel-mini-value">NORMAL</span>
       </div>

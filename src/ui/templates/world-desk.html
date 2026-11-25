@@ -1,0 +1,129 @@
+  <!-- Command bar: brand, workspace switch, pulse and clocks. -->
+  <header id="command-bar" aria-label="Command bar">
+      <div id="title-bar">
+        <div class="title-glow"></div>
+        <h1><span class="title-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span> <span class="title-wordmark">3RD <span class="title-accent">EYE</span></span><span class="title-osint">OSINT</span></h1>
+        <p class="subtitle">OBSERVE. ORIENT. DECIDE. ACT.</p>
+      </div>
+    <nav id="workspace-switch" aria-label="Workspace">
+      <button type="button" class="workspace-btn active" data-workspace="globe" aria-pressed="true" title="Globe (G)">GLOBE</button>
+      <button type="button" class="workspace-btn" data-workspace="desk" aria-pressed="false" aria-controls="world-desk" title="World Desk (N)">WORLD DESK<span id="desk-unread" class="workspace-count" hidden></span></button>
+      <button type="button" class="workspace-btn" data-workspace="africa" aria-pressed="false" title="Fly to East Africa and switch on its core layers">AFRICA</button>
+    </nav>
+    <div id="command-bar-status">
+      <div id="world-pulse" class="pulse" role="status" aria-live="polite" data-level="idle" title="Average priority of the twenty leading stories">
+        <span class="pulse-label">PULSE</span>
+        <span id="world-pulse-value" class="pulse-value">--</span>
+        <span class="pulse-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="clock"><span>KGL</span><time id="clock-kigali">--:--</time></div>
+      <div class="clock"><span>UTC</span><time id="clock-utc">--:--</time></div>
+      <div class="view-switch" role="radiogroup" aria-label="Map framing">
+        <button type="button" role="radio" data-view="circle" aria-checked="true" title="Frame the map in a circle">CIRCLE</button>
+        <button type="button" role="radio" data-view="wide" aria-checked="false" title="Show the full map">WIDE</button>
+      </div>
+      <div id="command-bar-network">
+      <div id="style-indicator" class="internet-status" role="status" aria-live="polite" aria-label="Internet connection status">
+        <svg class="internet-status-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle class="signal-dot" cx="12" cy="19" r="1.7" />
+          <path class="signal-arc signal-arc-inner" d="M8.4 15.4a5.1 5.1 0 0 1 7.2 0" />
+          <path class="signal-arc signal-arc-middle" d="M5.5 12.5a9.2 9.2 0 0 1 13 0" />
+          <path class="signal-arc signal-arc-outer" d="M2.7 9.6a13.2 13.2 0 0 1 18.6 0" />
+        </svg>
+      </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live wire: the leading headlines, always in view. -->
+  <div id="live-wire" aria-label="Live wire">
+    <span class="live-wire-tag"><i aria-hidden="true"></i>LIVE WIRE</span>
+    <div id="live-wire-track" class="live-wire-track"></div>
+    <button id="live-wire-pause" type="button" aria-pressed="false" title="Pause the wire">PAUSE</button>
+  </div>
+
+  <!-- World Desk -->
+  <section id="world-desk" aria-label="World Desk" tabindex="-1" hidden>
+    <aside class="desk-rail bento" aria-label="Desk controls">
+      <label class="desk-search">
+        <span class="sr-only">Search the desk</span>
+        <input id="desk-search" type="search" placeholder="Search stories, places, outlets" autocomplete="off" spellcheck="false" />
+      </label>
+      <div class="desk-group">
+        <h3>REGION</h3>
+        <div id="desk-regions" class="desk-chips" role="radiogroup" aria-label="Region"></div>
+      </div>
+      <div class="desk-group">
+        <h3>DESKS</h3>
+        <div id="desk-categories" class="desk-list"></div>
+      </div>
+      <div class="desk-group">
+        <h3>WINDOW</h3>
+        <div id="desk-windows" class="desk-chips" role="radiogroup" aria-label="Time window"></div>
+      </div>
+      <div class="desk-group">
+        <h3>FLOOR <output id="desk-floor-value">ALL</output></h3>
+        <input id="desk-floor" type="range" min="0" max="90" step="5" value="0" aria-label="Lowest priority shown" />
+      </div>
+      <div class="desk-group">
+        <h3>WATCHLIST</h3>
+        <form id="desk-watch-form" class="desk-watch-form">
+          <input id="desk-watch-input" type="text" maxlength="40" placeholder="Add a name, place or topic" aria-label="Watchlist term" autocomplete="off" />
+          <button type="submit" aria-label="Add to watchlist">+</button>
+        </form>
+        <div id="desk-watchlist" class="desk-chips"></div>
+      </div>
+      <div class="desk-group desk-switches">
+        <label><input id="desk-alerts" type="checkbox" /> Alert me on critical and watchlist stories</label>
+        <label><input id="desk-corroborated" type="checkbox" /> Only stories with two or more outlets</label>
+        <label><input id="desk-hide-read" type="checkbox" /> Hide stories I have read</label>
+      </div>
+    </aside>
+
+    <main class="desk-main">
+      <article id="desk-lead" class="bento desk-lead" aria-live="polite"></article>
+      <div class="bento desk-feed">
+        <header class="bento-head">
+          <h2>PRIORITY FEED</h2>
+          <span id="desk-feed-count" class="mono-dim"></span>
+          <div id="desk-sort" class="desk-chips" role="radiogroup" aria-label="Sort"></div>
+          <button id="desk-refresh" type="button" class="desk-action">REFRESH</button>
+        </header>
+        <ol id="desk-stories" class="desk-stories"></ol>
+      </div>
+    </main>
+
+    <aside class="desk-side" aria-label="Situation">
+      <section class="bento">
+        <header class="bento-head"><h2>HOTSPOTS</h2><span class="mono-dim">coverage weight</span></header>
+        <ol id="desk-hotspots" class="desk-hotspots"></ol>
+      </section>
+      <section class="bento">
+        <header class="bento-head"><h2>TRENDING</h2><span class="mono-dim">24 h</span></header>
+        <div id="desk-trends" class="desk-trends"></div>
+      </section>
+      <section class="bento desk-agenda-card">
+        <header class="bento-head">
+          <h2>EXPECTED</h2>
+          <div id="desk-agenda-kinds" class="desk-chips" role="radiogroup" aria-label="Event type"></div>
+        </header>
+        <ol id="desk-agenda" class="desk-agenda"></ol>
+      </section>
+      <section class="bento">
+        <header class="bento-head"><h2>MARKETS</h2><span class="mono-dim">indicative</span></header>
+        <div id="desk-markets" class="desk-markets"></div>
+      </section>
+      <section class="bento">
+        <header class="bento-head"><h2>LIVE TV</h2><span class="mono-dim">loads on request</span></header>
+        <div id="desk-tv" class="desk-tv"></div>
+      </section>
+      <section class="bento">
+        <header class="bento-head"><h2>SOURCES</h2><span id="desk-source-count" class="mono-dim"></span></header>
+        <div id="desk-sources" class="desk-sources"></div>
+      </section>
+    </aside>
+  </section>
+
+  <!-- Details of one selected map record or story. -->
+  <aside id="intel-card" class="bento" aria-live="polite" hidden></aside>
+  <div id="desk-alerts-stack" role="log" aria-live="assertive" aria-label="Alerts"></div>

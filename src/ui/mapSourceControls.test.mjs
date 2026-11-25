@@ -69,7 +69,7 @@ function fixture() {
     { id: 'osm', label: 'OSM' },
     { id: 'esri-imagery', label: 'Esri' },
     {
-      id: 'bing-aerial',
+      id: 'bing-labels',
       label: 'Bing',
       available: false,
       unavailableReason: 'Unavailable for this test',
@@ -134,7 +134,7 @@ test('initial presentation uses actual state and retains unavailable chip semant
   const f = fixture();
   assert.equal(f.chip('osm').getAttribute('aria-pressed'), 'true');
   assert.equal(f.statusElement.textContent, 'OSM');
-  const unavailable = f.chip('bing-aerial');
+  const unavailable = f.chip('bing-labels');
   assert.equal(
     unavailable.disabled,
     false,

@@ -14,7 +14,8 @@
 #left-panel-stack > #data-panel,
 #left-panel-stack > #cctv-panel,
 #left-panel-stack > #global-context-panel,
-#left-panel-stack > #scene-panel {
+#left-panel-stack > #scene-panel,
+#left-panel-stack > #face-recognition-panel {
   position: relative;
   top: auto;
   right: auto;
@@ -39,6 +40,10 @@
   order: 4;
 }
 
+#left-panel-stack > #face-recognition-panel {
+  order: 5;
+}
+
 /*
  * Runtime focus mode: the layout engine applies this only when the expanded
  * panel's measured natural height plus sibling labels cannot fit inside the
@@ -57,12 +62,21 @@
   max-height: var(--left-panel-allocated-height, 100%);
 }
 
+#left-panel-stack > #face-recognition-panel:not(.collapsed) {
+  box-sizing: border-box;
+  flex: 0 1 var(--left-panel-allocated-height, auto);
+  height: var(--left-panel-allocated-height, auto);
+  max-height: var(--left-panel-allocated-height, 100%);
+}
+
 /*
  * When an expanded panel and its collapsed siblings fit together, preserve
  * the canonical control order and center their combined stack at 50vh.
  */
 #left-panel-stack.layout-tail
-  > :is(#data-panel, #cctv-panel, #scene-panel):not(.collapsed) {
+  > :is(#data-panel, #cctv-panel, #scene-panel, #face-recognition-panel):not(
+    .collapsed
+  ) {
   box-sizing: border-box;
   flex: 0 0 var(--left-panel-allocated-height);
   height: var(--left-panel-allocated-height);
@@ -72,6 +86,13 @@
 #left-panel-stack > #data-panel:not(.collapsed) .data-panel-inner,
 #left-panel-stack > #cctv-panel:not(.collapsed) .cctv-panel-inner,
 #left-panel-stack > #scene-panel:not(.collapsed) .scene-panel-inner {
+  height: 100%;
+  max-height: 100%;
+}
+
+#left-panel-stack
+  > #face-recognition-panel:not(.collapsed)
+  .face-recognition-inner {
   height: 100%;
   max-height: 100%;
 }
@@ -413,9 +434,19 @@
   display: none !important;
 }
 
+#face-recognition-panel.collapsed
+  .face-recognition-inner
+  > :not(.panel-header) {
+  display: none !important;
+}
+
 #data-panel.collapsed,
 #cctv-panel.collapsed,
 #scene-panel.collapsed {
+  width: var(--left-collapsed-width);
+}
+
+#face-recognition-panel.collapsed {
   width: var(--left-collapsed-width);
 }
 
@@ -431,11 +462,17 @@
   letter-spacing: 1.8px;
 }
 
+#face-recognition-panel.collapsed .panel-title {
+  font-size: 8px;
+  letter-spacing: 1.8px;
+}
+
 #control-panel.collapsed .panel-inner,
 #data-panel.collapsed .data-panel-inner,
 #cctv-panel.collapsed .cctv-panel-inner,
 #radio-panel.collapsed .radio-panel-inner,
 #scene-panel.collapsed .scene-panel-inner,
+#face-recognition-panel.collapsed .face-recognition-inner,
 #param-slider-panel.collapsed,
 #location-bar.collapsed .location-inner {
   padding-bottom: 10px;
@@ -447,6 +484,7 @@
 #radio-panel.collapsed .panel-header,
 #global-context-panel.collapsed .panel-header,
 #scene-panel.collapsed .panel-header,
+#face-recognition-panel.collapsed .panel-header,
 #param-slider-panel.collapsed .param-panel-header {
   margin-bottom: 2px;
 }

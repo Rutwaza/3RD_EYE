@@ -17,6 +17,7 @@ import {
   loadWarendorfSourcesFromCatalog,
   loadNswSourcesFromOpenData,
   loadCalgarySourcesFromOpenData,
+  loadItrafficSourcesFromMap,
 } from './sources.js';
 
 /** Env kill switch: unset or anything but "0" means enabled. */
@@ -30,6 +31,11 @@ const envEnabled = (name) => String(process.env[name] || '1').trim() !== '0';
  * kill switch.
  */
 const LIVE_PACKS = [
+  {
+    name: 'itraffic',
+    enabled: () => envEnabled('CCTV_ITRAFFIC_ENABLED'),
+    load: loadItrafficSourcesFromMap,
+  },
   { name: 'austin', enabled: () => true, load: loadAustinSourcesFromOpenData },
   {
     name: 'caltrans',

@@ -26,25 +26,50 @@
       </div>
       <div id="cctv-source-badge" role="status" aria-live="polite">SOURCE · UNKNOWN</div>
       <div id="cctv-meta">Enable CCTV to load camera intersections</div>
-      <div class="cctv-controls">
+      <div class="cctv-controls" data-cctv-standard-controls>
         <button id="cctv-enable-btn" class="scene-btn">CCTV OFF</button>
         <button id="cctv-nearest-btn" class="scene-btn">NEAREST</button>
       </div>
       <div class="cctv-controls">
-        <button id="cctv-prev-btn" class="scene-btn">PREV</button>
+        <button id="cctv-prev-btn" class="scene-btn cctv-normal-only">PREV</button>
         <select id="cctv-camera-select" aria-label="CCTV camera"></select>
-        <button id="cctv-next-btn" class="scene-btn">NEXT</button>
+        <button id="cctv-next-btn" class="scene-btn cctv-normal-only">NEXT</button>
       </div>
-      <div class="cctv-controls">
+      <section id="cctv-self-deploy-block" class="cctv-calibration-block" hidden>
+        <div class="cctv-calibration-header">
+          <div class="cctv-summary-label">DEPLOY A CAMERA</div>
+          <button id="cctv-self-reconnect-btn" class="scene-btn" type="button" disabled>RECONNECT</button>
+          <button id="cctv-self-remove-btn" class="scene-btn scene-btn-danger" type="button" disabled>REMOVE</button>
+        </div>
+        <form id="cctv-self-deploy-form" class="cctv-deploy-form">
+          <label>Camera name
+            <input id="cctv-self-name" name="name" type="text" maxlength="80" required autocomplete="off" />
+          </label>
+          <label class="cctv-deploy-wide">HTTP MJPEG stream URL
+            <input id="cctv-self-url" name="streamUrl" type="url" maxlength="2048" placeholder="http://192.168.1.45/stream" required autocomplete="url" />
+          </label>
+          <div class="cctv-deploy-coordinates">
+            <label>Latitude
+              <input id="cctv-self-lat" name="lat" type="number" min="-90" max="90" step="any" required inputmode="decimal" />
+            </label>
+            <label>Longitude
+              <input id="cctv-self-lon" name="lon" type="number" min="-180" max="180" step="any" required inputmode="decimal" />
+            </label>
+          </div>
+          <button class="scene-btn cctv-deploy-wide" type="submit">DEPLOY CAMERA</button>
+        </form>
+        <div id="cctv-self-status" role="status" aria-live="polite"></div>
+      </section>
+      <div class="cctv-controls" data-cctv-standard-controls>
         <button id="cctv-focus-btn" class="scene-btn">FOCUS</button>
         <button id="cctv-coverage-btn" class="scene-btn">COVERAGE OFF</button>
         <button id="cctv-auto-hop-btn" class="scene-btn">AUTO HOP OFF</button>
       </div>
-      <div class="cctv-controls">
+      <div class="cctv-controls" data-cctv-standard-controls>
         <button id="cctv-projection-btn" class="scene-btn">PROJECTION ON</button>
         <span id="cctv-quality-chip">CAL · --</span>
       </div>
-      <div class="cctv-calibration-block">
+      <div class="cctv-calibration-block" data-cctv-standard-controls>
         <div class="cctv-calibration-header">
           <div class="cctv-summary-label">CALIBRATION</div>
           <button id="cctv-adjust-btn" class="scene-btn" title="Drag the camera in the world: rings rotate, arrows move, handles set range/FOV">ADJUST</button>
@@ -63,8 +88,8 @@
           <button id="cctv-calib-reset-btn" class="scene-btn">RESET CAL</button>
         </div>
       </div>
-      <div class="cctv-summary-label">SCENE SUMMARY</div>
-      <div id="cctv-summary">Enable CCTV to start camera-linked intelligence summaries.</div>
+      <div class="cctv-summary-label" data-cctv-standard-controls>SCENE SUMMARY</div>
+      <div id="cctv-summary" data-cctv-standard-controls>Enable CCTV to start camera-linked intelligence summaries.</div>
     </div>
   </div>
 
@@ -102,6 +127,81 @@
         <div id="scene-progress-fill">0%</div>
       </div>
       <div id="scene-status">Ready</div>
+    </div>
+  </div>
+
+  <!-- Face Map: people, then faces, then the local database -->
+  <div id="face-recognition-panel" class="panel-collapsible collapsed" data-panel-id="face-recognition-panel">
+    <div class="panel-glow"></div>
+    <div class="face-recognition-inner">
+      <div class="panel-header">
+        <span class="panel-title">FACE MAP</span>
+        <span class="panel-divider"></span>
+        <button class="panel-collapse-btn" data-collapse-target="face-recognition-panel" title="Collapse panel">+</button>
+      </div>
+      <div class="face-tabs" role="tablist" aria-label="Face Map">
+        <button type="button" role="tab" data-face-tab="live" aria-selected="true">LIVE</button>
+        <button type="button" role="tab" data-face-tab="people" aria-selected="false">PEOPLE</button>
+        <button type="button" role="tab" data-face-tab="log" aria-selected="false">LOG</button>
+      </div>
+      <div id="face-recognition-status" role="status" aria-live="polite">Checking local recognition service…</div>
+
+      <section data-face-view="live">
+        <div class="face-recognition-controls">
+          <select id="face-recognition-camera" aria-label="Camera to analyse"></select>
+          <button id="face-recognition-start" class="scene-btn" type="button">START</button>
+          <button id="face-recognition-stop" class="scene-btn scene-btn-danger" type="button" disabled>STOP</button>
+        </div>
+        <div class="face-view"><canvas id="face-recognition-view" width="640" height="360" aria-label="Analysed frame"></canvas></div>
+        <div id="face-recognition-counts" class="face-counts" aria-live="polite"></div>
+        <div id="face-recognition-results" aria-live="polite"></div>
+        <label class="face-recognition-threshold">Match cutoff <span id="face-recognition-threshold-value">70/100</span>
+          <input id="face-recognition-threshold" type="range" min="50" max="95" value="70" step="1" />
+        </label>
+        <div class="face-recognition-note">Runs on this computer. A candidate needs three agreeing frames and a person must review it. People who are not enrolled are never recorded.</div>
+      </section>
+
+      <section data-face-view="people" hidden>
+        <div id="face-recognition-database" class="face-recognition-database" aria-live="polite">DATABASE · 0 REGISTERED FACES · 0 REFERENCE TEMPLATES</div>
+        <div id="face-recognition-people" aria-label="Enrolled people"></div>
+        <form id="face-recognition-enroll" class="face-recognition-enroll">
+          <div class="cctv-summary-label">ENROLL A PERSON</div>
+          <label>Name
+            <input id="face-recognition-name" type="text" maxlength="80" autocomplete="off" required />
+          </label>
+          <label>Category
+            <select id="face-recognition-category">
+              <option value="authorised">Authorised</option>
+              <option value="visitor">Visitor</option>
+              <option value="poi">Person of interest (pilot volunteer)</option>
+            </select>
+          </label>
+          <label>Note
+            <input id="face-recognition-note" type="text" maxlength="160" autocomplete="off" placeholder="Role, badge or reason" />
+          </label>
+          <label>Reference photos, 1 to 8
+            <input id="face-recognition-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
+          </label>
+          <label class="face-recognition-consent">
+            <input id="face-recognition-consent" type="checkbox" required />
+            This person agreed to be enrolled for this local face-matching tool.
+          </label>
+          <button class="scene-btn" type="submit">ENROLL</button>
+        </form>
+      </section>
+
+      <section data-face-view="log" hidden>
+        <div class="face-log-head">
+          <span class="cctv-summary-label">CANDIDATE SIGHTINGS</span>
+          <button id="face-recognition-clear" class="scene-btn scene-btn-danger" type="button">CLEAR</button>
+        </div>
+        <div id="face-recognition-sightings"></div>
+        <div class="face-log-head">
+          <span class="cctv-summary-label">AUDIT TRAIL</span>
+          <span id="face-recognition-audit-state" class="face-audit-state"></span>
+        </div>
+        <div id="face-recognition-audit"></div>
+      </section>
     </div>
   </div>
 

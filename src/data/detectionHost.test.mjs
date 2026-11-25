@@ -354,7 +354,7 @@ test('detection lifecycle re-hosts unchanged painters behind the sole host liste
   const modes = [];
   try {
     initWorldOverlay(env.viewer);
-    initDetection(env.viewer, [detectableLayer()], (mode) => modes.push(mode));
+    initDetection(env.viewer, [undefined, detectableLayer()], (mode) => modes.push(mode));
     assert.equal(env.postRender.listeners.size, 1);
     assert.equal(env.document.getElementById('detection-overlay'), null);
     assert.ok(env.document.getElementById('world-overlay-canvas'));
@@ -882,81 +882,3 @@ test('the backdrop feather reaches the canvas as a lighter plate against sky', (
   }
 });
 
-test('a transit vehicle is a contact: box, route, mode and operator on the shared canvas', () => {
-  // The owner's finding was that buses were "green dots moving around
-  // clumsily" — the layer rendered them and the detection overlay ignored
-  // them, because transit published no detectable objects at all. This drives
-  // the real host with the shape the layer now returns.
-  const env = installEnvironment();
-  const objects = [
-    {
-      position: new Cesium.Cartesian3(0, 0, 6_356_752),
-      sourceId: 'mbta:y1276',
-      tier: 'transit_bus',
-      id: '111',
-      type: 'VEH',
-      klass: 'MBTA',
-      metric: 'BUS 34 KM/H',
-    },
-    {
-      position: new Cesium.Cartesian3(0, 900, 6_356_752),
-      sourceId: 'mbta:R-548BBB14',
-      id: 'RED',
-      type: 'VEH',
-      klass: 'MBTA',
-      metric: 'METRO STOPPED',
-      skipLabel: true,
-    },
-  ];
-  try {
-    initWorldOverlay(env.viewer);
-    initDetection(
-      env.viewer,
-      [{ id: 'transit', getDetectableObjects: () => objects }],
-      () => {},
-    );
-    setMode('DENSE');
-    env.advance(250);
-    env.postRender.raise();
-    env.advance(250);
-    env.postRender.raise();
-    const painted = env.ctx.calls
-      .filter(([name]) => name === 'fillText')
-      .map(([, text]) => text);
-    assert.ok(
-      painted.includes('111'),
-      `the route is the bright line; painted ${JSON.stringify(painted)}`,
-    );
-    // The host paints a single-line track label — bright id, one dim micro
-    // field — so the mode and what the vehicle is doing share that field.
-    assert.ok(
-      painted.some((text) => String(text).includes('BUS')),
-      `the mode rides along on the micro line; painted ${JSON.stringify(painted)}`,
-    );
-    assert.ok(
-      painted.some((text) => String(text).includes('34 KM/H')),
-      'and so does what the vehicle is doing',
-    );
-    assert.ok(env.ctx.calls.some(([name, , color, width]) => name === 'stroke' && color === '#5EF08A' && width === 1.25));
-    assert.ok(env.ctx.calls.some(([name, , color, width]) => name === 'stroke' && color === '#05080C' && width === 3.25));
-    assert.ok(!env.detectionCtx.calls.some(([name, , color]) => name === 'stroke' && color === '#5EF08A'));
-    // The operator travels on the object for the two-tier card form, which is
-    // where `klass` is read; the host's track label does not paint it.
-    assert.equal(composeLabel(objects[0]).secondary, 'MBTA · BUS 34 KM/H');
-    // The selected vehicle carries its own fuller card, so detection must not
-    // label it a second time.
-    assert.equal(
-      painted.includes('RED'),
-      false,
-      'skipLabel keeps the selected vehicle from being labelled twice',
-    );
-  } finally {
-    env.cleanup();
-  }
-});
-
-test('transit contacts take the vehicle tier, not the civil-air one', () => {
-  assert.equal(resolveTier({ type: 'VEH' }), 'vehicle');
-  assert.equal(resolveTier({ type: 'AIR' }), 'civil');
-  assert.equal(resolveTier({ type: 'SEA' }), 'sea');
-});

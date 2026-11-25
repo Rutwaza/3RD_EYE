@@ -8,12 +8,12 @@ export const MAP_STACKS = [
     requiresIon: false,
   },
   {
-    id: 'bing-aerial',
-    label: 'Bing Aerial',
-    shortLabel: 'Aerial',
-    kind: 'ion',
-    style: Cesium.IonWorldImageryStyle.AERIAL,
-    requiresIon: true,
+    id: 'google-roadmap',
+    label: 'Google Maps',
+    shortLabel: 'Roadmap',
+    kind: 'google-roadmap',
+    requiresIon: false,
+    requiresGoogle: true,
   },
   {
     id: 'bing-labels',

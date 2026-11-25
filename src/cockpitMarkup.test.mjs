@@ -239,6 +239,9 @@ test('Cockpit owns a focused shared Display portal and compact Radio controls', 
   assert.doesNotMatch(html, /data-cockpit-display-slot="presets"/);
   assert.match(html, /id="clear-selected-layers"[^>]*aria-label="Clear selected data layers"/);
   assert.match(html, /id="reset-globe-view"[^>]*aria-label="Reset to full globe view"/);
+  assert.match(html, /class="title-osint">OSINT<\/span>/);
+  assert.match(html, /class="internet-status-icon"/);
+  assert.doesNotMatch(html, />ONLINE<|internet-status-value/);
   assert.match(css, /#top-center-actions\s*\{[\s\S]*?left:\s*50%;[\s\S]*?display:\s*flex;[\s\S]*?transform:\s*translateX\(-50%\)/);
   assert.match(
     css,
@@ -247,7 +250,7 @@ test('Cockpit owns a focused shared Display portal and compact Radio controls', 
   assert.match(css, /@media \(max-width: 720px\)\s*\{[\s\S]*?#style-indicator\s*\{\s*display:\s*none;/);
   assert.match(
     css,
-    /@media \(max-width: 520px\)\s*\{[\s\S]*?#title-bar h1 > span:last-child,[\s\S]*?#title-bar \.subtitle\s*\{\s*display:\s*none;/,
+    /@media \(max-width: 520px\)\s*\{[\s\S]*?#title-bar \.title-wordmark,[\s\S]*?#title-bar \.subtitle\s*\{\s*display:\s*none;/,
   );
   assert.match(css, /body\.ui-clean-view #top-center-actions/);
   assert.match(css, /body\.recording-mode #top-center-actions/);

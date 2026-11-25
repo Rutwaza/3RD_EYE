@@ -22,7 +22,7 @@ const TRACKING_ID_GRAMMAR = /^[0-9a-z~_-]{1,16}$/;
  * value past them is malformed or hostile. Reject the WHOLE payload, matching
  * the unknown-token rule — never salvage a prefix.
  */
-const MAX_ENABLED_LAYERS_CHARS = 64;
+const MAX_ENABLED_LAYERS_CHARS = 96;
 const MAX_LAYER_OPTIONS_CHARS = 512;
 export const LAYER_STATE_STORAGE_KEY = 'gev:layer-state:v2';
 export const LAYER_RESTORE_ORIGINS = Object.freeze({
@@ -32,6 +32,8 @@ export const LAYER_RESTORE_ORIGINS = Object.freeze({
 
 const RADIO_FILTER_CODES = Object.freeze({
   all: 'a',
+  'east-africa': 'e',
+  africa: 'f',
   news: 'n',
   talk: 't',
   weather: 'w',
@@ -303,13 +305,53 @@ export const SHARE_TRACKING_RESTORE_POLICIES = Object.freeze({
  */
 export const LAYER_STATE_REGISTRY = Object.freeze([
   Object.freeze({
-    id: 'ais-live-vessels',
-    token: 'a',
+    id: 'africa-airports',
+    token: '3',
     disposition: 'enabled-only',
   }),
   Object.freeze({
-    id: 'alpr-cameras',
-    token: 'p',
+    id: 'africa-displacement',
+    token: 'k',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-economy',
+    token: '9',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-environment',
+    token: '5',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-facilities',
+    token: '2',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-power',
+    token: '4',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-rivers',
+    token: '6',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-seismic',
+    token: '7',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-volcanoes',
+    token: '8',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'ais-live-vessels',
+    token: 'a',
     disposition: 'enabled-only',
   }),
   Object.freeze({
@@ -322,12 +364,16 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     token: 'z',
     disposition: 'enabled-only',
   }),
-  Object.freeze({ id: 'bikeshare', token: 'b', disposition: 'enabled-only' }),
   Object.freeze({
     id: 'cctv',
     token: 'c',
     disposition: 'enabled+options',
     optionOwner: 'cctv',
+  }),
+  Object.freeze({
+    id: 'crisis-alerts',
+    token: '0',
+    disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'directions', token: 'n', disposition: 'enabled-only' }),
   Object.freeze({ id: 'earthquakes', token: 'e', disposition: 'enabled-only' }),
@@ -336,6 +382,11 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     token: 'f',
     disposition: 'enabled+options',
     optionOwner: 'flights',
+  }),
+  Object.freeze({
+    id: 'health-outbreaks',
+    token: '1',
+    disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'local-dams', token: 'q', disposition: 'enabled-only' }),
   Object.freeze({
@@ -378,12 +429,21 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     optionOwner: 'satellites',
   }),
   Object.freeze({
+    id: 'self-deployed-cameras',
+    token: 'y',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'telegeography-submarine-cables',
     token: 'u',
     disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'traffic', token: 't', disposition: 'enabled-only' }),
-  Object.freeze({ id: 'transit', token: 'j', disposition: 'enabled-only' }),
+  Object.freeze({
+    id: 'world-news',
+    token: 'v',
+    disposition: 'enabled-only',
+  }),
 ]);
 
 export const REGISTERED_LAYER_IDS = Object.freeze(
@@ -396,6 +456,7 @@ const REGISTRY_BY_ID = new Map(
 const REGISTRY_BY_TOKEN = new Map(
   LAYER_STATE_REGISTRY.map((entry) => [entry.token, entry]),
 );
+const LEGACY_REMOVED_LAYER_TOKENS = new Set(['p', 'b', 'j']);
 const OPTION_OWNER_IDS = Object.freeze([
   ...new Set(
     LAYER_STATE_REGISTRY.map((entry) => entry.optionOwner).filter(Boolean),
@@ -578,10 +639,17 @@ export function decodeLayerStateParams(params) {
   // `l=` is the one valid explicit-empty representation. Any non-empty token
   // set containing an unknown member rejects the complete layer payload so a
   // typo or future token cannot silently become an authoritative empty set.
-  if (layerTokens.some((token) => !REGISTRY_BY_TOKEN.has(token))) return null;
-  const enabledLayerIds = layerTokens.map(
-    (token) => REGISTRY_BY_TOKEN.get(token).id,
-  );
+  if (
+    layerTokens.some(
+      (token) =>
+        !REGISTRY_BY_TOKEN.has(token) &&
+        !LEGACY_REMOVED_LAYER_TOKENS.has(token),
+    )
+  )
+    return null;
+  const enabledLayerIds = layerTokens
+    .filter((token) => REGISTRY_BY_TOKEN.has(token))
+    .map((token) => REGISTRY_BY_TOKEN.get(token).id);
   const rawOptions = {};
   for (const assignment of rawOptionsField.split('_')) {
     if (!assignment) continue;

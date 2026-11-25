@@ -1,0 +1,79 @@
+/* Shared scrollbar treatment for panel scrollers without a component skin.
+   The zero-specificity selectors leave existing, more specific skins intact. */
+:where(
+  .scene-panel-inner,
+  .face-recognition-inner,
+  #face-recognition-results,
+  #face-recognition-people,
+  .global-context-panel-inner,
+  .radio-panel-inner,
+  #right-context-rail.layout-focus > #pp-toggles,
+  #space-mission-panel-host .space-mission-roster-list
+) {
+  scrollbar-color: rgba(0, 212, 255, 0.46) rgba(255, 255, 255, 0.04);
+  scrollbar-width: thin;
+}
+
+:where(
+  .scene-panel-inner,
+  .face-recognition-inner,
+  #face-recognition-results,
+  #face-recognition-people,
+  .global-context-panel-inner,
+  .radio-panel-inner,
+  #right-context-rail.layout-focus > #pp-toggles,
+  #space-mission-panel-host .space-mission-roster-list
+)::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+:where(
+  .scene-panel-inner,
+  .face-recognition-inner,
+  #face-recognition-results,
+  #face-recognition-people,
+  .global-context-panel-inner,
+  .radio-panel-inner,
+  #right-context-rail.layout-focus > #pp-toggles,
+  #space-mission-panel-host .space-mission-roster-list
+)::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+:where(
+  .scene-panel-inner,
+  .face-recognition-inner,
+  #face-recognition-results,
+  #face-recognition-people,
+  .global-context-panel-inner,
+  .radio-panel-inner,
+  #right-context-rail.layout-focus > #pp-toggles,
+  #space-mission-panel-host .space-mission-roster-list
+)::-webkit-scrollbar-thumb {
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 255, 0.52),
+    rgba(0, 212, 255, 0.2)
+  );
+}
+
+:where(
+  .scene-panel-inner,
+  .face-recognition-inner,
+  #face-recognition-results,
+  #face-recognition-people,
+  .global-context-panel-inner,
+  .radio-panel-inner,
+  #right-context-rail.layout-focus > #pp-toggles,
+  #space-mission-panel-host .space-mission-roster-list
+)::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 212, 255, 0.76),
+    rgba(0, 212, 255, 0.34)
+  );
+}

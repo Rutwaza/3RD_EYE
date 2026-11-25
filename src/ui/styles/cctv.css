@@ -89,6 +89,64 @@
   margin: 0;
 }
 
+#cctv-panel.self-deployed-active [data-cctv-standard-controls],
+#cctv-panel.self-deployed-active .cctv-normal-only {
+  display: none;
+}
+
+.cctv-deploy-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.cctv-deploy-form label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.cctv-deploy-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 5px;
+  padding: 6px 8px;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.cctv-deploy-form input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.cctv-deploy-coordinates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cctv-deploy-wide {
+  grid-column: 1 / -1;
+}
+
+#cctv-self-status {
+  min-height: 12px;
+  margin-top: 7px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
 /* Click-to-edit effective-pose readout (viewshed/gizmo design §3d): compact
    value chips replace the seven offset sliders. */
 .cctv-cal-readout {

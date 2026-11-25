@@ -38,6 +38,7 @@ export class MapSourceController {
     this._imageryLayer = null;
     this._activeImageryProvider = null;
     this._removeImageryErrorListener = null;
+    this._removeRoadmapCreditListener = null;
     this._terrainMode = null;
     this._destroyed = false;
   }
@@ -149,6 +150,7 @@ export class MapSourceController {
   }
 
   async _activateTileset(source, gen) {
+    this._clearRoadmapCreditListener();
     let tileset = source.tileset;
     if (!tileset) {
       if (!source.createTileset)
@@ -194,6 +196,28 @@ export class MapSourceController {
     }
     const source = this._sources.get(resolution.effectiveStackId);
     this._credits.show(source?.credit || null);
+    this._clearRoadmapCreditListener();
+    if (resolution.effectiveStackId === 'google-roadmap') {
+      const refreshAttribution = async () => {
+        try {
+          const markup = await resolution.provider.getMapAttribution?.();
+          if (
+            !this._destroyed &&
+            gen === this._switchGen &&
+            this._activeImageryProvider === resolution.provider &&
+            markup
+          )
+            this._credits.show(markup);
+        } catch {
+          // Keep the last valid attribution while the viewport endpoint is unavailable.
+        }
+      };
+      this._removeRoadmapCreditListener =
+        this.viewer.camera.moveEnd.addEventListener(
+          () => void refreshAttribution(),
+        );
+      void refreshAttribution();
+    }
     // A repeated request still owns a new switch generation. Rebind its
     // failure listener so fallback remains live without accumulating listeners.
     this._removeImageryErrorListener?.();
@@ -306,6 +330,10 @@ export class MapSourceController {
     this._imageryLayer = null;
     this._activeImageryProvider = null;
   }
+  _clearRoadmapCreditListener() {
+    this._removeRoadmapCreditListener?.();
+    this._removeRoadmapCreditListener = null;
+  }
   _dispose(value) {
     if (!value || this._disposed.has(value)) return;
     this._disposed.add(value);
@@ -318,6 +346,7 @@ export class MapSourceController {
     this._switchGen++;
     this._abort.abort();
     this._isSwitching = false;
+    this._clearRoadmapCreditListener();
     this._removeImageryLayer();
     this._credits.destroy();
     for (const promise of this._imageryProviders.values())

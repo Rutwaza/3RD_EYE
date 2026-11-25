@@ -47,7 +47,6 @@ attributing a difference to the client.
 | CCTV city | 19,608.240 ms | 48 | 60 / 60 FPS | 192.7 MiB |
 | Space Missions (report label: Rocket missions) | 3,581.066 ms | 26 | 60 / 60 FPS | 131.3 MiB |
 | Radio | 3,458.709 ms | 750 | 60 / 60 FPS | 124.8 MiB |
-| Bikeshare | 2,069.498 ms | 633 | 60 / 60 FPS | 157.4 MiB |
 | Datacenters | 817.693 ms | 4,362 | 59.6 / 60 FPS | 328.2 MiB |
 | Flights | 667.671 ms | 247 | 60 / 60 FPS | 118.4 MiB |
 | Submarine cables | 614.727 ms | 2,629 | 60 / 60 FPS | 412.0 MiB |

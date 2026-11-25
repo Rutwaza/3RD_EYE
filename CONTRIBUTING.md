@@ -54,7 +54,7 @@ head -40 scripts/qa-radio.mjs  # what this runnable gate proves and how to run i
 Runnable gate entrypoints document what they assert and how to invoke them.
 Most need a dev server; some also need a specific provider key or port. Follow
 the entrypoint's header rather than assuming every matching file accepts the
-same arguments. Only a couple (`qa:map-source-tray`, `qa:transit`) have an
+same arguments. Only `qa:map-source-tray` has an
 `npm run` alias.
 
 If you aren't sure which gate covers your change, search `docs/CURRENT-STATE.md`

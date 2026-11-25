@@ -1290,19 +1290,3 @@
 #global-context-panel #cockpit-entry kbd {
   padding: 2px 4px;
 }
-
-/* ALPR keeps its nearby count in the legend while a wider status chip is shown. */
-.data-toggle-row[data-layer-id='alpr-cameras']
-  .data-toggle-right:has(
-    .data-toggle-btn:is(
-      .feed-loading,
-      .feed-degraded,
-      .feed-stale,
-      .feed-partial,
-      .feed-fallback,
-      .feed-unavailable
-    )
-  )
-  .data-count {
-  display: none;
-}

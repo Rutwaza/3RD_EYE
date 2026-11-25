@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { CctvControls } from './cctvControls.js';
+import { createSelfDeployedCameraStore } from '../layers/selfDeployedCameras/store.js';
 
 function element() {
   const classes = new Set();
@@ -57,6 +58,61 @@ test('a late image completion cannot replace a newer camera preview', (t) => {
   stale();
   assert.equal(controls._cctvFrame.src, 'second.jpg');
   assert.equal(controls._cctvFrame.dataset.cameraId, 'b');
+});
+
+test('self-deployed MJPEG selection uses one direct preview stream', (t) => {
+  const { controls, requests } = fixture(t);
+  const previousDocument = globalThis.document;
+  globalThis.document = {
+    createElement() {
+      return { value: '', textContent: '' };
+    },
+  };
+  t.after(() => {
+    if (previousDocument === undefined) delete globalThis.document;
+    else globalThis.document = previousDocument;
+  });
+
+  const options = [];
+  const select = {
+    options,
+    value: '',
+    disabled: false,
+    set innerHTML(_value) {
+      options.length = 0;
+    },
+    appendChild(option) {
+      options.push(option);
+    },
+  };
+  controls._cctvSelect = select;
+  controls._cctvPanel = { classList: { toggle() {} } };
+  controls._cctvSelfDeployBlock = { hidden: false };
+  controls._cctvSelfRemoveBtn = { disabled: false };
+  controls._cctvSourceBadge = { dataset: {}, textContent: '' };
+  controls._cctvMeta = { textContent: '' };
+  const cameras = createSelfDeployedCameraStore({
+    storage: { getItem: () => null, setItem() {} },
+  });
+  cameras.setEnabled(true);
+  controls.selfDeployedCameras = cameras;
+  controls.connect();
+  const camera = cameras.add({
+    name: 'Workshop',
+    streamUrl: 'http://192.168.1.45/stream',
+    lat: 47.6,
+    lon: -122.3,
+  });
+
+  assert.equal(select.options.length, 2);
+  assert.equal(select.options[1].value, camera.id);
+  assert.equal(controls._cctvFrame.src, camera.streamUrl);
+  assert.equal(controls._cctvFrame.dataset.selfStream, 'true');
+  assert.equal(
+    requests.length,
+    0,
+    'do not create a duplicate stream preloader',
+  );
 });
 
 test('failed refresh preserves settled pixels, but changing cameras clears them', (t) => {

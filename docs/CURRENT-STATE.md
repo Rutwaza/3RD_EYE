@@ -115,13 +115,12 @@ Repeated map-stack requests retain the live imagery layer when its provider is u
 
 Nepal Flood Incident is available in Scenes, with a 25-shot sequence, geographic labels, an event panel, scene scrubbing and shot playback. Comparison shots use Esri beneath Vantor imagery. Other Nepal shots use Google 3D when its tileset is available and fall back to Esri otherwise; without an ion token, the existing map stack uses Re:Earth terrain. Saved shots retain their authored camera and map preferences across keyed and keyless runtimes. The bundled pack contains historical 2021 and post-event 2026 imagery, not an isolated before/after measurement; the animated flood path is schematic, not a hazard model. Witness media opens or embeds original sources without bundled clips. See `public/events/bhote-koshi-2026/README.md` for provenance and non-commercial data terms.
 
-Transit snapshot and selected-history reads use an explicit source interface. The standalone source selects the existing routes; rendering, playback and selection retain their existing owners. A portable request service owns registered-feed admission, bounded decoding, cache/revalidation, backoff and history; development and preview use the same thin adapter. Compatibility exports and source attribution are preserved.
 
 Place search accepts an explicit Nominatim provider with independently configured search and reverse endpoints. The default offline/Google/Photon/local-fallback order is unchanged when no provider is selected. Provider adapters share normalized coordinates, viewport framing and reverse labels; roads and boundary geometry remain separate services. Portable capped-response and Overpass lexical helpers are exported independently of the Node server.
 
 Reference feed construction is exported through `sources/reference`; the cable source also has a dedicated `layers/submarine-cables/source` entry. Standalone catalog compatibility remains available. Source choices, data and attribution are unchanged.
 
-Source factories have dedicated `layers/<family>/source` exports. ALPR and earthquake record normalization and CCTV source policy no longer pull rendering into source consumers. Catalog construction and voice feed reads use their focused owners; compatibility entries remain available. Settings filesystem hardening lives under `server/standalone/`. Import-direction checks complement export ownership checks; source behavior, settings policy and rendering are unchanged.
+Source factories have dedicated `layers/<family>/source` exports. Earthquake record normalization and CCTV source policy no longer pull rendering into source consumers. Catalog construction and voice feed reads use their focused owners; compatibility entries remain available. Settings filesystem hardening lives under `server/standalone/`. Import-direction checks complement export ownership checks; source behavior, settings policy and rendering are unchanged.
 
 Voice controls bind to a protocol-independent session factory. The default WebRTC adapter preserves the existing Realtime connection, push-to-talk, cost controls and radio handoff. Session subscriptions expose state, transcript, action call/result, interruption and completion events; stopping or replacing a session cancels pending actions. Alternate adapters can use the same controls and action runner.
 
@@ -208,34 +207,6 @@ Google, OSRM and Nominatim adapters accept trusted construction-time configurati
 request parameters cannot choose arbitrary upstream URLs. See APPLICATION.md.
 
 
-The optional **ALPR Cameras** layer shows community-mapped OpenStreetMap locations,
-not camera footage or plate records. City-scale queries use the existing Overpass
-provider, with capped results, retry, cached-data and incomplete-coverage notices.
-Its `./layers/alpr` entry exposes a per-instance layer factory and bounded source
-adapter. Sources return normalized records, stale/coverage flags and their own
-attribution; rendering does not parse Overpass payloads. The standalone
-registration supplies selection, picking, terrain and
-render services. Selected cards and Data attribution identify OpenStreetMap.
-Layer state and the existing voice layer tools include `alpr-cameras`.
-The row count explicitly says **nearby**: loaded records can be outside the
-screen. Cyan camera badges use Manjunath's camera artwork; selection switches to a
-larger coral badge with corner brackets and an animated tactical card. Numeric
-mapped bearings draw illustrative 90 m direction wedges (not measured coverage).
-The shared overlay paints gradients for at most 64 nearby cameras, promoting the
-selected camera; farther cameras retain native Cesium badges and ground-clamped
-wedges. Unknown bearings never acquire a wedge. Asset URLs resolve relative to
-the reusable layer, and the caller supplies overlay and map-stack services.
-The ALPR row uses the same header layout as other data layers. **SHOW NEAREST**
-frames and selects the nearest loaded camera; it is
-disabled with no loaded cameras or while following a tracked entity. This action
-chooses from the current source snapshot and uses rendered surface height from
-3D tiles or globe terrain when available.
-Coverage follows a bounded neighborhood around the screen-center ground point,
-with a radius of twice the camera-to-ground range (at least 1 km), rather than
-extending to the horizon. Sky, dateline-crossing and wider-than-city views do not
-query. Movement within an accepted or pending query reuses it. Markers retain
-their Cesium identity and ground clamping while their geometry is unchanged;
-refreshes preserve selection without replaying a click event.
 
 Data Centers, Dams and Submarine Cables release their built Cesium data sources
 and record references when disabled. Parsed datasets remain cached for the layer
@@ -252,8 +223,7 @@ Each layer owns its state and visibility listener; destruction cancels source
 reads and pending initialization. Malformed health responses retain prior health.
 Existing catalog fallback, camera poses, frame pacing and coverage controls remain.
 
-Traffic and bikeshare expose factories through `./layers/traffic` and
-`./layers/bikeshare`. Traffic separates road requests, ingestion, animation,
+Traffic exposes its factory through `./layers/traffic`. Traffic separates road requests, ingestion, animation,
 flow matching, styling, viewport lifecycle and development timing. Each source
 owns its decoded flow cache; cancelled bodies cannot refill it. Bikeshare
 separates its city registry, station source, parsing, rendering, selection and
@@ -593,15 +563,6 @@ oversized image remains an upstream miss and uses the normal fallback chain.
 The existing declared media size ceiling remains 64 MiB.
 
 
-## GBFS upstream bounds
-
-The station reader addresses the proxy as `/api/gbfs/<encoded feed URL>`; the
-feed address is read from the path, and a query-string form is refused with a
-400. GBFS refuses upstream redirects and enforces its 5 MiB response cap while
-streaming. The 12-second deadline includes reading the body, and rejected or
-stalled downloads are cancelled. Development and preview use the same handler.
-
-
 ## Remaining local service modules
 
 Overpass query validation, geometry simplification, disk caching and upstream
@@ -627,7 +588,7 @@ existing modules.
 
 After `npm run build`, `npm run preview` serves the built app with the same data
 provider routes as development, including aircraft, satellites, terrain, traffic,
-FIRMS, GBFS, Overpass and CCTV/media. Unmatched `/api` requests return a JSON 404
+FIRMS, Overpass and CCTV/media. Unmatched `/api` requests return a JSON 404
 in both modes instead of the application HTML. Browser routes retain SPA fallback.
 Credential editing (`/api/setup/*` and Provider Settings) is development-only;
 preview returns JSON 404 for those endpoints. Server credentials come from the
@@ -645,14 +606,14 @@ caching are separate modules. Node-only package entries expose both provider
 factories. Routes, payloads, fallback behavior and existing dev/preview hook
 registration are preserved; browser rendering is unchanged.
 
-## Terrain, traffic, fire and bike-share provider modules
+## Terrain, traffic and fire provider modules
 
 Local composition now imports separate Node modules for Re:Earth heights,
-TomTom flow tiles, NASA FIRMS detections and GBFS station feeds. Existing routes,
+TomTom flow tiles, and NASA FIRMS detections. Existing routes,
 plugin order, server-key selection, validation, disk caches, budgets, retries
 and stale/error responses remain unchanged. Each has a Node-only package entry
 under `gods-eye-view/server/providers/`. Portable terrain mechanics, traffic tile
-math and GBFS source rules are available under `gods-eye-view/sources/`.
+math and source rules are available under `gods-eye-view/sources/`.
 The browser layers and their rendering remain in their existing modules.
 
 ## Landmark annotation identity
@@ -1867,7 +1828,7 @@ This is the current runtime/source-of-truth snapshot for the project.
 >   still releases tracking in place. The 200 px feel needs close-range field
 >   verification; fleet model sizing remains unchanged.
 > - **Deterministic sprite stacking:** contact collections reassert the stable
->   bottom-to-top order CCTV, FIRMS, bikeshare, AIS, military, then civilian
+>   bottom-to-top order CCTV, FIRMS, AIS, military, then civilian
 >   flights after every relevant layer init/enable and immediately after FIRMS
 >   lazily registers its detection sprites. Always-visible contact
 >   depth settings are unchanged. Cesium OIT weighted blending may soften strict
@@ -2063,7 +2024,6 @@ This is the current runtime/source-of-truth snapshot for the project.
 >   ambient-label budget. Host keyhole fading, horizon culling, UI exclusion,
 >   and final collision apply. Disable/destroy clear and hide the source; real
 >   earthquake entities carry no native label graphic.
-> - **Phase 5 bikeshare selection:** The selected station keeps its native cyan
 >   point highlight, while its station name, availability counts, capacity, and
 >   operational warnings now publish as one protected selected-lane host card.
 >   The card reads the point's authoritative Cartesian directly, declares zero
@@ -2522,8 +2482,6 @@ its criteria cannot be silently ignored.
 | Traffic | OSM Overpass (+ optional TomTom live flow) | `src/data/traffic.js` | `/api/overpass` + `/api/tomtom` | viewport-driven |
 | CCTV | Austin + Caltrans (CA) + TfL London + Ontario 511 + Fintraffic (FI) + DriveBC (BC) + TxDOT (TX) + Estonia (Tallinn, Tarktee) + Live Traffic NSW + Open Calgary Open Data + Street View fallback | `src/data/cctv.js` | `/api/cctv` | 10s (active) |
 | Radio | Radio Browser (public-domain station directory) | `src/data/radio.js` | `/api/radio/stations`, `/api/radio/click/:uuid` | 45 min directory refresh |
-| Transit 🚌 | Operator GTFS-Realtime VehiclePositions (7 keyless regions, `src/data/transitFeeds.js`) | `src/layers/transit/` via `src/app/layers/transit.js` | `/api/transit` | 15s (poll + delayed playback) |
-| Bikeshare 🚲 | GBFS (Lyft + BCycle) | `src/data/bikeshare.js` | `/api/gbfs` | 60s |
 | Directions 🧭 | OSRM on FOSSGIS servers (OpenStreetMap) | `src/data/directions.js` | `/api/route` (`steps=1`) | on placement / mode change |
 | Datacenters ▣ | OSM extract (bundled) | `src/data/localLayers.js` | — | static |
 | Dams ▰ | OpenInfraMap/OSM extract (bundled) | `src/data/localLayers.js` | — | static |
@@ -2612,218 +2570,6 @@ What a card needs is a resolved ground anchor: a step whose ground cell has not
 answered yet opens nothing rather than a card hanging at sea level. The cells
 are re-read for up to 90 seconds, which outlasts a cold terrain round trip;
 reroute, CLEAR and disable cancel that.
-Transit is off by default, and share links use token `j`. The movement panel order
-places Transit directly after Street Traffic and before Bike Share. Cameras and
-utilities retain their own groups. The layer polls
-registered feeds near the camera every 15 seconds, below a 3,000 km altitude
-gate. Seven keyless regions are available: Boston, Austin, Minneapolis–St Paul,
-Helsinki, the Netherlands, Norway and South East Queensland. Mode silhouettes
-identify buses, trams, subways, trains, ferries and unclassified vehicles.
-
-Retained transit history uses the same outlier quarantine as live observations and
-preserves the active live bracket. Rejected reports do not publish route or mode
-changes to sprites, cards or detection text.
-
-**Timestamp playback.** Vehicles play between reports at 1× or hold while
-waiting for the next report. The display delay adapts within 25–120 seconds;
-late updates do not make a vehicle accelerate. A short reported crawl still
-plays between fixes. Stationary segments schedule a wake at the next motion
-boundary. Motion wording and orientation come from the displayed segment;
-underflow says “Waiting for update,” and stale reports override confident
-motion wording. Reported speed and stop status remain explicitly labelled as
-reports. Duplicate timestamps and implausible observations cannot create a
-zero-duration journey or immediately relocate a visible vehicle.
-
-**Selected history.** Selecting one vehicle draws its available recent path,
-clipped to the displayed time. The browser retains up to 15 minutes and 128
-fixes per vehicle, under a global 32 MiB history budget. Capacity pressure may
-shorten that history. Only the selected vehicle has a trail: completed segments
-are batched primitives, and a small moving head ends at the marker. Trail
-geometry is bounded to 640 prepared vertices, prioritizing the active corridor
-and shortening the oldest geometry first. Active and future marker corridors
-retain their own 640-vertex budget; long report intervals use coarser subdivisions
-than 25 m instead of dropping an admitted vehicle. Supported scenes use ground polylines
-classified against both terrain and 3D tiles, including after map-stack changes,
-with per-segment age colours. History changes rebuild the body. The head is one
-short draped corridor, clipped to displayed time by a material uniform; only
-subdivision crossings rebuild it. Ordinary frames upload no head geometry.
-Without ground-polyline support, ordinary primitives retain a mode-coloured
-0.55-alpha depth-fail path, including the head, without dimming it to near-black.
-Instance attribute updates write back the same typed array returned by Cesium;
-its getters return copies, so reading a second time discards a visibility or colour edit.
-Normal instance colours follow the age ramp once per display second or style change. Subdivision crossings update only changed visibility
-attributes. Deselecting releases selection geometry; marker paths retain only
-active and future corridors.
-
-MBTA history is also retained in the running proxy: up to 15 minutes and 128
-observations per vehicle, with a 16 MiB feed limit and 64 MiB process limit.
-`GET /api/transit/trail/mbta/<encodedVehicle>` reads only observations already
-received by this process; it never contacts the operator. Selection reads it
-once and cancels the request on deselection or disable. Reload can recover
-available history while the same server stays running. Restart clears it, and
-there is no background collection or promise of complete coverage. Other feeds
-remain live-enabled with session-local trails; proxy history is opt-in per feed.
-The catalog and source tests pin that distinction and the MBTA / MassDOT credit.
-Epoch metadata grows as contexts arrive. Snapshot members are protected during
-ingestion, eviction uses receipt-ordered queues, and capacity loss is disclosed
-when history is recreated.
-
-**Surface and route limitations.** Heights are aligned to work with Google 3D
-tiles. Draped history is prepared on selection even while marker floors are unresolved;
-Cesium resolves its surface. Without ground-polyline support, unknown historical
-surfaces leave gaps. A selected body follows layer enablement and vehicle existence,
-so an off-screen head does not hide an on-screen tail. Sparse reports can
-cut across corners; these paths are not surveyed route geometry. Subway markers
-are projected to street level because the feed does not provide depth, and the
-selected card explains that choice. Actual street-level views still require
-visual inspection.
-
-**Appearance.** Normal fleet frames are 20 px, growing to 30 px on selection;
-CRT, NVG, thermal and noir frames are 26/39 px. Source rasters are 48/96 px before padding.
-External halos are 1/1.5 px in normal, 1.25/1.25 px in CRT and 2/2 px in sensors, calculated from the
-final unpadded display size. Six modes, two sizes and three profiles cap the
-raster cache at 36 variants. Normal mode colours are bus `#5EF08A`, tram
-`#FFC24A`, subway `#FF4538`, rail `#D9A6FF`, ferry `#5FD6FF`, and unknown
-`#D8DDE5`. Selection keeps the mode colour. Sensors reuse each normal silhouette's exact
-outer path, filled opaque white without interior panel lines, with an opaque
-`#05080C` halo. Only the external padding grows; the unpadded silhouette remains
-at CRT size. There is no envelope body. Black-hot reverses the contrast and
-Ironbow maps the white input to its hottest palette entry through the thermal
-effect; sprite code never applies a red tint. Creation, mode changes, selection, deselection, map presets and
-Cockpit vision use the same sprite styling function.
-
-Sensor signatures remain in-scene. The thresholds in `qaMetrics.js` require
-white-hot, Ironbow and noir centres ≥0.85 luma and halo minima ≤0.25;
-black-hot uses centre ≤0.15 and halo maximum ≥0.75. Surveillance uses ≥90%
-of its phosphor peak white (0.65992 from RGB 0.16/1/0.22), halo minimum ≤0.25
-with the centre minus sampled background reported without gating. Each preset needs at least
-six verified, unobscured sprites; insufficient coverage is UNEXERCISED.
-The sampler excludes overlapping footprints, including otherwise ineligible
-sprites, and chooses nine source-raster points in the widest solid white band, avoiding
-window/panel gaps. Equal-width tram bands prefer the upper solid body over the
-geometric centre; the nine-point spacing and all thresholds remain unchanged.
-The sampler then verifies pick ownership at all nine points.
-Noir samples also exclude its deliberately vignetted outer field, using shader
-settings and screen position rather than observed brightness. Selected-trail
-diagnostics report every condition even when selection fails.
-
-Transit brackets use the normal-composite overlay surface: a 1.25 px mode-colour
-stroke over 3.25 px dark backing. Other contact themes retain their existing
-behavior. The selected trail uses a 3 px core over 5 px backing, mode-coloured
-in normal and white input in sensors. Alpha falls linearly from 0.80 at the head
-to 0.45 at two minutes, 0.20 at ten minutes and 0.08 at fifteen minutes.
-
-**Cards and DETECT.** The card presents route, mode/operator, displayed motion,
-display delay and newest-report age, reported speed/stop, vehicle ID, and
-available trail duration. Its anchor follows the rendered marker; text is
-checked at 4 Hz and published when it changes. DETECT labels retain route,
-mode and motion, with the selected label suppressed beside its fuller card.
-Candidate membership changes on revisions, coalesced at 4 Hz; paints read
-cached contacts and strings. Marker migration explicitly updates cached
-position references. Freshness and delay use the shared sample’s anchored clock;
-newest bearings are explicitly labelled as reports. Rejected fixes cannot alter
-lag reservoirs or the target delay. Returning from a hidden tab explicitly
-synchronizes visible playback before its next frame.
-
-Playback reserves numeric scratch before the first sample, including unknown
-heights, and reuses caller-owned sample and segment storage.
-
-**Scene work.** Stationary and animated billboards use separate, adjacent
-collections above CCTV and Bikeshare. Traffic, Bikeshare and Transit share camera
-sensitivity claims; the original sensitivity returns after the last release.
-Visibility checks combine the camera frustum and ellipsoid occlusion at no more
-than 4 Hz; missing map bounds do not admit the globe's far side. Camera arrivals
-rebuild an unprepared or cold marker corridor during that visibility sweep,
-adopt a loaded surface, and update both heightPending and surfaceReady diagnostics.
-A resolved display sample clears its pending-height gate without waiting for a poll. Frame work
-visits moving visible vehicles, up to 64 pending height changes, and the selected
-head. Rotation visits visible membership at 5 Hz, with selected rotation per
-frame. The transit render hold exists only for visible positional or orientation
-animation. Polls, surface completions and trail fades request individual renders.
-Disable clears vehicles, detection references, requests, timers and holds;
-destruction also releases collections and registrations.
-
-**Acceptance harness.** Run against an already running development server:
-
-```sh
-QA_BASE_URL=http://localhost:4305 QA_TAG=keyless node scripts/qa-transit.mjs
-```
-
-`QA_BASE_URL=http://localhost:4305 node scripts/qa-transit-recovery.mjs` is the
-focused keyless camera-arrival regression. With destination tiles loaded, it
-injects nine disclosed moving-bus reports and delays their floor acquisition,
-selects the hidden vehicle, then releases the floor and calls camera.setView.
-Within two seconds it requires a visible marker, a prepared visible body and
-at least six of eight paired off/on trail pixel samples. It uses production
-selection, visibility and geometry owners and writes screenshots plus JSON;
-it does not establish Google 3D acceptance.
-
-The full run samples completed frames at 1920×1080 CSS pixels, records DPR, and
-measures moving fleets of 800 and 3,000 vehicles with 128 fixes each and DETECT
-on. Street/metro targets are respectively: transit frame CPU p95 ≤1/4 ms, frame
-interval p95 ≤20/25 ms, billboard uploads ≤256 KiB/1 MiB per frame, and retained
-heap growth ≤24/48 MiB. The 3,000-vehicle CPU budget is 4 ms (recorded browser
-measurement 3.4 ms); the 800-vehicle budget stays at 1 ms (measured 0.9 ms).
-Transit-authored frame allocation is ≤8 KiB/frame at both fleets, attributed
-by source stack to `src/layers/transit/**`, `src/data/contactPlayback.js`,
-`src/data/contactTrailRenderer.js` and `src/data/transit*.js`. Whole-frame
-allocation and its three largest allocators are reported without gating:
-Cesium billboard buffer uploads and the shared DETECT painter are outside
-this layer's allocation budget. **Follow-up: pool shared DETECT placement and
-paint scratch** in `_buildLabelPlacements`, `_materializeCandidate`,
-`_drawOverlay` and their cohort/arbiter helpers. Heap growth is measured
-conservatively as GC-bracketed page growth; allocation sampling includes objects
-collected during the interval. These are acceptance budgets, not measured claims
-for every machine.
-
-Artifacts in `qa-shots/transit/` include per-budget metrics and allocation
-profiles, the Boston Red/741/742/Green-E matrix on measured bright and dark
-backgrounds across normal, NVG, white-hot, black-hot and Ironbow, selected and
-restored screenshots, reload recovery, and disable checks. Matrix routes are
-scripted fixtures; the separate live-feed/reload checks use actual observations.
-The separate Boston live pass uses actual MBTA observations at 120–600 m and
-20–45 degree oblique views, with live selection and sensor readback.
-Live visual cities are otherwise chosen for local daytime operation. Motion checks use
-injected playback independently of live fleet activity. Thermal checks verify
-style activation before reading generated controls; DETECT checks set density
-and exercise the real OFF/restore button. Cesium render errors fail selection
-acceptance.
-The `trail-visible` section requires a visible Google 3D tileset. It selects a
-scripted straight bus with CapMetro metadata under the isolated `qa-trail-capmetro`
-feed ID, with nine retained fixes, runs for 20 seconds at each
-300/600/900 m view (55/45/45 degrees), then freezes playback and waits for sustained tile and primitive readiness.
-It captures off/on/off/on framebuffer patches at eight distinct projected surface
-points outside the padded sprite and selection bracket. `Google 3D selected trail visible at 6 of 8 projected samples`
-prints the selected key, fix count, elapsed display time, path length, hit count,
-per-point coordinates/hits and renderer strategy. At least six points need a
-repeatably changed green core or dark backing at the same pixels. Repeated off
-and on channels and their contrast deltas must agree within 8 RGB levels;
-background refinement, overlapping samples and unchanged dark roads fail. The dark
-backing must reduce summed RGB by at least 40%, and either match needs RGB
-distance of at least 40, so a faint depth-fail wash cannot satisfy visibility. Artifacts are
-`<tag>-<altitude>m-trail-visible.jpg` and matching JSON. Run the same harness
-against the base and patched keyed builds; partial runs remain diagnostic.
-Node checks run Cesium's final geometry pipeline, including batch IDs and
-position encoding: 1,576 bytes per head subdivision and 2,014,128 bytes for the
-1,278-instance body. The body plus a separate 81,792-byte instance reserve totals
-2,095,920 bytes, below the 2 MiB body limit; the head remains below its separate
-2 KiB/frame geometry limit. Ordinary frames upload no head geometry. These are
-pipeline buffer measurements, not measured GPU time or instance-texture uploads. The same 20-second browser interval scopes
-WebGL uploads to the trail body/head, forces one body rebuild, reports head CPU
-p95/max, and gates body uploads at 2 MiB and head uploads at 2 KiB/frame.
-
-Required empty or unexercised checks fail acceptance. The passing final line is
-`HARNESS: PASS (0 unexercised)`. A `QA_SECTIONS` subset is diagnostic only and
-cannot claim full acceptance.
-
-**Lifecycle and proxy.** Contacts temporarily disables Transit and restores its
-prior state on exit; Space Missions refuses enablement while isolating replay
-data. Cockpit enters through Contacts and does not independently enable Transit.
-The proxy fetches registered URLs only, validates redirect origins, bounds
-responses and decoding, caches successful snapshots, and backs off after failed
-refreshes. A 304 confirms contact without appending history. Missing vehicles
-are removed after two missed polls; reports older than ten minutes and feeds
-silent for five minutes are removed. Credits appear when the feed is used.
 
 `src/data/militaryAwareness.js` remains registered internally as the Contacts
 coordinator, but it is not a user-visible Data Layers entry. Its visible entry
@@ -3571,7 +3317,6 @@ are omitted rather than framing the wrong part of the globe.
   eight-second timeout; the timer is cleared on every success or failure path.
 - OpenSky response cache stores successful upstream responses only; OAuth token refresh calls are coalesced.
 - A cold OpenSky failure uses the current camera subpoint only to request a cached adsb.lol point fallback capped at 250 nm. A fresh OpenSky response or last-good cache wins; a nominally successful worldwide snapshot more than two minutes old prefers viewport-scoped adsb.lol when available, otherwise the stale source is reported honestly. The fallback is visibly source-labeled and is never presented as a worldwide snapshot.
-- GBFS proxy refuses upstream redirects (`redirect: 'manual'`; any 3xx becomes a 502 and the redirect target is logged server-side only) and enforces its 5 MB response cap while the body streams, cancelling the upstream read past the cap; CCTV health map is bounded.
 - Proxy error payloads are sanitized (no internal error details returned to clients).
 - That holds for the OpenAI and CCTV media paths too: `/api/openai/hud-summary` never relays OpenAI's own `error.message`, `/api/realtime/token` passes successful ephemeral-token responses through but answers with a fixed error when minting fails or upstream rejects the request, and a failed CCTV media fetch stores a fixed camera health `message` — `GET /api/cctv/health` serializes that field and the CCTV panel renders it as a status label, so it is a client surface as much as the response body is.
 - `OPENAI_API_KEY` is server-side only; the browser receives ephemeral Realtime client secrets from `/api/realtime/token`.
