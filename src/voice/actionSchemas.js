@@ -137,7 +137,7 @@ const schemas = [
             'local-dams',
             'telegeography-submarine-cables',
             'local-firms',
-            'alpr-cameras',
+            'self-deployed-cameras',
           ],
         },
         enabled: {
@@ -169,7 +169,7 @@ const schemas = [
             'local-dams',
             'telegeography-submarine-cables',
             'local-firms',
-            'alpr-cameras',
+            'self-deployed-cameras',
           ],
         },
       },
@@ -348,7 +348,7 @@ const schemas = [
           type: 'string',
           enum: [
             'photoreal',
-            'bing-aerial',
+            'google-roadmap',
             'bing-labels',
             'esri-imagery',
             'osm',

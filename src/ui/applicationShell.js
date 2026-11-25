@@ -14,6 +14,7 @@ import { readShellElements } from './shellElements.js';
 import { CockpitCoordinator } from './cockpitCoordinator.js';
 import { ContextControls } from './context.js';
 import { CctvControls } from './cctv.js';
+import { FaceRecognitionPanel } from './faceRecognitionPanel.js';
 import { RadioControls } from './radio.js';
 import { LocationNavigation } from './locationNavigation.js';
 import { bindClearLayersControl } from './layers.js';
@@ -72,8 +73,6 @@ export class StyleManager extends ShellFacade {
       militaryFlightsLayer,
       satellitesLayer,
       cctvLayer,
-      bikeshareLayer,
-      transitLayer,
       aisLiveVesselsLayer,
       militaryAwarenessLayer,
     } = services;
@@ -445,8 +444,6 @@ export class StyleManager extends ShellFacade {
         militaryFlightsLayer,
         satellitesLayer,
         cctvLayer,
-        bikeshareLayer,
-        transitLayer,
         aisLiveVesselsLayer,
       ],
       (modeLabel) => {
@@ -536,6 +533,7 @@ export class StyleManager extends ShellFacade {
     this._initRightPanelAdaptiveLayout();
     this._initRadioPanel();
     this._initCctvPanel();
+    this._initFaceRecognitionPanel();
     this._initGlobalContextPanel();
     this._initLocationBar();
     this._initShareButton();
@@ -686,33 +684,6 @@ export class StyleManager extends ShellFacade {
       onStateChanged: () => this._syncShareState(),
       onError: (message) => this._showToast(message),
     });
-  }
-
-  /**
-   * Switches the active map/globe source stack.
-   * @param {string} stackId - Map stack id.
-   * @param {object} [options]
-   * @param {boolean} [options.syncShare=true] - Whether to update the share link.
-   * @returns {Promise<void>}
-   */
-  async _setMapStack(stackId, { syncShare = true } = {}) {
-    if (!this.mapStackController) return;
-    return this._mapSourceControls.select(stackId, { syncShare });
-  }
-
-  /**
-   * Syncs the map stack chip row and status chip with controller state. The
-   * lit chip always follows `state.activeId`, never the click — a rejected or
-   * superseded switch therefore leaves the genuinely active stack lit.
-   * @param {object} state - Map stack controller state.
-   * @returns {void}
-   */
-  _renderMapStackState(state) {
-    this._mapSourceControls?.render(state);
-  }
-
-  _setDetectionAllocation(strategy, { syncShare = true, persist = true } = {}) {
-    return this._visualSettings._setDetectionAllocation(...arguments);
   }
 
   /**
@@ -899,6 +870,15 @@ export class StyleManager extends ShellFacade {
         _cctvProjectionBtn: this._cctvProjectionBtn,
         _cctvQualityChip: this._cctvQualityChip,
         _cctvSelect: this._cctvSelect,
+        _cctvSelfDeployBlock: this._cctvSelfDeployBlock,
+        _cctvSelfDeployForm: this._cctvSelfDeployForm,
+        _cctvSelfName: this._cctvSelfName,
+        _cctvSelfUrl: this._cctvSelfUrl,
+        _cctvSelfLat: this._cctvSelfLat,
+        _cctvSelfLon: this._cctvSelfLon,
+        _cctvSelfReconnectBtn: this._cctvSelfReconnectBtn,
+        _cctvSelfRemoveBtn: this._cctvSelfRemoveBtn,
+        _cctvSelfStatus: this._cctvSelfStatus,
         _cctvSourceBadge: this._cctvSourceBadge,
         _cctvSummary: this._cctvSummary,
         _cctvSyncChip: this._cctvSyncChip,
@@ -906,18 +886,79 @@ export class StyleManager extends ShellFacade {
         _cctvSyncProgress: this._cctvSyncProgress,
       },
       cctv: cctvLayer,
+      selfDeployedCameras: this.services.selfDeployedCameraStore,
       actions: {
         isEnabled: () => this._dataManager?.isEnabled('cctv'),
         setParams: (params, options) =>
           this._dataManager?.setLayerParams('cctv', params, options),
         toggleEnabled: (...args) => this._toggleCctvEnabled(...args),
         runExplicitFocus: (...args) => this._runExplicitCctvFocus(...args),
+        focusDeployedCamera: (camera) =>
+          this.runImmediateNavigation('camera', () => {
+            this.viewer.camera.flyTo({
+              destination: Cesium.Cartesian3.fromDegrees(
+                camera.lon,
+                camera.lat,
+                3000,
+              ),
+              orientation: {
+                heading: 0,
+                pitch: Cesium.Math.toRadians(-70),
+                roll: 0,
+              },
+              duration: 2.2,
+            });
+            return true;
+          }),
         setPanelCollapsed: (...args) => this.setPanelCollapsed(...args),
         showToast: (message) => this._showToast(message),
         syncViewport: () => this._syncCctvPanelViewport(),
         setSplitFlapText,
       },
     });
+  }
+
+  _initFaceRecognitionPanel() {
+    this._faceRecognitionControls?.destroy();
+    this._faceRecognitionControls = new FaceRecognitionPanel({
+      elements: {
+        _faceRecognitionCamera: this._faceRecognitionCamera,
+        _faceRecognitionStart: this._faceRecognitionStart,
+        _faceRecognitionStop: this._faceRecognitionStop,
+        _faceRecognitionThreshold: this._faceRecognitionThreshold,
+        _faceRecognitionThresholdValue: this._faceRecognitionThresholdValue,
+        _faceRecognitionStatus: this._faceRecognitionStatus,
+        _faceRecognitionDatabase: this._faceRecognitionDatabase,
+        _faceRecognitionResults: this._faceRecognitionResults,
+        _faceRecognitionEnrollForm: this._faceRecognitionEnrollForm,
+        _faceRecognitionName: this._faceRecognitionName,
+        _faceRecognitionPhotos: this._faceRecognitionPhotos,
+        _faceRecognitionConsent: this._faceRecognitionConsent,
+        _faceRecognitionPeople: this._faceRecognitionPeople,
+      },
+      cameraStore: this.services.selfDeployedCameraStore,
+      actions: {
+        enableCameraLayer: () => this._enableSelfDeployedCameraLayer(),
+        prepareStreamForAnalysis: () =>
+          this._cctvControls?.prepareFaceRecognitionStream(),
+        restoreStreamAfterAnalysis: () =>
+          this._cctvControls?.restoreFaceRecognitionStream(),
+        readStreamImage: () => this._cctvFrame,
+      },
+    });
+  }
+
+  async _enableSelfDeployedCameraLayer() {
+    const layerId = 'self-deployed-cameras';
+    if (!this._dataManager?.layers?.has(layerId))
+      throw new Error('Self deployed cameras are unavailable');
+    if (this._dataManager.isEnabled(layerId)) return true;
+    const result = await this._dataManager.setEnabled(layerId, true, {
+      origin: 'user',
+    });
+    if (result === false || !this._dataManager.isEnabled(layerId))
+      throw new Error('Could not enable self deployed cameras');
+    return true;
   }
 
   /**
@@ -1470,6 +1511,7 @@ export class StyleManager extends ShellFacade {
     this._mapSourceControls?.destroy();
     this._cameraOrientationControls?.destroy();
     this._clearLayersControl?.destroy();
+    this._faceRecognitionControls?.destroy();
     this._cctvControls?.destroy();
     this._radioControls?.destroy();
     this._cockpitCoordinator.stop();

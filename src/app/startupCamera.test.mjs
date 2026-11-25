@@ -1,15 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { flyToAustin } from '../camera.js';
+import * as Cesium from 'cesium';
+import { flyToKigali } from '../camera.js';
 
-test('teardown before the initial camera delay prevents a late flight', (t) => {
-  t.mock.timers.enable({ apis: ['setTimeout'] });
+test('fresh-start camera uses the configured Kigali projection', () => {
+  let view;
   let flights = 0;
   let cancelled = 0;
-  const stop = flyToAustin({
+  const viewer = {
     isDestroyed: () => false,
     camera: {
-      setView() {},
+      setView(value) {
+        view = value;
+      },
       flyTo() {
         flights++;
       },
@@ -17,9 +20,13 @@ test('teardown before the initial camera delay prevents a late flight', (t) => {
         cancelled++;
       },
     },
-  });
-  stop();
-  t.mock.timers.tick(1000);
+  };
+  const stop = flyToKigali(viewer);
+  assert.deepEqual(view.destination, Cesium.Cartesian3.fromDegrees(30.1093, -1.9774, 4012));
+  assert.equal(view.orientation.heading, Cesium.Math.toRadians(360));
+  assert.equal(view.orientation.pitch, Cesium.Math.toRadians(-90));
+  assert.equal(view.orientation.roll, 0);
   assert.equal(flights, 0);
+  stop();
   assert.equal(cancelled, 1);
 });

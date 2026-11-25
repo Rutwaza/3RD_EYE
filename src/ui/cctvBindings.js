@@ -1,6 +1,17 @@
 export function _initCctvPanel() {
   if (!this._cctvPanel) return;
 
+  this.listen(this._cctvFrame, 'error', () => {
+    if (this._cctvFrame?.dataset.selfStream !== 'true') return;
+    this._cctvFrame.classList.remove('active');
+    this._cctvFrameWrap?.classList.remove('has-frame', 'loading');
+    this._cctvFrame.dataset.error = 'true';
+    if (this._cctvSourceBadge) {
+      this._cctvSourceBadge.textContent = 'MJPEG · UNAVAILABLE';
+      this._cctvSourceBadge.dataset.frameState = 'error';
+    }
+  });
+
   this.listen(this._cctvEnableBtn, 'click', async () => {
     this._actionGeneration++;
     await this.actions.toggleEnabled();
@@ -59,8 +70,14 @@ export function _initCctvPanel() {
 
   this.listen(this._cctvSelect, 'change', async () => {
     const generation = ++this._actionGeneration;
-    const activeId = this._cctvState?.activeCameraId;
     const cameraId = this._cctvSelect.value;
+    if (this.selfDeployedCameras?.isEnabled()) {
+      const camera = this.selfDeployedCameras.select(cameraId, 'dropdown');
+      if (camera && !this.destroyed && generation === this._actionGeneration)
+        this.actions.focusDeployedCamera?.(camera);
+      return;
+    }
+    const activeId = this._cctvState?.activeCameraId;
     if (!cameraId) return;
     if (!(await this.actions.toggleEnabled(true))) return;
     if (
@@ -78,6 +95,36 @@ export function _initCctvPanel() {
       (selectedId) => this.cctv.focusCamera(selectedId, 2.2),
     );
     this.actions.setParams({ selectedCameraId: cameraId }, { origin: 'user' });
+  });
+
+  this.listen(this._cctvSelfDeployForm, 'submit', (event) => {
+    event.preventDefault();
+    if (!this.selfDeployedCameras?.isEnabled()) return;
+    try {
+      const camera = this.selfDeployedCameras.add({
+        name: this._cctvSelfName.value,
+        streamUrl: this._cctvSelfUrl.value,
+        lat: this._cctvSelfLat.value,
+        lon: this._cctvSelfLon.value,
+      });
+      this._cctvSelfDeployForm.reset();
+      this._setSelfCameraStatus(`Deployed: ${camera.name}`);
+      this.actions.focusDeployedCamera?.(camera);
+    } catch (error) {
+      this._setSelfCameraStatus(error.message || 'Could not deploy camera');
+    }
+  });
+
+  this.listen(this._cctvSelfRemoveBtn, 'click', () => {
+    const camera = this.selfDeployedCameras?.selected();
+    if (!camera || !this.selfDeployedCameras.remove(camera.id)) return;
+    this._setSelfCameraStatus(`Removed: ${camera.name}`);
+  });
+
+  this.listen(this._cctvSelfReconnectBtn, 'click', () => {
+    if (!this.selfDeployedCameras?.selected()) return;
+    this._selfStreamCameraId = null;
+    this._renderSelfDeployedState();
   });
 
   this.listen(this._cctvFocusBtn, 'click', async () => {

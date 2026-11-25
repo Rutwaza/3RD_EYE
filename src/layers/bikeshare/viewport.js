@@ -7,6 +7,8 @@ import {
   CAMERA_DEBOUNCE_MS,
 } from './policy.js';
 
+export const BIKESHARE_GLOBAL_CITY_IDS = new Set([]);
+
 export function createViewport({ state: layerState, services, parts, source }) {
   const { governorRequestRender } = services.render;
 
@@ -190,19 +192,32 @@ export function createViewport({ state: layerState, services, parts, source }) {
   async function runProximityCheck() {
     if (!layerState._enabled || !layerState._viewer) return;
 
+    const globalCities = GBFS_CITY_REGISTRY.filter((city) =>
+      BIKESHARE_GLOBAL_CITY_IDS.has(city.id),
+    );
+    const hasGlobalCities = globalCities.length > 0;
     const generation = ++layerState._proximityGeneration;
-    const altitude = getCameraAltitude(layerState._viewer);
-    // Altitude gate: disable all cities when camera is too high
-    if (!shouldActivateAtAltitude(altitude)) {
-      deactivateAllCities();
-      return;
+
+    if (!hasGlobalCities) {
+      const altitude = getCameraAltitude(layerState._viewer);
+      // Altitude gate: disable all cities when camera is too high
+      if (!shouldActivateAtAltitude(altitude)) {
+        deactivateAllCities();
+        return;
+      }
     }
 
     const center = getCameraCenterLatLon(layerState._viewer);
-    if (!center) return;
+    if (!center && !hasGlobalCities) return;
 
-    // Diff active set against newly computed in-range set
-    const nextActive = computeInRangeCities(center);
+    // Diff active set against newly computed in-range set, while ignoring the
+    // altitude gate for explicitly global cities.
+    const nextActive = new Set(
+      globalCities.map((city) => city.id),
+    );
+    if (center) {
+      for (const cityId of computeInRangeCities(center)) nextActive.add(cityId);
+    }
     for (const cityId of layerState._activeCityIds) {
       if (!nextActive.has(cityId)) {
         deactivateCity(cityId);

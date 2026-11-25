@@ -26,6 +26,7 @@
   #title-bar {
     top: 20px;
     left: 20px;
+    right: auto;
   }
 
   #top-center-actions {
@@ -50,6 +51,10 @@
 
   #title-bar .title-logo {
     width: 36px;
+  }
+
+  #title-bar .title-osint {
+    color: var(--accent);
   }
 
   #title-bar .frame-rate-readout {
@@ -233,10 +238,12 @@
   #left-panel-stack > #cctv-panel,
   #left-panel-stack > #global-context-panel,
   #left-panel-stack > #scene-panel,
+  #left-panel-stack > #face-recognition-panel,
   #left-panel-stack > #data-panel.collapsed,
   #left-panel-stack > #cctv-panel.collapsed,
   #left-panel-stack > #global-context-panel.collapsed,
-  #left-panel-stack > #scene-panel.collapsed {
+  #left-panel-stack > #scene-panel.collapsed,
+  #left-panel-stack > #face-recognition-panel.collapsed {
     position: relative;
     top: auto;
     right: auto;
@@ -258,7 +265,7 @@
     left: 16px;
   }
 
-  #title-bar h1 > span:last-child,
+  #title-bar .title-wordmark,
   #title-bar .subtitle {
     display: none;
   }

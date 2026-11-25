@@ -51,16 +51,33 @@ export function createIngestion({
         )
           throw new Error('Radio directory freshness metadata was malformed');
         const rows = body.stations;
-        const acceptedRows = rows.filter(
+        const acceptedGlobalRows = rows.filter(
           parts.catalogModel.isValidRadioDirectoryStation,
         );
-        if (!acceptedRows.length)
+        if (!acceptedGlobalRows.length)
           throw new Error('Radio directory returned no usable stations');
-        if (acceptedRows.length !== rows.length) {
+        if (acceptedGlobalRows.length !== rows.length) {
           throw new Error(
             'Radio directory response contained malformed stations',
           );
         }
+        // Keep the established global catalog intact, then merge any optional
+        // regional supplement by UUID. Older servers simply omit this field.
+        const seenStationIds = new Set(
+          acceptedGlobalRows.map((station) => station.id),
+        );
+        const regionalRows = Array.isArray(body.eastAfricaStations)
+          ? body.eastAfricaStations.filter((station) => {
+              if (
+                !parts.catalogModel.isValidRadioDirectoryStation(station) ||
+                seenStationIds.has(station.id)
+              )
+                return false;
+              seenStationIds.add(station.id);
+              return true;
+            })
+          : [];
+        const acceptedRows = [...acceptedGlobalRows, ...regionalRows];
         const acceptedGeneration = body.acceptedGeneration;
         if (
           acceptedGeneration !== null &&

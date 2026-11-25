@@ -1,4 +1,5 @@
 import { MUSIC_GENRES, CATEGORY_MATCHERS } from './policy.js';
+import { isEastAfricaCountryCode } from '../../data/eastAfrica.js';
 
 export function createCategories({
   state: layerState,
@@ -43,6 +44,8 @@ export function createCategories({
 
   function stationMatchesRadioCategory(station, categoryId) {
     if (categoryId === 'all') return true;
+    if (categoryId === 'east-africa')
+      return isEastAfricaCountryCode(station?.countryCode);
     if (categoryId.startsWith('genre:')) {
       return detectedGenres(station).includes(
         categoryId.slice('genre:'.length),
@@ -70,6 +73,7 @@ export function createCategories({
     const rows = Array.isArray(stations) ? stations : [];
     const categories = [
       { id: 'all', label: 'All' },
+      { id: 'east-africa', label: 'East Africa' },
       { id: 'news', label: 'News' },
       { id: 'talk', label: 'Talk' },
       { id: 'weather', label: 'Weather / Emergency' },

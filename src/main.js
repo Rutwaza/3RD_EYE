@@ -7,13 +7,15 @@ const application = createStandaloneApplication({
   allowQaRegistration: import.meta.env.DEV,
 });
 
-const internetStatus = document.getElementById('internet-status-value');
+const internetStatus = document.getElementById('style-indicator');
 const updateInternetStatus = () => {
   const online = navigator.onLine;
   if (!internetStatus) return;
-  internetStatus.textContent = online ? 'ONLINE' : 'OFFLINE';
-  internetStatus.closest('#style-indicator')?.classList.toggle('is-offline', !online);
-  internetStatus.setAttribute('aria-label', online ? 'Internet connected' : 'No internet connection');
+  internetStatus.classList.toggle('is-offline', !online);
+  internetStatus.setAttribute(
+    'aria-label',
+    online ? 'Internet connected' : 'No internet connection',
+  );
 };
 window.addEventListener('online', updateInternetStatus);
 window.addEventListener('offline', updateInternetStatus);

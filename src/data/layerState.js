@@ -308,11 +308,6 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     disposition: 'enabled-only',
   }),
   Object.freeze({
-    id: 'alpr-cameras',
-    token: 'p',
-    disposition: 'enabled-only',
-  }),
-  Object.freeze({
     id: 'bhote-koshi-2026',
     token: 'h',
     disposition: 'enabled-only',
@@ -322,7 +317,6 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     token: 'z',
     disposition: 'enabled-only',
   }),
-  Object.freeze({ id: 'bikeshare', token: 'b', disposition: 'enabled-only' }),
   Object.freeze({
     id: 'cctv',
     token: 'c',
@@ -378,12 +372,16 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     optionOwner: 'satellites',
   }),
   Object.freeze({
+    id: 'self-deployed-cameras',
+    token: 'y',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
     id: 'telegeography-submarine-cables',
     token: 'u',
     disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'traffic', token: 't', disposition: 'enabled-only' }),
-  Object.freeze({ id: 'transit', token: 'j', disposition: 'enabled-only' }),
 ]);
 
 export const REGISTERED_LAYER_IDS = Object.freeze(
@@ -396,6 +394,7 @@ const REGISTRY_BY_ID = new Map(
 const REGISTRY_BY_TOKEN = new Map(
   LAYER_STATE_REGISTRY.map((entry) => [entry.token, entry]),
 );
+const LEGACY_REMOVED_LAYER_TOKENS = new Set(['p']);
 const OPTION_OWNER_IDS = Object.freeze([
   ...new Set(
     LAYER_STATE_REGISTRY.map((entry) => entry.optionOwner).filter(Boolean),
@@ -578,10 +577,17 @@ export function decodeLayerStateParams(params) {
   // `l=` is the one valid explicit-empty representation. Any non-empty token
   // set containing an unknown member rejects the complete layer payload so a
   // typo or future token cannot silently become an authoritative empty set.
-  if (layerTokens.some((token) => !REGISTRY_BY_TOKEN.has(token))) return null;
-  const enabledLayerIds = layerTokens.map(
-    (token) => REGISTRY_BY_TOKEN.get(token).id,
-  );
+  if (
+    layerTokens.some(
+      (token) =>
+        !REGISTRY_BY_TOKEN.has(token) &&
+        !LEGACY_REMOVED_LAYER_TOKENS.has(token),
+    )
+  )
+    return null;
+  const enabledLayerIds = layerTokens
+    .filter((token) => REGISTRY_BY_TOKEN.has(token))
+    .map((token) => REGISTRY_BY_TOKEN.get(token).id);
   const rawOptions = {};
   for (const assignment of rawOptionsField.split('_')) {
     if (!assignment) continue;

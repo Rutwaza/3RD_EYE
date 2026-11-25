@@ -3141,7 +3141,7 @@ const testPlaceSearch = () => createStandalonePlaceSearch({ resolveApiKey: () =>
 function createGevActionRunner(options) { return createActionRunner({ placeSearch: testPlaceSearch(), ...options }); }
 function controlRadio(viewer, manager, args, options) { return runControlRadio(viewer, manager, args, { placeSearch: testPlaceSearch(), ...options }); }
 
-test('ALPR common names toggle only the registered camera layer through the normal voice action', async () => {
+test('self-deployed camera names toggle only the registered layer through the normal voice action', async () => {
   globalThis.window = globalThis.window || { clearTimeout, setTimeout, requestIdleCallback: null };
   const viewer = { clock: { onTick: { addEventListener: () => () => {} } },
     scene: { canvas: { addEventListener() {}, removeEventListener() {} } },
@@ -3149,18 +3149,18 @@ test('ALPR common names toggle only the registered camera layer through the norm
   const calls = [];
   let enabled = false;
   const dataManager = {
-    layers: new Map([['alpr-cameras', { module: {} }]]),
-    getAll: () => [{ id: 'alpr-cameras', name: 'ALPR Cameras' }],
+    layers: new Map([['self-deployed-cameras', { module: {} }]]),
+    getAll: () => [{ id: 'self-deployed-cameras', name: 'Self deployed cameras' }],
     isEnabled: () => enabled,
     setEnabled: async (id, value) => { calls.push([id, value]); enabled = value; return true; },
   };
   const runner = createGevActionRunner({ viewer, styleManager: {}, dataManager });
-  for (const alias of ['alpr-cameras', 'alpr', 'alpr cameras', 'flock cameras', 'license plate readers', 'license plate cameras', 'plate readers']) {
+  for (const alias of ['self-deployed-cameras', 'self deployed cameras', 'deployed cameras', 'esp32 cameras']) {
     for (const value of [true, false]) {
       const result = await runner('set_layer_visibility', { layerId: alias, enabled: value });
       assert.equal(result.ok, true);
-      assert.equal(result.layerId, 'alpr-cameras');
-      assert.deepEqual(calls.at(-1), ['alpr-cameras', value]);
+      assert.equal(result.layerId, 'self-deployed-cameras');
+      assert.deepEqual(calls.at(-1), ['self-deployed-cameras', value]);
     }
   }
 });

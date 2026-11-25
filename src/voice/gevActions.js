@@ -215,12 +215,9 @@ const LAYER_ALIASES = new Map([
   ['firms', 'local-firms'],
   ['fires', 'local-firms'],
   ['active fires', 'local-firms'],
-  ['alpr', 'alpr-cameras'],
-  ['alpr cameras', 'alpr-cameras'],
-  ['flock cameras', 'alpr-cameras'],
-  ['license plate readers', 'alpr-cameras'],
-  ['license plate cameras', 'alpr-cameras'],
-  ['plate readers', 'alpr-cameras'],
+  ['self deployed cameras', 'self-deployed-cameras'],
+  ['deployed cameras', 'self-deployed-cameras'],
+  ['esp32 cameras', 'self-deployed-cameras'],
 ]);
 
 const CITY_ALIASES = new Map([
@@ -237,7 +234,8 @@ const CITY_ALIASES = new Map([
 // phrasing ALWAYS means the satellites DATA LAYER, never a basemap; the
 // session instructions carry the decision table.
 //
-// Road phrasings resolve to OSM, the one shipped road basemap. Every alias
+// Generic road phrasings resolve to OSM; explicit Google Maps/Roadmap names
+// resolve to Google's labeled 2D style. Every alias
 // must name a live `MAP_STACKS` id: an alias for a retired stack would resolve
 // cleanly and then fail at the controller with "Unknown map stack", which reads
 // to the operator as a broken command rather than a retired source.
@@ -247,8 +245,11 @@ const STACK_ALIASES = new Map([
   ['google', 'photoreal'],
   ['3d', 'photoreal'],
   ['photorealistic', 'photoreal'],
-  ['bing-aerial', 'bing-aerial'],
-  ['bing aerial', 'bing-aerial'],
+  ['google-roadmap', 'google-roadmap'],
+  ['google roadmap', 'google-roadmap'],
+  ['google maps', 'google-roadmap'],
+  ['google map', 'google-roadmap'],
+  ['roadmap', 'google-roadmap'],
   ['bing-labels', 'bing-labels'],
   ['bing labels', 'bing-labels'],
   ['labels', 'bing-labels'],

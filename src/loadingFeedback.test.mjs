@@ -714,30 +714,14 @@ test('guidance does not suppress independent manager and feed failures', () => {
   }
 });
 
-test('ALPR retries show a countdown, preserve other failures, and clear when disabled', () => {
-  const camera = { ...retrySite({ error: 'Overpass rate-limited' }), id: 'alpr-cameras', name: 'ALPR cameras' };
-  const summary = aggregateLayerLoading([camera]);
-  const view = presentLoadingFeedback(createLoadingFeedbackState(), summary, 0);
-  assert.equal(view.state, 'retry');
-  assert.equal(view.label, 'OVERPASS RATE-LIMITED');
-  assert.match(view.detail, /ALPR cameras · retrying in 30s/);
-  const failed = { visible: true, phase: 'terminal', terminal: 'error', activeIds: ['alpr-cameras', 'flights'] };
-  const otherFailure = aggregateLayerLoading([camera, { id: 'flights', enabled: true, stats: { error: 'Failed' } }]);
-  assert.equal(presentLoadingFeedback(failed, otherFailure, 0).label, 'LOAD FAILED');
-  assert.equal(presentLoadingFeedback({ ...failed, failedEventIds: ['flights'] }, summary, 0).label, 'LOAD FAILED');
-  assert.equal(presentLoadingFeedback(createLoadingFeedbackState(), aggregateLayerLoading([{ ...camera, enabled: false }]), 0), null);
-});
-
-test('ALPR retry success does not inherit its prior error, including turning the layer off', () => {
-  const camera = stats => ({ id: 'alpr-cameras', enabled: true, stats });
-  const loading = aggregateLayerLoading([camera({ status: 'loading', loading: true, retrying: true })]);
-  let state = reduceLoadingFeedback(createLoadingFeedbackState(), loading, 0);
-  state = reduceLoadingFeedback(state, loading, 200);
-  assert.equal(presentLoadingFeedback(state, loading, 200).label, 'RETRYING ALPR CAMERAS');
-  const done = aggregateLayerLoading([camera({ status: 'ready', count: 3 })]);
-  state = reduceLoadingFeedback(state, done, 300);
-  assert.equal(presentLoadingFeedback(state, done, 300).label, 'LOAD COMPLETE');
-  const stopping = normalizeLayerLoading({ ...camera({ status: 'unavailable', error: 'Old failure' }), lifecycleState: 'disabling' });
-  assert.equal(stopping.error, null);
-  assert.equal(stopping.unavailable, false);
+test('self-deployed cameras use ordinary layer loading feedback without provider retries', () => {
+  const camera = {
+    id: 'self-deployed-cameras',
+    name: 'Self deployed cameras',
+    enabled: true,
+    stats: { retryAt: 30_000, retrying: true, error: 'Stream unavailable' },
+  };
+  const record = normalizeLayerLoading(camera);
+  assert.equal(record.error, 'Stream unavailable');
+  assert.equal(record.cameraRetry, undefined);
 });

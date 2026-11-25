@@ -80,7 +80,9 @@ details.
 
 ## Using the app
 
-1. Choose a first-run option or search for a place.
+1. On a fresh launch, the globe flies to Kigali Convention Centre in Kigali,
+   Rwanda. Choose a first-run option or search for another place to change the
+   view.
 2. Open the layer controls and enable the data you want to see.
 3. Click a marker to inspect it and follow its updates. For aircraft, select
    **COCKPIT** to ride along; use the contacts controls to switch aircraft.
@@ -103,34 +105,46 @@ details.
 | `C` | Enter or leave aircraft cockpit mode when available |
 | `Esc` | Exit the active mode or dismiss an interaction |
 
-## Camera expansion plan: self-hosted cameras
+## Self-deployed cameras and local face matching
 
-The current camera layer uses supported public camera sources. Connecting
-operator-owned cameras is a future expansion; it is not currently implemented.
+The CCTV panel can connect to up to 64 operator-provided HTTP MJPEG cameras.
+Camera names, stream URLs, and coordinates are stored in this browser's local
+storage. Do not put credentials in a stream URL. The camera must allow the app
+origin through CORS so the browser can read frames for local analysis.
 
-The proposed design is to run a small gateway on the camera owner's network.
-It would connect to explicitly enrolled RTSP or ONVIF cameras and provide an
-authenticated API for the app. A separate source adapter would translate
-camera IDs, operator-supplied labels and locations, health, and authorized
-frames into the existing camera layer. Private camera links and credentials
-should stay private and should not be added to shared URLs by default.
+The **Face Map** panel runs the Human FaceRes model in a browser worker.
+It samples the selected self-deployed camera once per second, at up to 1280
+pixels wide. Matching and enrollment run on the local device; camera frames
+and reference photos are not uploaded or saved by the face service. The
+loopback-only local API stores enrollment names, consent timestamps, and face
+embeddings in `~/.gods-eye-view/face-identities/identities-v1.json`. This file
+is not encrypted, so protect access to the local account and its files. Face Map
+shows the registered identity and template totals, refreshing when the panel is
+opened, when you return to the app, and after enrollment or deletion. The
+local API is available through `npm run dev` and `npm run preview`; a static
+build deployment does not include the API.
 
-Any future video analysis should remain local to that gateway and focus on
-non-identifying events, such as motion or vehicle presence. The project will
-add face recognition, named-person search, or individual tracking. A
-deployment should include authentication, encrypted connections, network
-allowlists, limited retention, access logs, a visible processing status, and
-clear camera enrollment and removal controls.
+For better input quality, the app rejects faces with a box smaller than 224
+pixels or detection scores below 0.7. Enroll one to eight clear photos only
+with the person's agreement. Results are possible candidates for human review.
+The displayed score is a normalized model similarity score, not a probability
+or confirmation of identity. The current cutoff is configurable but has not
+been calibrated against a representative evaluation set; do not treat it as
+a validated security threshold. This feature does not perform liveness checks.
+New enrollments are compared with the local database. A score of 90/100 or
+higher raises a possible-duplicate prompt; it is a review warning, not proof
+that two photos show the same person. The panel reports registered identities
+and reference templates separately.
 
-Suggested implementation order:
+To use it, enable **Self deployed cameras**, add an HTTP MJPEG stream with its
+location, open **Face Map**, enroll consented reference photos, select
+the camera, and press **Start**. Stop analysis when it is no longer needed and
+delete enrollments when they are no longer authorized.
 
-1. Define and secure the local gateway API.
-2. Test it with an operator-owned camera on a private network.
-3. Add an opt-in camera source adapter and health status.
-4. Reuse the globe's existing selection, projection, and calibration UI.
-5. Pull the pretrained face recognition model
-6. Build a know face and target face database
-5. Document deployment, privacy, retention, and camera revocation.
+For the common AI-Thinker ESP32-CAM board, see
+[`docs/hardware/esp32_cam_face_map.ino`](docs/hardware/esp32_cam_face_map.ino)
+for a matching MJPEG firmware sketch and upload instructions. Other ESP32-CAM
+board variants need their own camera pin map.
 
 ## Development
 

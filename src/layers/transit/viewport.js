@@ -6,7 +6,19 @@ import {
   RANGE_SLACK_KM,
   inflateViewBounds,
 } from './policy.js';
-import { transitFeedsInRange } from '../../data/transitFeeds.js';
+import {
+  TRANSIT_FEED_REGISTRY,
+  transitFeedsInRange,
+} from '../../data/transitFeeds.js';
+
+export const TRANSIT_GLOBAL_FEED_IDS = new Set([
+  'myciti-cape-town',
+  'gautrain-johannesburg',
+  'nairobi-kbs',
+  'dar-es-salaam-brt',
+  'kigali-rwanda',
+  'casablanca-transport',
+]);
 
 /**
  * Camera-driven feed activation: only the feeds whose coverage circle contains
@@ -77,10 +89,23 @@ export function createViewport({ state, services, parts }) {
   function runProximityCheck() {
     if (!state._enabled || !state._viewer) return;
     refreshViewBounds();
+
+    const globalFeeds = TRANSIT_FEED_REGISTRY.filter((feed) =>
+      TRANSIT_GLOBAL_FEED_IDS.has(feed.id),
+    );
+    const hasGlobalFeeds = globalFeeds.length > 0;
     const altitude = getCameraAltitude();
-    state._altitudeGateOpen = altitudeGateOpen(altitude);
+    if (!hasGlobalFeeds) {
+      state._altitudeGateOpen = altitudeGateOpen(altitude);
+    } else {
+      state._altitudeGateOpen = true;
+    }
+
     const center = state._altitudeGateOpen ? getCameraCenterLatLon() : null;
     const desired = new Map();
+    if (hasGlobalFeeds) {
+      for (const feed of globalFeeds) desired.set(feed.id, feed);
+    }
     if (center) {
       for (const feed of transitFeedsInRange(center.lat, center.lon)) {
         desired.set(feed.id, feed);

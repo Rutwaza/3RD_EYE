@@ -354,7 +354,7 @@ test('detection lifecycle re-hosts unchanged painters behind the sole host liste
   const modes = [];
   try {
     initWorldOverlay(env.viewer);
-    initDetection(env.viewer, [detectableLayer()], (mode) => modes.push(mode));
+    initDetection(env.viewer, [undefined, detectableLayer()], (mode) => modes.push(mode));
     assert.equal(env.postRender.listeners.size, 1);
     assert.equal(env.document.getElementById('detection-overlay'), null);
     assert.ok(env.document.getElementById('world-overlay-canvas'));

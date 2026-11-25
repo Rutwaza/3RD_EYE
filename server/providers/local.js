@@ -20,6 +20,7 @@ import { trackBackfillProxies } from './aircraft/tracks.js';
 import { openAiRealtimeProxy } from './openai.js';
 import { googlePlacesContextProxy } from './places.js';
 import { keySetupEndpoint } from '../standalone/key-setup.js';
+import { faceRecognitionProxy } from './face-recognition.js';
 
 /** Construct the local provider plugins in their established order. */
 function localProviderPlugins() {
@@ -44,12 +45,14 @@ function localProviderPlugins() {
     aisLiveProxy(),
     trackBackfillProxies(),
     openAiRealtimeProxy(),
+    faceRecognitionProxy(),
     googlePlacesContextProxy(),
     keySetupEndpoint(),
   ];
 }
 
 export { localProviderPlugins };
+export { createFaceRecognitionMiddleware, faceRecognitionProxy } from './face-recognition.js';
 
 export {
   CCTV_FRAME_FETCH_TIMEOUT_MS,

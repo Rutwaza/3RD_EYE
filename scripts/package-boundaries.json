@@ -172,6 +172,15 @@
     ],
     "external": []
   },
+  "face-recognition-provider": {
+    "runtime": "node",
+    "exports": ["./server/providers/face-recognition"],
+    "modules": [
+      "server/providers/face-recognition.js",
+      "server/providers/face-recognition/store.js"
+    ],
+    "external": []
+  },
   "radio-provider": {
     "runtime": "node",
     "exports": ["./server/providers/radio"],

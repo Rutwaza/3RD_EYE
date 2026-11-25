@@ -16,19 +16,11 @@ const FEED_STATE_LABELS = Object.freeze({
 const PANEL_GROUPS = [
   {
     label: 'Movement',
-    ids: [
-      'satellites',
-      'flights',
-      'military',
-      'ais-live-vessels',
-      'traffic',
-      'transit',
-      'bikeshare',
-    ],
+    ids: ['satellites', 'flights', 'military', 'ais-live-vessels', 'traffic'],
   },
   {
     label: 'Cameras',
-    ids: ['cctv', 'alpr-cameras'],
+    ids: ['cctv', 'self-deployed-cameras'],
   },
   {
     label: 'Infrastructure',
@@ -58,7 +50,7 @@ const PANEL_LABELS = {
   'ais-live-vessels': 'Live Vessels',
   bikeshare: 'Bike Share',
   cctv: 'Cameras',
-  'alpr-cameras': 'Mapped ALPR Cameras',
+  'self-deployed-cameras': 'Self deployed cameras',
   'local-datacenters': 'Data Centers',
   'local-firms': 'Active Fires',
 };

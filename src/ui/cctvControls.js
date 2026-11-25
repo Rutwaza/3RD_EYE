@@ -13,6 +13,7 @@ import {
 import {
   _calBadgeLabel,
   _renderCctvState,
+  _renderSelfDeployedState,
   _typeCctvSummary,
   _updateCctvSyncChip,
 } from './cctvPresentation.js';
@@ -20,13 +21,15 @@ import { _initCctvPanel } from './cctvBindings.js';
 
 /** Own camera-panel interaction and presentation; receive the camera port and application actions. */
 export class CctvControls {
-  constructor({ elements, cctv, actions }) {
+  constructor({ elements, cctv, actions, selfDeployedCameras = null }) {
     Object.assign(this, elements);
     this.cctv = cctv;
     this.actions = actions;
+    this.selfDeployedCameras = selfDeployedCameras;
     this.destroyed = false;
     this.listeners = new AbortController();
     this._cctvUnsubscribe = null;
+    this._selfCameraUnsubscribe = null;
     this._cctvState = null;
     this._cctvSummaryTypingTimer = null;
     this._lastCctvSummaryText = '';
@@ -50,12 +53,23 @@ export class CctvControls {
   }
   connect() {
     this._cctvUnsubscribe?.();
+    this._selfCameraUnsubscribe?.();
     this._cctvUnsubscribe = null;
+    this._selfCameraUnsubscribe = null;
     if (this.destroyed) return;
     this._cctvUnsubscribe = this.cctv.subscribe?.((state) =>
       this._renderCctvState(state),
     );
     if (this.cctv.getUIState) this._renderCctvState(this.cctv.getUIState());
+    this._selfCameraUnsubscribe = this.selfDeployedCameras?.subscribe?.(
+      (event) => {
+        if (event.reason === 'map' || event.reason === 'face-recognition')
+          this.actions.setPanelCollapsed?.('cctv-panel', false, {
+            explicit: true,
+          });
+        this._renderCctvState(this._cctvState);
+      },
+    );
   }
   _clearCctvFrame(...args) {
     return _clearCctvFrame.call(this, ...args);
@@ -87,6 +101,28 @@ export class CctvControls {
   _renderCctvState(...args) {
     return _renderCctvState.call(this, ...args);
   }
+  _renderSelfDeployedState(...args) {
+    return _renderSelfDeployedState.call(this, ...args);
+  }
+  prepareFaceRecognitionStream() {
+    if (!this._cctvFrame || !this.selfDeployedCameras?.isEnabled?.())
+      return false;
+    this._selfStreamCameraId = null;
+    this._clearCctvFrame();
+    this._cctvFrame.crossOrigin = 'anonymous';
+    return true;
+  }
+  restoreFaceRecognitionStream() {
+    if (!this._cctvFrame) return;
+    this._selfStreamCameraId = null;
+    this._clearCctvFrame();
+    this._cctvFrame.crossOrigin = '';
+    if (this.selfDeployedCameras?.isEnabled?.())
+      this._renderSelfDeployedState();
+  }
+  _setSelfCameraStatus(message) {
+    if (this._cctvSelfStatus) this._cctvSelfStatus.textContent = message;
+  }
   _typeCctvSummary(...args) {
     return _typeCctvSummary.call(this, ...args);
   }
@@ -103,6 +139,8 @@ export class CctvControls {
     this.listeners.abort();
     this._cctvUnsubscribe?.();
     this._cctvUnsubscribe = null;
+    this._selfCameraUnsubscribe?.();
+    this._selfCameraUnsubscribe = null;
     this._calibrationEdit?.(false);
     this._clearCctvFrame();
     clearInterval(this._cctvSummaryTypingTimer);

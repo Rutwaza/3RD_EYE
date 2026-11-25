@@ -12,6 +12,7 @@ export function _clearCctvFrame() {
     this._cctvFrame.dataset.currentSrc = '';
     this._cctvFrame.dataset.loading = '';
     this._cctvFrame.dataset.error = '';
+    this._cctvFrame.dataset.selfStream = '';
   }
   this._cctvFrameWrap?.classList.remove('loading', 'has-frame');
 }

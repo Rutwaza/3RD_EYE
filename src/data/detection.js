@@ -772,7 +772,7 @@ function _collectDetectableObjects() {
 
   for (let i = 0; i < _layers.length; i++) {
     const layer = _layers[i];
-    if (typeof layer.getDetectableObjects !== 'function') continue;
+    if (typeof layer?.getDetectableObjects !== 'function') continue;
     try {
       const maxCount = ['flights', 'military'].includes(layer.id)
         ? Number.POSITIVE_INFINITY

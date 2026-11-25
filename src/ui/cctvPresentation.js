@@ -13,14 +13,26 @@ export function _calBadgeLabel(badge) {
 
 export function _renderCctvState(state) {
   if (this.destroyed) return;
+  const previousState = this._cctvState;
+  this._cctvState = state || null;
+  const selfMode = this.selfDeployedCameras?.isEnabled?.() === true;
+  this._cctvPanel?.classList?.toggle('self-deployed-active', selfMode);
+  if (this._cctvSelfDeployBlock) this._cctvSelfDeployBlock.hidden = !selfMode;
+  if (selfMode) {
+    this._renderSelfDeployedState();
+    return;
+  }
+  if (this._selfStreamCameraId) {
+    this._clearCctvFrame();
+    this._selfStreamCameraId = null;
+  }
   if (
     !state?.enabled ||
     !this.actions.isEnabled() ||
-    state?.activeCameraId !== this._cctvState?.activeCameraId
+    state?.activeCameraId !== previousState?.activeCameraId
   ) {
     this._calibrationEdit?.(false);
   }
-  this._cctvState = state || null;
   const cameras = state?.cameras || [];
   const enabled = !!state?.enabled && !!this.actions.isEnabled();
   const activeId = state?.activeCameraId || '';
@@ -190,6 +202,82 @@ export function _renderCctvState(state) {
     state?.summary ||
       'Enable CCTV to start camera-linked intelligence summaries.',
   );
+}
+
+export function _renderSelfDeployedState() {
+  if (this.destroyed || !this.selfDeployedCameras?.isEnabled?.()) return;
+  const cameras = this.selfDeployedCameras.list();
+  const selected = this.selfDeployedCameras.selected();
+  if (this._cctvSelect) {
+    const optionsMatch =
+      this._cctvSelect.options.length === cameras.length + 1 &&
+      this._cctvSelect.options[0]?.value === '' &&
+      cameras.every(
+        (camera, index) =>
+          this._cctvSelect.options[index + 1]?.value === camera.id,
+      );
+    if (!optionsMatch) {
+      this._cctvSelect.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'SELECT DEPLOYED CAMERA';
+      this._cctvSelect.appendChild(placeholder);
+      for (const camera of cameras) {
+        const option = document.createElement('option');
+        option.value = camera.id;
+        option.textContent = `${camera.name} · ${camera.lat.toFixed(4)}, ${camera.lon.toFixed(4)}`;
+        this._cctvSelect.appendChild(option);
+      }
+    }
+    this._cctvSelect.disabled = cameras.length === 0;
+    this._cctvSelect.value = selected?.id || '';
+  }
+  if (this._cctvSelfRemoveBtn) this._cctvSelfRemoveBtn.disabled = !selected;
+  if (this._cctvSelfReconnectBtn)
+    this._cctvSelfReconnectBtn.disabled = !selected;
+  if (this._cctvSelfStatus && !cameras.length)
+    this._cctvSelfStatus.textContent = 'No deployed cameras';
+
+  if (!selected) {
+    if (this._selfStreamCameraId) {
+      this._clearCctvFrame();
+      this._selfStreamCameraId = null;
+    }
+    if (this._cctvSourceBadge) {
+      this._cctvSourceBadge.textContent = cameras.length
+        ? 'MJPEG · SELECT CAMERA'
+        : 'MJPEG · NO CAMERAS';
+      this._cctvSourceBadge.dataset.frameState = 'idle';
+    }
+    if (this._cctvMeta)
+      this._cctvMeta.textContent = cameras.length
+        ? 'Select a deployed camera to open its stream'
+        : 'Deploy a camera to add its stream';
+    return;
+  }
+
+  if (this._cctvFrame && this._selfStreamCameraId !== selected.id) {
+    this._clearCctvFrame();
+    this._selfStreamCameraId = selected.id;
+    this._cctvFrame.dataset.cameraId = selected.id;
+    this._cctvFrame.dataset.currentSrc = selected.streamUrl;
+    this._cctvFrame.dataset.selfStream = 'true';
+    this._cctvFrame.dataset.loading = '';
+    this._cctvFrame.dataset.error = '';
+    this._cctvFrame.referrerPolicy = 'no-referrer';
+    // Let Face Map read deployed camera frames into its local analysis canvas.
+    this._cctvFrame.crossOrigin = 'anonymous';
+    this._cctvFrame.src = selected.streamUrl;
+    this._cctvFrame.classList.add('active');
+    this._cctvFrameWrap?.classList.remove('loading');
+    this._cctvFrameWrap?.classList.add('has-frame');
+  }
+  if (this._cctvSourceBadge) {
+    this._cctvSourceBadge.textContent = 'MJPEG · STREAM';
+    this._cctvSourceBadge.dataset.frameState = 'ready';
+  }
+  if (this._cctvMeta)
+    this._cctvMeta.textContent = `${selected.name} · ${selected.lat.toFixed(5)}, ${selected.lon.toFixed(5)} · LIVE MJPEG`;
 }
 
 export function _typeCctvSummary(text) {
