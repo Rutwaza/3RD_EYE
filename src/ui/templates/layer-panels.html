@@ -130,7 +130,7 @@
     </div>
   </div>
 
-  <!-- Local, consent-based Face Map -->
+  <!-- Face Map: people, then faces, then the local database -->
   <div id="face-recognition-panel" class="panel-collapsible collapsed" data-panel-id="face-recognition-panel">
     <div class="panel-glow"></div>
     <div class="face-recognition-inner">
@@ -139,33 +139,69 @@
         <span class="panel-divider"></span>
         <button class="panel-collapse-btn" data-collapse-target="face-recognition-panel" title="Collapse panel">+</button>
       </div>
-      <div class="face-recognition-controls">
-        <select id="face-recognition-camera" aria-label="Self deployed camera"></select>
-        <button id="face-recognition-start" class="scene-btn" type="button">START</button>
-        <button id="face-recognition-stop" class="scene-btn scene-btn-danger" type="button" disabled>STOP</button>
+      <div class="face-tabs" role="tablist" aria-label="Face Map">
+        <button type="button" role="tab" data-face-tab="live" aria-selected="true">LIVE</button>
+        <button type="button" role="tab" data-face-tab="people" aria-selected="false">PEOPLE</button>
+        <button type="button" role="tab" data-face-tab="log" aria-selected="false">LOG</button>
       </div>
-      <label class="face-recognition-threshold">Similarity score cutoff <span id="face-recognition-threshold-value">70/100</span>
-        <input id="face-recognition-threshold" type="range" min="50" max="95" value="70" step="1" />
-      </label>
-      <div class="face-recognition-note">LOCAL MATCHING · CONSENTED ENROLLMENTS · HUMAN REVIEW REQUIRED. Scores are model similarity, not identity confidence.</div>
       <div id="face-recognition-status" role="status" aria-live="polite">Checking local recognition service…</div>
-      <div id="face-recognition-database" class="face-recognition-database" aria-live="polite">DATABASE · 0 REGISTERED FACES · 0 REFERENCE TEMPLATES</div>
-      <div id="face-recognition-results" aria-live="polite"></div>
-      <form id="face-recognition-enroll" class="face-recognition-enroll">
-        <div class="cctv-summary-label">ENROLL KNOWN PERSON</div>
-        <label>Display name
-          <input id="face-recognition-name" type="text" maxlength="80" autocomplete="off" required />
+
+      <section data-face-view="live">
+        <div class="face-recognition-controls">
+          <select id="face-recognition-camera" aria-label="Camera to analyse"></select>
+          <button id="face-recognition-start" class="scene-btn" type="button">START</button>
+          <button id="face-recognition-stop" class="scene-btn scene-btn-danger" type="button" disabled>STOP</button>
+        </div>
+        <div class="face-view"><canvas id="face-recognition-view" width="640" height="360" aria-label="Analysed frame"></canvas></div>
+        <div id="face-recognition-counts" class="face-counts" aria-live="polite"></div>
+        <div id="face-recognition-results" aria-live="polite"></div>
+        <label class="face-recognition-threshold">Match cutoff <span id="face-recognition-threshold-value">70/100</span>
+          <input id="face-recognition-threshold" type="range" min="50" max="95" value="70" step="1" />
         </label>
-        <label>Reference photos
-          <input id="face-recognition-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
-        </label>
-        <label class="face-recognition-consent">
-          <input id="face-recognition-consent" type="checkbox" required />
-          This person agreed to be enrolled for this local face-matching tool.
-        </label>
-        <button class="scene-btn" type="submit">ENROLL</button>
-      </form>
-      <div id="face-recognition-people" aria-label="Enrolled people"></div>
+        <div class="face-recognition-note">Runs on this computer. A candidate needs three agreeing frames and a person must review it. People who are not enrolled are never recorded.</div>
+      </section>
+
+      <section data-face-view="people" hidden>
+        <div id="face-recognition-database" class="face-recognition-database" aria-live="polite">DATABASE · 0 REGISTERED FACES · 0 REFERENCE TEMPLATES</div>
+        <div id="face-recognition-people" aria-label="Enrolled people"></div>
+        <form id="face-recognition-enroll" class="face-recognition-enroll">
+          <div class="cctv-summary-label">ENROLL A PERSON</div>
+          <label>Name
+            <input id="face-recognition-name" type="text" maxlength="80" autocomplete="off" required />
+          </label>
+          <label>Category
+            <select id="face-recognition-category">
+              <option value="authorised">Authorised</option>
+              <option value="visitor">Visitor</option>
+              <option value="poi">Person of interest (pilot volunteer)</option>
+            </select>
+          </label>
+          <label>Note
+            <input id="face-recognition-note" type="text" maxlength="160" autocomplete="off" placeholder="Role, badge or reason" />
+          </label>
+          <label>Reference photos, 1 to 8
+            <input id="face-recognition-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
+          </label>
+          <label class="face-recognition-consent">
+            <input id="face-recognition-consent" type="checkbox" required />
+            This person agreed to be enrolled for this local face-matching tool.
+          </label>
+          <button class="scene-btn" type="submit">ENROLL</button>
+        </form>
+      </section>
+
+      <section data-face-view="log" hidden>
+        <div class="face-log-head">
+          <span class="cctv-summary-label">CANDIDATE SIGHTINGS</span>
+          <button id="face-recognition-clear" class="scene-btn scene-btn-danger" type="button">CLEAR</button>
+        </div>
+        <div id="face-recognition-sightings"></div>
+        <div class="face-log-head">
+          <span class="cctv-summary-label">AUDIT TRAIL</span>
+          <span id="face-recognition-audit-state" class="face-audit-state"></span>
+        </div>
+        <div id="face-recognition-audit"></div>
+      </section>
     </div>
   </div>
 

@@ -892,7 +892,7 @@ export function createDirectionsLayer({ services }) {
    * Every layer binds its own handler to the same canvas, and they all run
    * inside ONE browser event. Releasing the claim the instant this layer places
    * an endpoint hands the rest of that same click to every ambient handler
-   * registered after this one — placing A on top of a bikeshare station also
+   * registered after this one — placing A on top of a camera station also
    * deselected the station. A timer, not a microtask: a microtask checkpoint
    * runs between two DOM listeners, which is exactly the gap this closes.
    */

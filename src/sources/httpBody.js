@@ -55,7 +55,7 @@ export async function readResponseJsonCapped(response, maxBytes, signal) {
 
 /**
  * Read a fetch() Response body as bytes with the same hard cap as
- * readResponseTextCapped — for protobuf upstreams (GTFS-Realtime).
+ * readResponseTextCapped — for binary upstreams.
  * Throws { code:'RESPONSE_TOO_LARGE' }.
  */
 export async function readResponseBytesCapped(response, maxBytes) {

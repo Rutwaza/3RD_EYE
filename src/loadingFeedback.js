@@ -403,16 +403,6 @@ export function presentLoadingFeedback(state, summary, nowMs) {
     return { state: state.terminal, label, detail: '' };
   }
   const active = summary.active;
-  if (active.length === 1 && active[0].cameraRetry && !summary.disabling) {
-    return {
-      state: 'loading',
-      label: active[0].cameraRetry.retrying
-        ? 'RETRYING ALPR CAMERAS'
-        : 'FETCHING ALPR CAMERAS',
-      detail: 'OpenStreetMap · Overpass',
-    };
-  }
-
   if (
     active.length === 1 &&
     active[0].installationRetry &&

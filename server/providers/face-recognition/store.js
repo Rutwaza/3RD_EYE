@@ -8,6 +8,9 @@ export const FACE_IDENTITY_LIMIT = 256;
 export const FACE_TEMPLATES_PER_IDENTITY_LIMIT = 8;
 export const FACE_SIMILARITY_THRESHOLD_DEFAULT = 70;
 export const FACE_POSSIBLE_DUPLICATE_THRESHOLD = 90;
+/** A best score this close to another person's is not a usable answer. */
+export const FACE_AMBIGUITY_MARGIN = 4;
+export const FACE_CATEGORIES = Object.freeze(['authorised', 'visitor', 'poi']);
 
 function validateEmbedding(value) {
   if (
@@ -37,6 +40,10 @@ function normalizeIdentity(identity) {
   return {
     id,
     name,
+    category: FACE_CATEGORIES.includes(identity.category)
+      ? identity.category
+      : 'authorised',
+    note: String(identity.note || '').trim().slice(0, 160),
     createdAt: String(identity.createdAt || new Date().toISOString()),
     consentConfirmedAt: String(
       identity.consentConfirmedAt || identity.createdAt || new Date().toISOString(),
@@ -126,9 +133,11 @@ export function createFaceIdentityStore({
   return Object.freeze({
     async list() {
       const rows = await load();
-      return rows.map(({ id: identityId, name, createdAt, embeddings }) => ({
+      return rows.map(({ id: identityId, name, category, note, createdAt, embeddings }) => ({
         id: identityId,
         name,
+        category,
+        note,
         createdAt,
         templateCount: embeddings.length,
       }));
@@ -140,21 +149,35 @@ export function createFaceIdentityStore({
         ? Math.max(50, Math.min(95, requestedThreshold))
         : FACE_SIMILARITY_THRESHOLD_DEFAULT;
       const rows = await load();
-      let best = null;
-      for (const row of rows) {
-        for (const template of row.embeddings) {
-          const similarity = faceSimilarity(candidate, template);
-          if (!best || similarity > best.similarityPct)
-            best = { id: row.id, name: row.name, similarityPct: similarity };
-        }
-      }
+      const ranked = rows
+        .map((row) => {
+          // Two agreeing templates count for more than one lucky one.
+          const scores = row.embeddings
+            .map((template) => faceSimilarity(candidate, template))
+            .sort((first, second) => second - first)
+            .slice(0, 2);
+          return {
+            id: row.id,
+            name: row.name,
+            category: row.category,
+            similarityPct: Math.round(
+              scores.reduce((sum, score) => sum + score, 0) / scores.length,
+            ),
+          };
+        })
+        .sort((first, second) => second.similarityPct - first.similarityPct);
+      const [best, second] = ranked;
       if (!best || best.similarityPct < threshold)
         return { status: 'unknown', similarityPct: best?.similarityPct ?? 0 };
+      if (second && best.similarityPct - second.similarityPct < FACE_AMBIGUITY_MARGIN)
+        return { status: 'ambiguous', similarityPct: best.similarityPct };
       return { status: 'possible-match', ...best };
     },
     async enroll({
       name: candidateName,
       embeddings,
+      category = 'authorised',
+      note = '',
       consentConfirmed,
       allowPossibleDuplicate = false,
     }) {
@@ -162,6 +185,8 @@ export function createFaceIdentityStore({
         const rows = await load();
         if (consentConfirmed !== true)
           throw new TypeError('Explicit enrollment consent is required');
+        if (!FACE_CATEGORIES.includes(category))
+          throw new TypeError('Choose a valid category');
         if (rows.length >= FACE_IDENTITY_LIMIT)
           throw new TypeError(`Maximum ${FACE_IDENTITY_LIMIT} identities reached`);
         const name = String(candidateName || '').trim();
@@ -187,6 +212,8 @@ export function createFaceIdentityStore({
         const record = normalizeIdentity({
           id: id(),
           name,
+          category,
+          note,
           createdAt,
           consentConfirmedAt: createdAt,
           embeddings: templates,
@@ -195,6 +222,7 @@ export function createFaceIdentityStore({
         return {
           id: record.id,
           name: record.name,
+          category: record.category,
           createdAt: record.createdAt,
           templateCount: record.embeddings.length,
         };

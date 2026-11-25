@@ -1,5 +1,8 @@
 import { MUSIC_GENRES, CATEGORY_MATCHERS } from './policy.js';
-import { isEastAfricaCountryCode } from '../../data/eastAfrica.js';
+import {
+  isAfricaCountryCode,
+  isEastAfricaCountryCode,
+} from '../../data/africa.js';
 
 export function createCategories({
   state: layerState,
@@ -46,6 +49,8 @@ export function createCategories({
     if (categoryId === 'all') return true;
     if (categoryId === 'east-africa')
       return isEastAfricaCountryCode(station?.countryCode);
+    if (categoryId === 'africa')
+      return isAfricaCountryCode(station?.countryCode);
     if (categoryId.startsWith('genre:')) {
       return detectedGenres(station).includes(
         categoryId.slice('genre:'.length),
@@ -74,12 +79,13 @@ export function createCategories({
     const categories = [
       { id: 'all', label: 'All' },
       { id: 'east-africa', label: 'East Africa' },
+      { id: 'africa', label: 'Africa' },
       { id: 'news', label: 'News' },
       { id: 'talk', label: 'Talk' },
       { id: 'weather', label: 'Weather / Emergency' },
       { id: 'public-safety', label: 'Public Safety' },
       { id: 'aviation-marine', label: 'Aviation / Marine' },
-      { id: 'traffic-transit', label: 'Traffic / Transit' },
+      { id: 'traffic-transit', label: 'Traffic / Transport' },
       { id: 'music', label: 'Music' },
     ];
 

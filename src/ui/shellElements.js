@@ -57,6 +57,20 @@ export function readShellElements(document = globalThis.document) {
     _faceRecognitionPhotos: document.getElementById('face-recognition-photos'),
     _faceRecognitionConsent: document.getElementById('face-recognition-consent'),
     _faceRecognitionPeople: document.getElementById('face-recognition-people'),
+    _faceRecognitionView: document.getElementById('face-recognition-view'),
+    _faceRecognitionCounts: document.getElementById('face-recognition-counts'),
+    _faceRecognitionCategory: document.getElementById(
+      'face-recognition-category',
+    ),
+    _faceRecognitionNote: document.getElementById('face-recognition-note'),
+    _faceRecognitionSightings: document.getElementById(
+      'face-recognition-sightings',
+    ),
+    _faceRecognitionClear: document.getElementById('face-recognition-clear'),
+    _faceRecognitionAudit: document.getElementById('face-recognition-audit'),
+    _faceRecognitionAuditState: document.getElementById(
+      'face-recognition-audit-state',
+    ),
     _cctvPanel: document.getElementById('cctv-panel'),
     _radioPanel: document.getElementById('radio-panel'),
     _contextRadioDock: document.getElementById('context-radio-dock'),

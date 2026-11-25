@@ -4,17 +4,15 @@
  *
  * `camera.changed` fires once the view has moved by this fraction, and it is a
  * single number on the camera that every listener in the app shares. Several
- * layers want it finer than the default — traffic, bikeshare and transit all
- * ask for 0.05 so they notice they have entered a coverage area — and each of
- * them used to write the number directly and hand back whatever it remembered.
+ * layers want it finer than the default — traffic, for one,
+ * asks for 0.05 so it notices it has entered a coverage area — and they
+ * used to write the number directly and hand back whatever it remembered.
  *
  * That cannot work, because a number is not an owner. Two layers asking for the
  * same 0.05 write the same value, so when the first one leaves it sees its own
  * number still in place, concludes nothing else has claimed it, and restores
  * the coarse default out from under a layer that is still running. The symptom
- * is a camera-driven layer that quietly stops noticing the camera: Transit is
- * turned off and Bikeshare stops loading new cities until something else nudges
- * it.
+ * is a camera-driven layer that quietly stops noticing the camera.
  *
  * So ownership is tracked explicitly. Claims are named, the camera gets the
  * finest value anyone has asked for, and the original value returns only when

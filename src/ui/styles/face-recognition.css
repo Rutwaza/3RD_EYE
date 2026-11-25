@@ -178,3 +178,135 @@
     width: min(360px, calc(100vw - 32px));
   }
 }
+
+/* ── Face Map console ─────────────────────────── */
+.face-recognition-inner section {
+  display: grid;
+  gap: 9px;
+}
+
+.face-recognition-inner section[hidden] {
+  display: none;
+}
+
+.face-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgb(130 170 255 / 16%);
+  border-radius: 10px;
+}
+
+.face-tabs button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.face-tabs button[aria-selected='true'] {
+  color: #fff;
+  background: linear-gradient(110deg, rgb(53 224 255 / 24%), rgb(155 107 255 / 28%));
+}
+
+.face-view {
+  overflow: hidden;
+  border: 1px solid rgb(53 224 255 / 28%);
+  border-radius: 12px;
+  background: #02040a;
+}
+
+.face-view canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.face-counts,
+.face-audit-state {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.face-recognition-note,
+.face-recognition-database,
+#face-recognition-status,
+.face-recognition-threshold,
+.face-recognition-result,
+.face-recognition-person,
+.face-recognition-enroll > label:not(.face-recognition-consent) {
+  font-size: 11px;
+}
+
+.face-recognition-enroll select {
+  min-height: 32px;
+}
+
+.face-recognition-result[data-match='possible'],
+.face-sighting[data-category='authorised'],
+.face-recognition-person[data-category='authorised'] {
+  border-color: rgb(62 230 168 / 45%);
+}
+
+.face-recognition-result[data-match='spoof'],
+.face-sighting[data-category='poi'],
+.face-recognition-person[data-category='poi'] {
+  border-color: rgb(255 77 109 / 55%);
+}
+
+.face-recognition-result[data-match='analysing'] {
+  border-color: rgb(155 107 255 / 50%);
+}
+
+.face-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.face-audit-state[data-intact='false'] {
+  color: #ff4d6d;
+}
+
+#face-recognition-sightings,
+#face-recognition-audit {
+  display: grid;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.face-sighting {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 8px;
+  border: 1px solid rgb(130 170 255 / 18%);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.face-sighting span {
+  flex: 1 1 100%;
+}
+
+.face-sighting b {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.face-audit-row {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}

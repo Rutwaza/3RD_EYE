@@ -7,6 +7,7 @@ import { createCctvSource } from '../layers/cctv/source.js';
 import { createRadioSource } from '../layers/radio/source.js';
 import { createTrafficSource } from '../layers/traffic/source.js';
 import { createSelfDeployedCameraStore } from '../layers/selfDeployedCameras/store.js';
+import { createIntelSource } from '../layers/intel/index.js';
 import { createInstallationSource } from '../layers/installations/source.js';
 import { createSatelliteSource } from '../layers/satellites/source.js';
 import { createLaunchSource } from '../layers/launches/source.js';
@@ -31,5 +32,6 @@ export function createStandaloneLayerSources() {
     satellites: createSatelliteSource(),
     launches: createLaunchSource(),
     firms: createFirmsSource(),
+    intel: createIntelSource(),
   };
 }

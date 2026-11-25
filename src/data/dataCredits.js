@@ -93,14 +93,6 @@ export const DATA_CREDITS = [
       '(ODbL 1.0)',
   },
   {
-    key: 'alpr-osm',
-    html:
-      'ALPR camera locations (automatic license plate readers): ' +
-      '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> ' +
-      '(<a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a>); ' +
-      'community mapping includes <a href="https://deflock.org" target="_blank" rel="noopener">DeFlock</a>',
-  },
-  {
     key: 'military-installations-osm',
     html:
       'Mapped installation context: ' +
@@ -175,14 +167,37 @@ export const DATA_CREDITS = [
       'license CC BY 4.0',
   },
   {
+    key: 'itraffic-cctv',
+    html:
+      'CCTV cameras &amp; frames (South Africa): ' +
+      '<a href="https://www.i-traffic.co.za/" target="_blank" rel="noopener">SANRAL i-TRAFFIC</a>',
+  },
+  {
+    key: 'africa-data',
+    html:
+      'Africa layers: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> (ODbL) · ' +
+      '<a href="https://ourairports.com/data/" target="_blank" rel="noopener">OurAirports</a> · ' +
+      '<a href="https://datasets.wri.org/datasets/global-power-plant-database" target="_blank" rel="noopener">WRI Global Power Plant Database</a> (CC BY 4.0) · ' +
+      '<a href="https://volcano.si.edu/" target="_blank" rel="noopener">Smithsonian GVP</a> · ' +
+      '<a href="https://data.worldbank.org/" target="_blank" rel="noopener">World Bank</a> (CC BY 4.0) · ' +
+      '<a href="https://www.unhcr.org/refugee-statistics/" target="_blank" rel="noopener">UNHCR</a> · ' +
+      '<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0)',
+  },
+  {
+    key: 'world-desk',
+    html:
+      'World Desk: headlines link to their publishers; ' +
+      '<a href="https://www.gdacs.org/" target="_blank" rel="noopener">GDACS</a> · ' +
+      '<a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener">NASA EONET</a> · ' +
+      '<a href="https://www.who.int/emergencies/disease-outbreak-news" target="_blank" rel="noopener">WHO</a> · ' +
+      '<a href="https://www.wikidata.org/" target="_blank" rel="noopener">Wikidata</a> (CC0) · ' +
+      '<a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates by Exchange Rate API</a>',
+  },
+  {
     key: 'calgary-cctv',
     html:
       'Traffic cameras (Calgary): contains information licensed under the ' +
       '<a href="https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa" target="_blank" rel="noopener">Open Government Licence – City of Calgary</a>',
-  },
-  {
-    key: 'gbfs',
-    html: 'Bikeshare availability: GBFS operator feeds (e.g. Austin BCycle)',
   },
   {
     key: 'osrm-routing',
@@ -193,10 +208,6 @@ export const DATA_CREDITS = [
       '<a href="https://routing.openstreetmap.de/about.html" target="_blank" rel="noopener">routing.openstreetmap.de</a> · ' +
       '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> (ODbL) · ' +
       '<a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">fix the map</a>',
-  },
-  {
-    key: 'gtfs-rt',
-    html: 'Transit vehicles: operator GTFS-Realtime feeds (each operator is credited below when its vehicles are shown)',
   },
   {
     key: 'radio-browser',
@@ -301,27 +312,6 @@ export const NATURAL_EARTH_CREDIT = {
     'Physical region boundaries from ' +
     '<a href="https://www.naturalearthdata.com" target="_blank" rel="noopener">Natural Earth</a> (public domain)',
 };
-
-/**
- * Per-feed transit credit, registered the first time that feed's vehicles
- * render (see `src/data/transitFeeds.js` for the license of each).
- * @param {{ id: string, attribution: string, license: string, licenseUrl: string }} feed
- * @returns {{ key: string, html: string }}
- */
-export function transitFeedCredit(feed) {
-  const escape = (text) =>
-    String(text)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;');
-  return {
-    key: `transit-${feed.id}`,
-    html:
-      `Transit (${escape(feed.attribution)}): ` +
-      `<a href="${escape(feed.licenseUrl)}" target="_blank" rel="noopener">${escape(feed.license)}</a>`,
-  };
-}
 
 /** Registered when the Bhote Koshi event reconstruction activates. */
 export const BHOTE_KOSHI_CREDIT = {

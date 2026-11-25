@@ -118,6 +118,7 @@ export const CATEGORY_MATCHERS = Object.freeze({
 export const RADIO_CATEGORY_COLORS = Object.freeze({
   all: '#b9fbff',
   'east-africa': '#f2a65a',
+  africa: '#e0c067',
   news: '#44adff',
   talk: '#f2b84b',
   weather: '#ff5c78',
@@ -130,6 +131,7 @@ export const RADIO_CATEGORY_COLORS = Object.freeze({
 
 export const RADIO_CLUSTER_LABELS = Object.freeze({
   'east-africa': 'E AFRICA',
+  africa: 'AFRICA',
   news: 'NEWS',
   talk: 'TALK',
   weather: 'WEATHER',
@@ -142,6 +144,7 @@ export const RADIO_CLUSTER_LABELS = Object.freeze({
 
 export const RADIO_MARKER_CATEGORY_ORDER = Object.freeze([
   'east-africa',
+  'africa',
   'news',
   'public-safety',
   'weather',

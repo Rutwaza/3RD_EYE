@@ -1,17 +1,10 @@
 import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createFaceIdentityStore } from './face-recognition/store.js';
+import { readModelFile } from './face-recognition/models.js';
+import { createFaceJournal } from './face-recognition/journal.js';
 
 const MAX_REQUEST_BYTES = 1_500_000;
-const MODEL_FILES = new Set([
-  'blazeface.json',
-  'blazeface.bin',
-  'facemesh.json',
-  'facemesh.bin',
-  'faceres.json',
-  'faceres.bin',
-]);
 
 function isLoopback(address = '') {
   const normalized = String(address).toLowerCase().replace(/^::ffff:/, '');
@@ -50,6 +43,7 @@ function respond(response, status, payload, contentType = 'application/json') {
 /** Loopback-only Face Recognition API. It never accepts or fetches stream URLs. */
 export function createFaceRecognitionMiddleware({
   store = createFaceIdentityStore(),
+  journal = createFaceJournal(),
   modelsDirectory,
 } = {}) {
   const humanEntry = createRequire(import.meta.url).resolve(
@@ -78,17 +72,17 @@ export function createFaceRecognitionMiddleware({
 
     const url = new URL(request.url || '/', 'http://localhost');
     const method = String(request.method || 'GET').toUpperCase();
-    const modelMatch = /^\/models\/([a-z0-9-]+\.(?:json|bin))$/.exec(
+    const modelMatch = /^\/models\/([a-z0-9-]+\.(?:json|weights))$/.exec(
       url.pathname,
     );
     if (modelMatch && method === 'GET') {
       const [, filename] = modelMatch;
-      if (!MODEL_FILES.has(filename)) {
-        respond(response, 404, { error: 'Model not found' });
-        return;
-      }
       try {
-        const body = await readFile(path.join(modelRoot, filename));
+        const body = await readModelFile(modelRoot, filename);
+        if (!body) {
+          respond(response, 404, { error: 'Model not found' });
+          return;
+        }
         respond(
           response,
           200,
@@ -109,7 +103,7 @@ export function createFaceRecognitionMiddleware({
         respond(response, 200, {
           available: true,
           identities: identities.length,
-          model: 'Human FaceRes',
+          model: 'CenterNet people · BlazeFace · FaceRes · liveness',
           storage: 'private local folder',
         });
       } catch {
@@ -131,6 +125,7 @@ export function createFaceRecognitionMiddleware({
       try {
         const body = await readJson(request);
         const identity = await store.enroll(body);
+        await journal.audit('enrolled', identity.name, identity.category);
         respond(response, 201, { identity });
       } catch (error) {
         if (error?.duplicate) {
@@ -167,10 +162,83 @@ export function createFaceRecognitionMiddleware({
     const identityPath = /^\/identities\/([a-f0-9-]{36})$/i.exec(url.pathname);
     if (identityPath && method === 'DELETE') {
       try {
+        const person = (await store.list()).find(
+          ({ id }) => id === identityPath[1],
+        );
         const removed = await store.remove(identityPath[1]);
+        if (removed) {
+          await journal.forget(identityPath[1]);
+          await journal.audit('deleted', person?.name);
+        }
         respond(response, removed ? 200 : 404, { removed });
       } catch {
         respond(response, 503, { error: 'Local identity store is unavailable' });
+      }
+      return;
+    }
+
+    if (url.pathname === '/sightings') {
+      try {
+        if (method === 'GET') {
+          respond(response, 200, { sightings: (await journal.list()).slice(0, 120) });
+          return;
+        }
+        if (method === 'DELETE') {
+          respond(response, 200, { cleared: await journal.clear() });
+          return;
+        }
+        if (method === 'POST') {
+          const body = await readJson(request);
+          const identity = (await store.list()).find(
+            ({ id }) => id === body.identityId,
+          );
+          if (!identity) {
+            respond(response, 404, { error: 'That person is not enrolled' });
+            return;
+          }
+          respond(response, 201, {
+            sighting: await journal.record(body, identity),
+          });
+          return;
+        }
+      } catch (error) {
+        respond(response, error instanceof TypeError ? 400 : 503, {
+          error: error instanceof TypeError ? error.message : 'Sightings are unavailable',
+        });
+        return;
+      }
+    }
+
+    const reviewPath = /^\/sightings\/([a-f0-9-]{36})\/review$/i.exec(url.pathname);
+    if (reviewPath && method === 'POST') {
+      try {
+        const { verdict } = await readJson(request);
+        const sighting = await journal.review(reviewPath[1], verdict);
+        respond(response, sighting ? 200 : 404, sighting ? { sighting } : { error: 'Sighting not found' });
+      } catch (error) {
+        respond(response, 400, { error: error.message || 'Review failed' });
+      }
+      return;
+    }
+
+    if (url.pathname === '/audit' && method === 'GET') {
+      try {
+        respond(response, 200, await journal.readAudit());
+      } catch {
+        respond(response, 503, { error: 'Audit trail is unavailable' });
+      }
+      return;
+    }
+
+    if (url.pathname === '/session' && method === 'POST') {
+      try {
+        const { action, cameraName } = await readJson(request);
+        if (!['started', 'stopped'].includes(action))
+          throw new TypeError('Unknown session action');
+        await journal.audit(`analysis-${action}`, '', cameraName);
+        respond(response, 200, { recorded: true });
+      } catch (error) {
+        respond(response, 400, { error: error.message || 'Session was not recorded' });
       }
       return;
     }

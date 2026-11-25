@@ -34,6 +34,8 @@ test('face identity store requires consent and persists embeddings without sourc
       {
         id: enrolled.id,
         name: 'Dev teammate',
+        category: 'authorised',
+        note: '',
         createdAt: enrolled.createdAt,
         templateCount: 2,
       },
@@ -52,6 +54,7 @@ test('face matching reports possible matches only above threshold and unknown ot
       status: 'possible-match',
       id: enrolled.id,
       name: 'Dev teammate',
+      category: 'authorised',
       similarityPct: 100,
     });
     assert.equal((await store.match(embedding(0.5), 70)).status, 'unknown');

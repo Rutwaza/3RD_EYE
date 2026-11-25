@@ -15,6 +15,24 @@ const FEED_STATE_LABELS = Object.freeze({
 // Presentation order is independent of catalog registration and startup order.
 const PANEL_GROUPS = [
   {
+    label: 'World pulse',
+    ids: ['world-news', 'crisis-alerts', 'health-outbreaks'],
+  },
+  {
+    label: 'Africa',
+    ids: [
+      'africa-facilities',
+      'africa-airports',
+      'africa-power',
+      'africa-environment',
+      'africa-rivers',
+      'africa-seismic',
+      'africa-volcanoes',
+      'africa-economy',
+      'africa-displacement',
+    ],
+  },
+  {
     label: 'Movement',
     ids: ['satellites', 'flights', 'military', 'ais-live-vessels', 'traffic'],
   },
@@ -48,7 +66,6 @@ const PANEL_POSITIONS = new Map(
 );
 const PANEL_LABELS = {
   'ais-live-vessels': 'Live Vessels',
-  bikeshare: 'Bike Share',
   cctv: 'Cameras',
   'self-deployed-cameras': 'Self deployed cameras',
   'local-datacenters': 'Data Centers',

@@ -55,6 +55,11 @@ import {
   DEFAULT_CALGARY_MAX_SOURCES,
   CALGARY_DOWNTOWN,
   CALGARY_MAX_CATALOG_BYTES,
+  ITRAFFIC_CAMERAS_URL,
+  ITRAFFIC_IMAGE_ORIGIN,
+  ITRAFFIC_ANCHORS,
+  ITRAFFIC_MAX_CATALOG_BYTES,
+  DEFAULT_ITRAFFIC_MAX_SOURCES,
   CCTV_SOURCE_FETCH_TIMEOUT_MS,
 } from './constants.js';
 import {
@@ -1591,6 +1596,104 @@ export async function loadCalgarySourcesFromOpenData() {
       '[CCTV] Calgary camera download error:',
       error?.message || error,
     );
+    return [];
+  }
+}
+
+/** Nearest large city, so a camera without a name still says where it is. */
+const SOUTH_AFRICAN_CITIES = [
+  ['Johannesburg', -26.2041, 28.0473],
+  ['Pretoria', -25.7479, 28.2293],
+  ['Durban', -29.8587, 31.0218],
+  ['Cape Town', -33.9249, 18.4241],
+  ['Gqeberha', -33.9608, 25.6022],
+  ['East London', -33.0153, 27.9116],
+  ['Bloemfontein', -29.0852, 26.1596],
+  ['Polokwane', -23.9045, 29.4689],
+  ['Mbombela', -25.4753, 30.9694],
+  ['Pietermaritzburg', -29.6006, 30.3794],
+  ['George', -33.988, 22.453],
+  ['Paarl', -33.7342, 18.9621],
+];
+
+function nearestSouthAfricanCity(lat, lon) {
+  let best = SOUTH_AFRICAN_CITIES[0];
+  let bestDistance = Infinity;
+  for (const city of SOUTH_AFRICAN_CITIES) {
+    const distance = (lat - city[1]) ** 2 + (lon - city[2]) ** 2;
+    if (distance < bestDistance) {
+      best = city;
+      bestDistance = distance;
+    }
+  }
+  return best[0];
+}
+
+/**
+ * Load South African road cameras from the public i-TRAFFIC map. Keyless: the
+ * map publishes an id and a position per camera, and each still lives at a
+ * fixed path under the same host, so no upstream text can choose a URL.
+ *
+ * @returns {Promise<Array<object>>} Normalized camera source objects.
+ */
+export async function loadItrafficSourcesFromMap() {
+  try {
+    const resp = await fetch(ITRAFFIC_CAMERAS_URL, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(CCTV_SOURCE_FETCH_TIMEOUT_MS),
+    });
+    if (!resp.ok) {
+      console.warn('[CCTV] i-TRAFFIC camera download failed:', resp.status);
+      return [];
+    }
+    const rows = await readResponseJsonCapped(resp, ITRAFFIC_MAX_CATALOG_BYTES);
+    if (!Array.isArray(rows)) return [];
+    const cameras = new Map();
+    for (const row of rows) {
+      const rawId = String(row?.itemId || '').trim();
+      if (!/^[A-Za-z0-9_-]{1,40}$/.test(rawId)) continue;
+      const lat = toFiniteNumber(row?.location?.[0]);
+      const lon = toFiniteNumber(row?.location?.[1]);
+      if (!(lat > -35.5 && lat < -21.5 && lon > 16 && lon < 33.5)) continue;
+      const id = `za-${rawId}`;
+      const city = nearestSouthAfricanCity(lat, lon);
+      const url = `${ITRAFFIC_IMAGE_ORIGIN}${encodeURIComponent(rawId)}`;
+      cameras.set(id, {
+        id,
+        name: String(row?.title || '').trim() || `${city} road camera ${rawId.split('-')[0]}`,
+        city,
+        cityId: 'south-africa',
+        provider: 'SANRAL i-TRAFFIC',
+        lat,
+        lon,
+        headingDeg: fallbackHeadingFromId(id),
+        headingConfidence: 'low',
+        pitchDeg: -18,
+        fovDeg: 44,
+        rangeM: 160,
+        mountHeightM: 12,
+        groundElevationM: city === 'Johannesburg' || city === 'Pretoria' ? 1500 : 60,
+        feedType: 'image',
+        url,
+        snapshotUrl: url,
+        sourceKind: 'itraffic-public-map',
+        license: 'Public SANRAL i-TRAFFIC traffic imagery',
+      });
+    }
+    const unique = [...cameras.values()];
+    const maxRaw = Number(
+      process.env.CCTV_ITRAFFIC_MAX_SOURCES || DEFAULT_ITRAFFIC_MAX_SOURCES,
+    );
+    const maxCount = Number.isFinite(maxRaw)
+      ? Math.max(8, Math.min(2000, Math.floor(maxRaw)))
+      : DEFAULT_ITRAFFIC_MAX_SOURCES;
+    const prioritized = prioritizeSources(unique, maxCount, ITRAFFIC_ANCHORS);
+    console.log(
+      `[CCTV] Loaded South African camera sources: ${unique.length} (using nearest ${prioritized.length})`,
+    );
+    return prioritized;
+  } catch (error) {
+    console.warn('[CCTV] i-TRAFFIC download error:', error?.message || error);
     return [];
   }
 }

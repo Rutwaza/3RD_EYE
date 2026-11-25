@@ -66,8 +66,8 @@ export function createIngestion({
         const seenStationIds = new Set(
           acceptedGlobalRows.map((station) => station.id),
         );
-        const regionalRows = Array.isArray(body.eastAfricaStations)
-          ? body.eastAfricaStations.filter((station) => {
+        const regionalRows = Array.isArray(body.africaStations)
+          ? body.africaStations.filter((station) => {
               if (
                 !parts.catalogModel.isValidRadioDirectoryStation(station) ||
                 seenStationIds.has(station.id)

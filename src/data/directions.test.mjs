@@ -560,7 +560,7 @@ test('the pointer claim outlives the click that consumed it', async (t) => {
   // Every layer binds its own handler to the same canvas and they all run
   // inside ONE browser event. Releasing the claim the moment the endpoint is
   // placed hands the rest of that same click to every ambient handler
-  // registered after this one — which is how placing A on top of a bikeshare
+  // registered after this one — which is how placing A on top of a camera
   // station also deselected the station.
   directionsLayer.setParams({ arm: 'a' });
   assert.equal(pointerOwner(), DIRECTIONS_POINTER_OWNER);

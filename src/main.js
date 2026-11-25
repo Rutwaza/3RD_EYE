@@ -1,5 +1,6 @@
 import { createStandaloneApplication } from './standalone/application.js';
 import { describeError } from './standalone/errors.js';
+import { mountWorldDesk } from './ui/news/index.js';
 
 const application = createStandaloneApplication({
   googleApiKey: import.meta.env.GOOGLE_MAPS_API_KEY,
@@ -21,7 +22,20 @@ window.addEventListener('online', updateInternetStatus);
 window.addEventListener('offline', updateInternetStatus);
 updateInternetStatus();
 
-application.start().catch((error) => {
+application
+  .start()
+  .then(() => {
+    const { scene, controls, data } = application.getComponents();
+    const unmount = mountWorldDesk({
+      viewer: scene.viewer,
+      styleManager: controls.styleManager,
+      dataManager: data.dataManager,
+    });
+    application.subscribe(({ status }) => {
+      if (status === 'destroying' || status === 'destroyed') unmount();
+    });
+  })
+  .catch((error) => {
   console.error('3rd Eye initialization failed:', error);
   const loaderStatus = document.querySelector('#loading-screen .loader-status');
   loaderStatus.textContent = `Error: ${describeError(error)}`;

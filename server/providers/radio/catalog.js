@@ -1,6 +1,9 @@
 import { lookup as lookupDns } from 'node:dns/promises';
 import { randomUUID } from 'node:crypto';
-import { EAST_AFRICA_COUNTRY_CODES } from '../../../src/data/eastAfrica.js';
+import {
+  AFRICA_COUNTRY_CODES,
+  isEastAfricaCountryCode,
+} from '../../../src/data/africa.js';
 
 import { readResponseTextCapped } from '../common/http.js';
 import {
@@ -55,7 +58,7 @@ export function createRadioProxyMiddleware({
   let catalogCache = null;
   // Regional stations are an additive field: the established global catalog
   // keeps its existing selection and 750-station cap unchanged.
-  let eastAfricaByCountry = new Map();
+  let africaByCountry = new Map();
   let catalogGeneration = 0;
   // The generation counter is process-local, so it restarts from 1 with the
   // server. The instance token scopes each generation sequence: a client that
@@ -164,7 +167,7 @@ export function createRadioProxyMiddleware({
       'marine',
       'traffic',
     ];
-    // EAC Partner States. Each country gets its own small, popularity-ranked
+    // African countries, EAC partner states first. Each country gets its own small, popularity-ranked
     // allowance so global click counts cannot crowd the region out.
     const outcomes = await mapRadioConcurrent(
       queries,
@@ -283,7 +286,7 @@ export function createRadioProxyMiddleware({
     // separate cap. A region-query outage never invalidates the existing
     // global catalog or its health policy.
     const regionalOutcomes = await mapRadioConcurrent(
-      EAST_AFRICA_COUNTRY_CODES,
+      AFRICA_COUNTRY_CODES,
       3,
       async (countryCode) => {
         const params = new URLSearchParams({
@@ -293,7 +296,7 @@ export function createRadioProxyMiddleware({
           hidebroken: 'true',
           order: 'clickcount',
           reverse: 'true',
-          limit: '40',
+          limit: isEastAfricaCountryCode(countryCode) ? '80' : '30',
         });
         try {
           const rows = await fetchPath(`/json/stations/search?${params}`);
@@ -303,7 +306,7 @@ export function createRadioProxyMiddleware({
             .filter(
               (station) => station && station.countryCode === countryCode,
             )
-            .slice(0, 20);
+            .slice(0, isEastAfricaCountryCode(countryCode) ? 40 : 15);
           return { countryCode, stations, succeeded: true };
         } catch {
           return { countryCode, succeeded: false };
@@ -316,24 +319,24 @@ export function createRadioProxyMiddleware({
     if (regionalSucceeded) {
       for (const outcome of regionalOutcomes) {
         if (outcome.succeeded)
-          eastAfricaByCountry.set(outcome.countryCode, {
+          africaByCountry.set(outcome.countryCode, {
             stations: outcome.stations,
             updatedAt: timestamp,
           });
       }
     }
     const globalIds = new Set(selected.map((station) => station.id));
-    for (const [countryCode, cached] of eastAfricaByCountry) {
+    for (const [countryCode, cached] of africaByCountry) {
       if (timestamp - cached.updatedAt > RADIO_DIRECTORY_STALE_MS)
-        eastAfricaByCountry.delete(countryCode);
+        africaByCountry.delete(countryCode);
     }
-    const eastAfricaStations = [...eastAfricaByCountry.values()]
+    const africaStations = [...africaByCountry.values()]
       .flatMap((cached) => cached.stations)
       .filter((station) => !globalIds.has(station.id));
-    nextCatalog.eastAfricaStations = eastAfricaStations.map(publicRadioStation);
+    nextCatalog.africaStations = africaStations.map(publicRadioStation);
     nextCatalog.stationIds = new Set([
       ...nextCatalog.stationIds,
-      ...eastAfricaStations.map((station) => station.id),
+      ...africaStations.map((station) => station.id),
     ]);
     if (degraded && catalogCache) {
       const error = new Error(
@@ -416,7 +419,7 @@ export function createRadioProxyMiddleware({
         const catalog = await getCatalog();
         sendJson(res, 200, {
           stations: catalog.stations,
-          eastAfricaStations: catalog.eastAfricaStations || [],
+          africaStations: catalog.africaStations || [],
           updatedAt: catalog.updatedAt,
           stale: catalog.stale,
           degraded: Boolean(catalog.degraded),

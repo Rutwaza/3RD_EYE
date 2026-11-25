@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createFaceIdentityStore, FACE_EMBEDDING_LENGTH } from './face-recognition/store.js';
 import { createFaceRecognitionMiddleware } from './face-recognition.js';
+import { createFaceJournal } from './face-recognition/journal.js';
 
 function request(method, url, body, { address = '127.0.0.1', origin = 'http://localhost:4173' } = {}) {
   const bytes = body === undefined ? [] : [Buffer.from(JSON.stringify(body))];
@@ -64,6 +65,7 @@ test('Face Recognition API enrolls, matches, lists, and deletes identities local
   try {
     const middleware = createFaceRecognitionMiddleware({
       store: createFaceIdentityStore({ directory }),
+      journal: createFaceJournal({ directory }),
     });
     const enrolled = await invoke(
       middleware,
@@ -90,11 +92,54 @@ test('Face Recognition API enrolls, matches, lists, and deletes identities local
     assert.equal(listed.body.identities.length, 1);
     assert.equal(Object.hasOwn(listed.body.identities[0], 'embeddings'), false);
 
+    const person = enrolled.body.identity;
+    const sighting = await invoke(
+      middleware,
+      request('POST', '/sightings', {
+        identityId: person.id,
+        cameraName: 'Gate',
+        similarityPct: 91,
+        votes: 3,
+      }),
+    );
+    assert.equal(sighting.status, 201);
+    assert.equal(
+      (
+        await invoke(
+          middleware,
+          request('POST', '/sightings', {
+            identityId: '00000000-0000-0000-0000-000000000000',
+          }),
+        )
+      ).status,
+      404,
+      'a person who is not enrolled is never recorded',
+    );
+    const reviewed = await invoke(
+      middleware,
+      request('POST', `/sightings/${sighting.body.sighting.id}/review`, {
+        verdict: 'confirmed',
+      }),
+    );
+    assert.equal(reviewed.body.sighting.review, 'confirmed');
+
     const removed = await invoke(
       middleware,
       request('DELETE', `/identities/${enrolled.body.identity.id}`),
     );
     assert.equal(removed.body.removed, true);
+    assert.equal(
+      (await invoke(middleware, request('GET', '/sightings'))).body.sightings
+        .length,
+      0,
+      'deleting a person deletes their sightings',
+    );
+    const audit = await invoke(middleware, request('GET', '/audit'));
+    assert.equal(audit.body.intact, true);
+    assert.deepEqual(
+      audit.body.rows.map(({ action }) => action),
+      ['deleted', 'review-confirmed', 'sighting', 'enrolled'],
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -103,13 +148,22 @@ test('Face Recognition API enrolls, matches, lists, and deletes identities local
 test('Face Recognition model route serves only the small allowlisted model set', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'gev-face-models-'));
   try {
-    await writeFile(path.join(directory, 'blazeface.json'), '{"model":true}');
+    await writeFile(path.join(directory, 'blazeface.json'), '{"weightsManifest":[{"paths":["blazeface.bin"]}]}');
+    await writeFile(path.join(directory, 'blazeface.bin'), 'weights');
     const middleware = createFaceRecognitionMiddleware({ modelsDirectory: directory });
     const model = await invoke(middleware, request('GET', '/models/blazeface.json'));
     assert.equal(model.status, 200);
-    assert.deepEqual(model.body, { model: true });
+    assert.deepEqual(
+      model.body.weightsManifest[0].paths,
+      ['blazeface.weights'],
+      'weights avoid the .bin name that download managers seize',
+    );
     assert.equal(
-      (await invoke(middleware, request('GET', '/models/unknown.bin'))).status,
+      (await invoke(middleware, request('GET', '/models/blazeface.weights'))).status,
+      200,
+    );
+    assert.equal(
+      (await invoke(middleware, request('GET', '/models/unknown.weights'))).status,
       404,
     );
   } finally {

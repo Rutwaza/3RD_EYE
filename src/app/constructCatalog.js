@@ -19,6 +19,7 @@ import { createInfrastructureLayers } from '../data/infrastructure.js';
 import { localGeoJsonServices } from './localGeojsonServices.js';
 import { createBhoteKoshiEventLayer } from '../data/bhoteKoshiEvent.js';
 import { createBhoteKoshiLocatorLayer } from '../data/bhoteKoshiLocator.js';
+import { createIntelLayers } from '../layers/intel/index.js';
 import { createSelfDeployedCamerasLayer } from '../layers/selfDeployedCameras/index.js';
 
 const SOURCE_METHODS = Object.freeze({
@@ -132,6 +133,7 @@ export function createApplicationCatalog({
           source: 'NASA FIRMS · LIVE',
           feed: sources.firms,
         }),
+        ...createIntelLayers({ source: sources.intel }),
       ],
       metadata,
     );

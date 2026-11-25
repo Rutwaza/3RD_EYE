@@ -38,11 +38,6 @@ import {
   createEarthquakeOverlayEntry,
 } from '../data/earthquakes.js';
 import {
-  BIKESHARE_SELECTED_OVERLAY_SOURCE_ID,
-  BIKESHARE_SELECTED_OVERLAY_SOURCE_OPTIONS,
-  createBikeshareSelectedOverlayEntry,
-} from '../data/bikeshare.js';
-import {
   ISS_OVERLAY_SOURCE_ID,
   ISS_OVERLAY_SOURCE_OPTIONS,
   createIssOverlayEntry,
@@ -764,7 +759,7 @@ function buildPhase5EarthquakesWorkload(count) {
   return workload;
 }
 
-function buildPhase5BikeshareWorkload(count) {
+function buildPhase5SatellitesWorkload(count) {
   const earthquakeCount =
     LOCAL_OVERLAY_COHORT_LIMIT * 2 +
     FIRMS_AMBIENT_COHORT_LIMIT +
@@ -775,45 +770,8 @@ function buildPhase5BikeshareWorkload(count) {
     EARTHQUAKE_OVERLAY_COHORT_LIMIT;
   const expectedCount = earthquakeCount + 1;
   if (count !== expectedCount)
-    throw new Error(`phase5-bikeshare requires ${expectedCount} entries`);
-  const workload = buildPhase5EarthquakesWorkload(earthquakeCount);
-  const position = new Cesium.Cartesian3(0.12, -0.08, 0);
-  workload.positions.push(position);
-  workload.drifts.push({ baseX: 0.12, baseY: -0.08, phase: 0.7, rate: 0.41 });
-  const entry = createBikeshareSelectedOverlayEntry('allocation:station', {
-    stationId: 'station',
-    stationName: 'CONGRESS & 6TH',
-    bikesAvailable: 7,
-    docksAvailable: 4,
-    capacity: 11,
-    isInstalled: true,
-    isRenting: true,
-    isReturning: true,
-    point: { position },
-  });
-  entry.horizonCull = false;
-  workload.registrations.push({
-    sourceId: BIKESHARE_SELECTED_OVERLAY_SOURCE_ID,
-    entries: [entry],
-    options: BIKESHARE_SELECTED_OVERLAY_SOURCE_OPTIONS,
-  });
-  return workload;
-}
-
-function buildPhase5SatellitesWorkload(count) {
-  const bikeshareCount =
-    LOCAL_OVERLAY_COHORT_LIMIT * 2 +
-    FIRMS_AMBIENT_COHORT_LIMIT +
-    vesselOverlayCohortLimit(VIEWPORT_WIDTH, VIEWPORT_HEIGHT) +
-    1 +
-    CCTV_AMBIENT_CARD_MAX +
-    1 +
-    EARTHQUAKE_OVERLAY_COHORT_LIMIT +
-    1;
-  const expectedCount = bikeshareCount + 1;
-  if (count !== expectedCount)
     throw new Error(`phase5-satellites requires ${expectedCount} entries`);
-  const workload = buildPhase5BikeshareWorkload(bikeshareCount);
+  const workload = buildPhase5EarthquakesWorkload(earthquakeCount);
   const position = new Cesium.Cartesian3(-0.42, 0.54, 0);
   workload.positions.push(position);
   workload.drifts.push({ baseX: -0.42, baseY: 0.54, phase: 1.3, rate: 0.62 });
@@ -836,7 +794,7 @@ function buildPhase5CctvProjectionWorkload(count) {
     CCTV_AMBIENT_CARD_MAX +
     1 +
     EARTHQUAKE_OVERLAY_COHORT_LIMIT +
-    2;
+    1;
   const expectedCount = satelliteCount + 1;
   if (count !== expectedCount) {
     throw new Error(`phase5-cctv-projection requires ${expectedCount} entries`);
@@ -953,7 +911,7 @@ function buildPhase5RocketMissionWorkload(count) {
     CCTV_AMBIENT_CARD_MAX +
     1 +
     EARTHQUAKE_OVERLAY_COHORT_LIMIT +
-    3;
+    2;
   const expectedCount =
     phase5Count + ROCKET_MISSION_AMBIENT_OVERLAY_COHORT_LIMIT;
   if (count !== expectedCount) {
@@ -1190,8 +1148,6 @@ function main() {
                 ? buildPhase4CctvWorkload(ENTRY_COUNT)
                 : PROFILE === 'phase5-earthquakes'
                   ? buildPhase5EarthquakesWorkload(ENTRY_COUNT)
-                  : PROFILE === 'phase5-bikeshare'
-                    ? buildPhase5BikeshareWorkload(ENTRY_COUNT)
                     : PROFILE === 'phase5-satellites'
                       ? buildPhase5SatellitesWorkload(ENTRY_COUNT)
                       : PROFILE === 'phase5-cctv-projection'

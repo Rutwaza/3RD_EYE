@@ -99,6 +99,14 @@ export const KEY_SETUP_KEYS = Object.freeze([
     tier: 'free',
   }),
   Object.freeze({
+    id: 'x-api',
+    title: 'X NEWSROOMS',
+    unlocks: 'Newsroom posts from X in the World Desk (X bills per post read)',
+    getUrl: 'https://console.x.com',
+    envVars: Object.freeze(['X_BEARER_TOKEN']),
+    tier: 'metered',
+  }),
+  Object.freeze({
     id: 'launch-library',
     title: 'LAUNCH LIBRARY',
     unlocks: 'Higher space-missions request allowance',

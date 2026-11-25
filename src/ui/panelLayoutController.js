@@ -10,8 +10,8 @@ const COCKPIT_LAYOUT_SETTLE_MS = 240;
 const LEFT_STACK_OBSTACLE_SELECTOR = [
   '#cockpit-hud .cockpit-topline',
   '#cockpit-hud .cockpit-topline > div',
-  '#title-bar',
-  '#style-indicator',
+  '#command-bar',
+  '#live-wire',
   '#top-center-actions',
   '#traffic-sync-chip',
   '#cctv-sync-chip',
@@ -40,8 +40,8 @@ const LEFT_STACK_OBSTACLE_SELECTOR = [
 const RIGHT_STACK_OBSTACLE_SELECTOR = [
   '#cockpit-hud .cockpit-topline',
   '#cockpit-hud .cockpit-topline > div',
-  '#title-bar',
-  '#style-indicator',
+  '#command-bar',
+  '#live-wire',
   '#top-center-actions',
   '#traffic-sync-chip',
   '#cctv-sync-chip',

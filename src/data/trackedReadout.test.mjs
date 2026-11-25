@@ -123,9 +123,9 @@ test('tracked entry factory pins the production protected-lane policy', () => {
 
 test('selected camera readout carries tactical animation and fixed badge clearance', () => {
   const entry = createTrackedOverlayEntry({
-    id: 'alpr:42', gevDisplayPosition: () => ({ x: 1, y: 2, z: 3 }),
+    id: 'site:42', gevDisplayPosition: () => ({ x: 1, y: 2, z: 3 }),
     gevLabelModel: {
-      title: 'ALPR-0042', details: ['OSM MAPPED'], accent: '#ff6474',
+      title: 'SITE-0042', details: ['OSM MAPPED'], accent: '#ff6474',
       cardStyle: 'tactical', selected: true, leaderStyle: 'elbow',
       leaderAnimationMs: 440, leaderAnimationStartedAt: 100, leaderDrawRatio: 0.68,
       anchorRadiusPx: 30, anchorRadiusScale: null,

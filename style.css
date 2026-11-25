@@ -21,3 +21,5 @@
 @import './src/ui/styles/first-run.css';
 @import './src/ui/styles/provider-settings.css';
 @import './src/ui/styles/panel-scrollbars.css';
+@import './src/ui/styles/theme.css';
+@import './src/ui/styles/world-desk.css';

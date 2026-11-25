@@ -12,8 +12,6 @@ import { weatherEffectsProxy } from './regional/weather-effects.js';
 import { cctvProxy } from './cctv.js';
 import { defaultSourceRoot } from './common/source-root.js';
 import { radioBrowserProxy } from './radio.js';
-import { gbfsProxy } from './gbfs.js';
-import { transitProxy } from './transit.js';
 import { adsbLolProxy } from './aircraft/adsb-lol.js';
 import { aisLiveProxy } from './vessels/ais-live.js';
 import { trackBackfillProxies } from './aircraft/tracks.js';
@@ -21,6 +19,7 @@ import { openAiRealtimeProxy } from './openai.js';
 import { googlePlacesContextProxy } from './places.js';
 import { keySetupEndpoint } from '../standalone/key-setup.js';
 import { faceRecognitionProxy } from './face-recognition.js';
+import { intelProxy } from './intel.js';
 
 /** Construct the local provider plugins in their established order. */
 function localProviderPlugins() {
@@ -39,13 +38,12 @@ function localProviderPlugins() {
     weatherEffectsProxy(),
     cctvProxy({ sourceRoot: defaultSourceRoot }),
     radioBrowserProxy(),
-    gbfsProxy(),
-    transitProxy(),
     adsbLolProxy(),
     aisLiveProxy(),
     trackBackfillProxies(),
     openAiRealtimeProxy(),
     faceRecognitionProxy(),
+    intelProxy(),
     googlePlacesContextProxy(),
     keySetupEndpoint(),
   ];

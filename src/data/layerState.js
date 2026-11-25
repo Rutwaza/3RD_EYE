@@ -22,7 +22,7 @@ const TRACKING_ID_GRAMMAR = /^[0-9a-z~_-]{1,16}$/;
  * value past them is malformed or hostile. Reject the WHOLE payload, matching
  * the unknown-token rule — never salvage a prefix.
  */
-const MAX_ENABLED_LAYERS_CHARS = 64;
+const MAX_ENABLED_LAYERS_CHARS = 96;
 const MAX_LAYER_OPTIONS_CHARS = 512;
 export const LAYER_STATE_STORAGE_KEY = 'gev:layer-state:v2';
 export const LAYER_RESTORE_ORIGINS = Object.freeze({
@@ -32,6 +32,8 @@ export const LAYER_RESTORE_ORIGINS = Object.freeze({
 
 const RADIO_FILTER_CODES = Object.freeze({
   all: 'a',
+  'east-africa': 'e',
+  africa: 'f',
   news: 'n',
   talk: 't',
   weather: 'w',
@@ -382,6 +384,66 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     disposition: 'enabled-only',
   }),
   Object.freeze({ id: 'traffic', token: 't', disposition: 'enabled-only' }),
+  Object.freeze({
+    id: 'world-news',
+    token: 'v',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'crisis-alerts',
+    token: '0',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'health-outbreaks',
+    token: '1',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-facilities',
+    token: '2',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-airports',
+    token: '3',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-power',
+    token: '4',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-environment',
+    token: '5',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-rivers',
+    token: '6',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-seismic',
+    token: '7',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-volcanoes',
+    token: '8',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-economy',
+    token: '9',
+    disposition: 'enabled-only',
+  }),
+  Object.freeze({
+    id: 'africa-displacement',
+    token: 'k',
+    disposition: 'enabled-only',
+  }),
 ]);
 
 export const REGISTERED_LAYER_IDS = Object.freeze(
@@ -394,7 +456,7 @@ const REGISTRY_BY_ID = new Map(
 const REGISTRY_BY_TOKEN = new Map(
   LAYER_STATE_REGISTRY.map((entry) => [entry.token, entry]),
 );
-const LEGACY_REMOVED_LAYER_TOKENS = new Set(['p']);
+const LEGACY_REMOVED_LAYER_TOKENS = new Set(['p', 'b', 'j']);
 const OPTION_OWNER_IDS = Object.freeze([
   ...new Set(
     LAYER_STATE_REGISTRY.map((entry) => entry.optionOwner).filter(Boolean),
